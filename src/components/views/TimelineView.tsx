@@ -140,8 +140,8 @@ export default function TimelineView({
                             key={z}
                             onClick={() => setZoom(z)}
                             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${zoom === z
-                                    ? 'bg-[#e0592a] text-white'
-                                    : 'text-gray-400 hover:text-white'
+                                ? 'bg-[#e0592a] text-white'
+                                : 'text-gray-400 hover:text-white'
                                 }`}
                         >
                             {z.charAt(0).toUpperCase() + z.slice(1)}
@@ -178,7 +178,7 @@ export default function TimelineView({
 
                     {/* Timeline Rows */}
                     <div className="relative">
-                        {timelineTasks.map((task, index) => (
+                        {timelineTasks.map((task) => (
                             <div key={task.id} className="flex border-b border-[#2c2d65] hover:bg-[#1a1b4b]/50 transition-colors">
                                 {/* Task Name */}
                                 <div className="w-64 flex-shrink-0 p-4 border-r border-[#2c2d65]">

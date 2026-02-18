@@ -1,12 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, verifyToken } from '@/lib/auth';
-import { z } from 'zod';
-
-const createBoardSchema = z.object({
-    name: z.string().min(1),
-    departmentId: z.string().uuid(),
-    // Optional columns config could be passed here
-});
 
 export async function POST(req: NextRequest) {
     const token = req.cookies.get('token')?.value;
@@ -18,40 +11,43 @@ export async function POST(req: NextRequest) {
 
     try {
         const body = await req.json();
-        const { name, departmentId } = createBoardSchema.parse(body);
+        const { name, departmentId } = body;
 
-        // Verify department belongs to org
-        const department = await db.department.findUnique({
-            where: { id: departmentId },
-        });
-
-        if (!department || department.organizationId !== payload.orgId) {
-            return NextResponse.json({ error: 'Invalid department' }, { status: 403 });
+        if (!name || !departmentId) {
+            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
-
-        const defaultColumns = [
-            { id: 'person', type: 'person', title: 'Person', width: 100 },
-            {
-                id: 'status', type: 'status', title: 'Status', width: 140, settings: {
-                    labels: { 'done': '#00c875', 'working': '#fdab3d', 'stuck': '#e2445c', 'default': '#c4c4c4' }
-                }
-            },
-            { id: 'date', type: 'date', title: 'Date', width: 120 },
-        ];
 
         const board = await db.board.create({
             data: {
                 name,
                 departmentId,
-                columns: JSON.stringify(defaultColumns),
             },
         });
 
-        return NextResponse.json(board, { status: 201 });
+        // Initialize default group
+        await db.group.create({
+            data: {
+                boardId: board.id,
+                title: 'Group Title',
+                color: '#579bfc',
+                position: 0,
+            },
+        });
+
+        // Initialize default Table view
+        await db.boardView.create({
+            data: {
+                boardId: board.id,
+                name: 'Main Table',
+                type: 'table',
+                isDefault: true,
+                position: 0,
+            },
+        });
+
+        return NextResponse.json(board);
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: error.issues }, { status: 400 });
-        }
+        console.error('Error creating board:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

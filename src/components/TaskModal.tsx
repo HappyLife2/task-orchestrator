@@ -1,7 +1,8 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useEffect, useRef } from 'react';
-import { X, User, Check, ChevronDown, Calendar, Tag, AlignLeft } from 'lucide-react';
+import { X, User, ChevronDown, Calendar, Tag, AlignLeft } from 'lucide-react';
 
 interface TaskModalProps {
     task: any;

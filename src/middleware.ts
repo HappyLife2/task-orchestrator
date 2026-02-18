@@ -44,7 +44,7 @@ export async function middleware(req: NextRequest) {
             await jose.jwtVerify(token, secret);
             // Valid token
             return NextResponse.next();
-        } catch (err) {
+        } catch {
             if (path.startsWith('/api/')) {
                 return NextResponse.json({ error: 'Invalid Token' }, { status: 401 });
             } else {

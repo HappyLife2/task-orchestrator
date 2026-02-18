@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useEffect, useState, useRef, Fragment } from 'react';
-import { Plus, Loader2, MessageSquare, ChevronRight, ChevronDown, X, Check, User2 } from 'lucide-react';
-import { Button, TextField, Dropdown, Avatar, EditableHeading, IconButton, Tooltip } from '@vibe/core';
+import { useEffect, useState, useCallback, Fragment } from 'react';
+import { Plus, Loader2, MessageSquare, ChevronRight, ChevronDown, X, Check } from 'lucide-react';
+import { Button, TextField, Dropdown, EditableHeading, IconButton } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 
 interface Task {
@@ -48,11 +49,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     // Dropdown states
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchData();
-    }, [boardId]);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             const [boardRes, tasksRes, employeesRes] = await Promise.all([
@@ -86,7 +83,11 @@ export default function BoardView({ boardId }: { boardId: string }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [boardId]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const handleUpdateBoardName = async (newName: string) => {
         if (!newName.trim()) return;
@@ -265,9 +266,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
         });
     };
 
-    const renderTaskRow = (task: Task, isSubitem = false, parentId?: string) => {
+    const renderTaskRow = (task: Task, isSubitem = false) => {
         const isExpanded = expandedTasks.has(task.id);
-        const hasSubitems = task.subTasks && task.subTasks.length > 0;
         const isEditing = editingTaskId === task.id;
 
         const statusColumn = board?.columns?.find((c: Column) => c.type === 'status');
@@ -294,9 +294,9 @@ export default function BoardView({ boardId }: { boardId: string }) {
                         <div className="flex items-center gap-2">
                             {!isSubitem && (
                                 <IconButton
-                                    icon={isExpanded ? ChevronDown : ChevronRight}
+                                    icon={(isExpanded ? ChevronDown : ChevronRight) as any}
                                     onClick={() => toggleExpanded(task.id)}
-                                    size="sm"
+                                    size="small"
                                     kind="tertiary"
                                     ariaLabel="Expand task"
                                 />
@@ -393,7 +393,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             onClick={() => setSelectedTaskForUpdates(task)}
                             kind="tertiary"
                             size="small"
-                            leftIcon={MessageSquare}
+                            leftIcon={MessageSquare as any}
                         >
                             {task._count?.updates || 0}
                         </Button>
@@ -403,7 +403,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                 {/* Add Subitem Row */}
                 {isExpanded && !isSubitem && (
                     <>
-                        {task.subTasks?.map(subTask => renderTaskRow(subTask, true, task.id))}
+                        {task.subTasks?.map(subTask => renderTaskRow(subTask, true))}
 
                         {addingSubitemFor === task.id ? (
                             <tr className="border-b border-[#2c2d65]">
@@ -427,12 +427,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                             Add
                                         </Button>
                                         <IconButton
-                                            icon={X}
+                                            icon={X as any}
                                             onClick={() => {
                                                 setAddingSubitemFor(null);
                                                 setNewSubitemName('');
                                             }}
-                                            size="sm"
+                                            size="small"
                                             kind="tertiary"
                                             ariaLabel="Cancel"
                                         />
@@ -446,7 +446,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                         onClick={() => setAddingSubitemFor(task.id)}
                                         kind="tertiary"
                                         size="small"
-                                        leftIcon={Plus}
+                                        leftIcon={Plus as any}
                                     >
                                         Add Subitem
                                     </Button>
@@ -494,7 +494,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                     <Button
                         onClick={() => setIsAddingTask(true)}
-                        leftIcon={Plus}
+                        leftIcon={Plus as any}
                         size="medium"
                     >
                         New Item
@@ -543,12 +543,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                 Add Task
                                             </Button>
                                             <IconButton
-                                                icon={X}
+                                                icon={X as any}
                                                 onClick={() => {
                                                     setIsAddingTask(false);
                                                     setNewTaskName('');
                                                 }}
-                                                size="md"
+                                                size="medium"
                                                 kind="tertiary"
                                                 ariaLabel="Cancel"
                                             />
@@ -566,7 +566,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                             <div className="w-16 h-16 bg-[#1a1b4b] rounded-full flex items-center justify-center">
                                                 <Plus size={32} className="text-gray-600" />
                                             </div>
-                                            <p>No items yet. Click "New Item" to get started!</p>
+                                            <p>No items yet. Click &quot;New Item&quot; to get started!</p>
                                         </div>
                                     </td>
                                 </tr>

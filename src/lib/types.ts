@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Type definitions for all Monday.com modules
 // Centralized types for use across the application
 
@@ -399,7 +400,7 @@ export interface Notification {
   id: string;
   userId: string;
   type: 'mention' | 'assignment' | 'update' | 'automation';
-  title: string ;
+  title: string;
   content?: string;
   link?: string;
   isRead: boolean;

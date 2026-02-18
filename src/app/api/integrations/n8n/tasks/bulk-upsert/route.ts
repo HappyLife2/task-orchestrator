@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
         processed: 0,
         created: 0,
         updated: 0,
-        errors: [] as any[],
+        errors: [] as { externalId: string; error: unknown }[],
     };
 
     // 3. Process Items
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
                 }
 
                 // C. Handle Person Auto-Creation and Column Parsing
-                const parsedColumns: Record<string, any> = {};
+                const parsedColumns: Record<string, unknown> = {};
                 let assignedUserId: string | null = null;
 
                 if (item.column_values) {
@@ -183,9 +183,9 @@ export async function POST(req: NextRequest) {
 
             results.processed++;
 
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
-            results.errors.push({ externalId: item.externalId, error: err.message });
+            results.errors.push({ externalId: item.externalId, error: (err as Error).message || String(err) });
         }
     }
 

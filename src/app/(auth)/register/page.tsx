@@ -33,10 +33,10 @@ export default function RegisterPage() {
             } else {
                 const data = await res.json();
                 // Handle Zod array error or string error
-                const msg = Array.isArray(data.error) ? data.error.map((e: any) => e.message).join(', ') : data.error;
+                const msg = Array.isArray(data.error) ? data.error.map((e: { message: string }) => e.message).join(', ') : data.error;
                 setError(msg || 'Registration failed');
             }
-        } catch (err) {
+        } catch {
             setError('An error occurred');
         } finally {
             setLoading(false);

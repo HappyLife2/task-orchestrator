@@ -7,7 +7,7 @@ import type { Group as GroupType, Task } from '@/lib/types';
 interface GroupProps {
     group: GroupType;
     tasks: Task[];
-    columns: any[];
+    columns: unknown[];
     onAddTask?: (groupId: string) => void;
     onUpdateGroup?: (groupId: string, updates: Partial<GroupType>) => void;
     onDeleteGroup?: (groupId: string) => void;
@@ -17,7 +17,6 @@ interface GroupProps {
 export default function Group({
     group,
     tasks,
-    columns,
     onAddTask,
     onUpdateGroup,
     onDeleteGroup,

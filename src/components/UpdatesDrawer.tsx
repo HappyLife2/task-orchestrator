@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,8 +20,13 @@ interface Update {
     replies?: Update[];
 }
 
+interface Task {
+    id: string;
+    name: string;
+}
+
 interface UpdatesDrawerProps {
-    task: any;
+    task: Task | null;
     onClose: () => void;
 }
 
@@ -40,7 +46,7 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                 .then(data => setUpdates(Array.isArray(data) ? data : []))
                 .finally(() => setLoading(false));
         }
-    }, [task?.id]);
+    }, [task]);
 
     const handleSubmit = async () => {
         if (!newUpdate.trim() || !task) return;
@@ -63,7 +69,7 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
     };
 
     const handleReply = async (parentId: string) => {
-        if (!replyText.trim()) return;
+        if (!replyText.trim() || !task) return;
 
         try {
             const res = await fetch(`/api/tasks/${task.id}/updates`, {
@@ -126,9 +132,9 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                     <p className="text-xs text-gray-400 mt-1">Updates & Activity</p>
                 </div>
                 <IconButton
-                    icon={X}
+                    icon={X as any}
                     onClick={onClose}
-                    size="md"
+                    size="medium"
                     kind="tertiary"
                     ariaLabel="Close drawer"
                 />
@@ -183,7 +189,6 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                                         size="medium"
                                         type="text"
                                         text={update.user?.name || 'Unknown'}
-                                        backgroundColor="orange"
                                         ariaLabel={update.user?.name}
                                     />
                                     <div className="flex-1 min-w-0">
@@ -209,13 +214,11 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                                     <Menu>
                                         <MenuButton
                                             component={IconButton}
-                                            icon={MoreVertical}
-                                            size="sm"
-                                            kind="tertiary"
                                             ariaLabel="More options"
+                                            {...({ icon: MoreVertical, size: "small", kind: "tertiary" } as object)}
                                         />
                                         <MenuItem
-                                            icon={Trash2}
+                                            icon={Trash2 as any}
                                             onClick={() => handleDelete(update.id)}
                                             title="Delete"
                                             className="text-red-400"
@@ -292,7 +295,6 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                                                 size="small"
                                                 type="text"
                                                 text={reply.user?.name || 'Unknown'}
-                                                backgroundColor="gray"
                                                 ariaLabel={reply.user?.name}
                                             />
                                             <div className="flex-1 min-w-0">

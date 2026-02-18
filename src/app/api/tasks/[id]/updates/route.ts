@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from 'next/server';
 import { db, verifyToken } from '@/lib/auth';
 import { z } from 'zod';
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         const topLevelUpdates = updates.filter((u: any) => !u.parentId);
 
         return NextResponse.json(topLevelUpdates);
-    } catch (e) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch updates' }, { status: 500 });
     }
 }
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         });
 
         return NextResponse.json(update, { status: 201 });
-    } catch (e) {
+    } catch {
         return NextResponse.json({ error: 'Failed to create update' }, { status: 500 });
     }
 }

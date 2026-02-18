@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { DndContext, DragEndEvent, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { Task, BoardColumn } from '@/lib/types';
 import { Plus } from 'lucide-react';

@@ -16,7 +16,6 @@ type ViewMode = 'month' | 'week' | 'day';
 
 export default function CalendarView({
     tasks,
-    columns,
     dateColumnId,
     onTaskClick,
     renderTaskPreview
@@ -24,7 +23,7 @@ export default function CalendarView({
     const [currentDate, setCurrentDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('month');
 
-    const { startDate, endDate, days } = useMemo(() => {
+    const { days } = useMemo(() => {
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
 
@@ -139,8 +138,8 @@ export default function CalendarView({
                             key={mode}
                             onClick={() => setViewMode(mode)}
                             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${viewMode === mode
-                                    ? 'bg-[#e0592a] text-white'
-                                    : 'text-gray-400 hover:text-white'
+                                ? 'bg-[#e0592a] text-white'
+                                : 'text-gray-400 hover:text-white'
                                 }`}
                         >
                             {mode.charAt(0).toUpperCase() + mode.slice(1)}
@@ -172,17 +171,17 @@ export default function CalendarView({
                             <div
                                 key={index}
                                 className={`min-h-[120px] p-2 rounded-lg border transition-colors ${today
-                                        ? 'bg-[#1a1b4b] border-[#e0592a]'
-                                        : currentMonth
-                                            ? 'bg-[#1a1b4b] border-[#2c2d65] hover:border-[#3c3d75]'
-                                            : 'bg-[#0f102a] border-[#1a1b4b]'
+                                    ? 'bg-[#1a1b4b] border-[#e0592a]'
+                                    : currentMonth
+                                        ? 'bg-[#1a1b4b] border-[#2c2d65] hover:border-[#3c3d75]'
+                                        : 'bg-[#0f102a] border-[#1a1b4b]'
                                     }`}
                             >
                                 <div className={`text-sm font-medium mb-2 ${today
-                                        ? 'text-[#e0592a]'
-                                        : currentMonth
-                                            ? 'text-white'
-                                            : 'text-gray-600'
+                                    ? 'text-[#e0592a]'
+                                    : currentMonth
+                                        ? 'text-white'
+                                        : 'text-gray-600'
                                     }`}>
                                     {date.getDate()}
                                 </div>

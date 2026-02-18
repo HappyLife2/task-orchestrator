@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
             select: { id: true, name: true, email: true, role: true }
         });
         return NextResponse.json(employees);
-    } catch (e) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch employees' }, { status: 500 });
     }
 }

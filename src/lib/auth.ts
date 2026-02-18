@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-jwt-key-dev-only';
-const prisma = new PrismaClient(); // Global prisma client instance usage is discouraged in serverless/lambdas usually, but fine for this
+// const prisma = new PrismaClient(); // Global prisma client instance usage is discouraged in serverless/lambdas usually, but fine for this
 
 // Prevent multiple instances of Prisma Client in development
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
@@ -34,7 +34,7 @@ export const signToken = (payload: JWTPayload) => {
 export const verifyToken = (token: string): JWTPayload | null => {
     try {
         return jwt.verify(token, JWT_SECRET) as JWTPayload;
-    } catch (error) {
+    } catch {
         return null;
     }
 };
