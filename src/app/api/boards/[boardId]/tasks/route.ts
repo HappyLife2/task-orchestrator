@@ -44,3 +44,66 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
 
     return NextResponse.json(tasks);
 }
+
+// POST /api/boards/[boardId]/tasks
+export async function POST(req: NextRequest, { params }: { params: { boardId: string } }) {
+    const token = req.cookies.get('token')?.value;
+    const payload = verifyToken(token || '');
+
+    if (!payload) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const boardId = params.boardId;
+
+    try {
+        const body = await req.json();
+        const { name } = body;
+
+        if (!name) {
+            return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+        }
+
+        // Verify board access
+        const board = await db.board.findUnique({
+            where: { id: boardId },
+            include: { department: true }
+        });
+
+        if (!board || board.department.organizationId !== payload.orgId) {
+            return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
+        }
+
+        // Get max position to append to bottom
+        const lastTask = await db.task.findFirst({
+            where: { boardId, parentTaskId: null },
+            orderBy: { position: 'desc' },
+            select: { position: true }
+        });
+
+        const newPosition = (lastTask?.position ?? -1) + 1000;
+
+        const task = await db.task.create({
+            data: {
+                name,
+                boardId,
+                creatorId: payload.userId,
+                position: newPosition,
+                state: 'ACTIVE',
+                columnValues: '{}',
+            },
+            include: {
+                assignedUser: {
+                    select: { id: true, name: true, email: true }
+                }
+            }
+        });
+
+        return NextResponse.json(task);
+
+    } catch (error) {
+        console.error('Error creating task:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
+

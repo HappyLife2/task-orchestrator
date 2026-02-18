@@ -66,3 +66,35 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+    const token = req.cookies.get('token')?.value;
+    const payload = verifyToken(token || '');
+
+    if (!payload) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+        const taskId = params.id;
+
+        // Verify task exists and belongs to org
+        const task = await db.task.findUnique({
+            where: { id: taskId },
+            include: { board: { include: { department: true } } }
+        });
+
+        if (!task || task.board.department.organizationId !== payload.orgId) {
+            return NextResponse.json({ error: 'Task not found or access denied' }, { status: 404 });
+        }
+
+        // Delete subtasks first, then the task itself
+        await db.task.deleteMany({ where: { parentTaskId: taskId } });
+        await db.task.delete({ where: { id: taskId } });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Delete task error:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
