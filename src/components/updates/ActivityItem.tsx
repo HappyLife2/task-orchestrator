@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { MoreHorizontal, MessageSquare, Heart, Smile, Trash2, Edit2 } from 'lucide-react';
-import { Avatar, IconButton, Menu, MenuButton, MenuItem } from '@vibe/core';
+import { MoreHorizontal, ThumbsUp, CornerUpLeft, Bell, FileText, Trash2, Edit2 } from 'lucide-react';
+import { Avatar, IconButton, Menu, MenuItem, MenuButton } from '@vibe/core';
 import ReplyItem from './ReplyItem';
 import InlineReplyComposer from './InlineReplyComposer';
 
@@ -24,7 +24,7 @@ interface ActivityItemProps {
     onReaction: (id: string, emoji: string) => void;
 }
 
-export default function ActivityItem({ update, onReply, onDelete, onReaction }: ActivityItemProps) {
+export default function ActivityItem({ update, currentUser, onReply, onDelete }: ActivityItemProps) {
     const [isReplying, setIsReplying] = useState(false);
 
     const handleDelete = () => {
@@ -35,27 +35,51 @@ export default function ActivityItem({ update, onReply, onDelete, onReaction }: 
 
     return (
         <div className="group/activity animate-in fade-in slide-in-from-bottom-2 duration-300">
-            {/* Header Row */}
-            <div className="flex items-start gap-3">
-                <Avatar
-                    size="medium"
-                    type="text"
-                    text={update.user?.name || 'U'}
-                    className="mt-1 shrink-0 bg-gradient-to-br from-blue-500 to-indigo-600 border-2 border-[#1a1b4b]"
-                />
+            {/* 
+                THE CARD 
+                - Single Border
+                - Contains: Post Header, Post Content, Post Footer (Like/Reply), Divider, Replies, Reply Input
+            */}
+            <div className="rounded-xl border border-[#2c2d65] bg-[#1a1b4b] overflow-hidden">
 
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className="text-white font-semibold text-sm">{update.user?.name || 'Unknown'}</span>
-                            <span className="text-gray-500 text-xs">•</span>
-                            <span className="text-gray-500 text-xs">
-                                {new Date(update.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                            </span>
+                {/* --- POST SECTION --- */}
+                <div className="p-5">
+                    {/* Header Row */}
+                    <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <Avatar
+                                size="medium"
+                                type="text"
+                                text={update.user?.name || 'U'}
+                                className="bg-gradient-to-br from-gray-700 to-gray-600 ring-2 ring-[#1a1b4b]"
+                            />
+                            <div>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-white font-bold text-[15px]">{update.user?.name || 'Unknown'}</span>
+                                    <span className="text-gray-500 text-sm">
+                                        {/* Reference: "21d" */}
+                                        {new Date(update.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Actions Menu */}
-                        <div className="opacity-0 group-hover/activity:opacity-100 transition-opacity">
+                        {/* Header Actions (Top Right) */}
+                        <div className="flex items-center gap-1 text-gray-400">
+                            <IconButton
+                                icon={FileText as any}
+                                size="small"
+                                kind="tertiary"
+                                className="text-gray-400 hover:text-white"
+                                ariaLabel="Log"
+                            />
+                            <IconButton
+                                icon={Bell as any}
+                                size="small"
+                                kind="tertiary"
+                                className="text-gray-400 hover:text-white"
+                                ariaLabel="Subscribe"
+                            />
                             <Menu>
                                 <MenuButton
                                     component={IconButton}
@@ -64,7 +88,7 @@ export default function ActivityItem({ update, onReply, onDelete, onReaction }: 
                                         icon: MoreHorizontal,
                                         size: "small",
                                         kind: "tertiary",
-                                        className: "text-gray-500 hover:text-white"
+                                        className: "text-gray-400 hover:text-white"
                                     } as object)}
                                 />
                                 <MenuItem icon={Edit2 as any} onClick={() => { }} title="Edit" />
@@ -74,60 +98,57 @@ export default function ActivityItem({ update, onReply, onDelete, onReaction }: 
                     </div>
 
                     {/* Content */}
-                    <div className="mt-1 text-[#d1d5db] text-[15px] leading-relaxed whitespace-pre-wrap break-words font-normal">
+                    <div className="mt-4 text-[#d1d5db] text-[15px] leading-relaxed whitespace-pre-wrap break-words font-normal">
                         {update.content}
                     </div>
 
-                    {/* Footer Actions */}
-                    <div className="flex items-center gap-4 mt-3">
-                        <button
-                            onClick={() => onReaction(update.id, '❤️')}
-                            className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${update.myReaction === '❤️' ? 'text-rose-400' : 'text-gray-500 hover:text-gray-300'}`}
-                        >
-                            <Heart size={14} className={update.myReaction === '❤️' ? 'fill-current' : ''} />
-                            {update.reactions?.some((r: any) => r.emoji === '❤️' && r.count > 0) && (
-                                <span>{update.reactions.find((r: any) => r.emoji === '❤️')?.count}</span>
-                            )}
-                            <span className={update.myReaction === '❤️' ? '' : 'hidden group-hover/activity:inline'}>Like</span>
-                        </button>
-
-                        <button
-                            onClick={() => setIsReplying(!isReplying)}
-                            className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-300 transition-colors"
-                        >
-                            <MessageSquare size={14} />
-                            {update.replies && update.replies.length > 0 && <span>{update.replies.length}</span>}
-                            <span>Reply</span>
-                        </button>
-
-                        <button className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-300 transition-colors opacity-0 group-hover/activity:opacity-100">
-                            <Smile size={14} />
-                            React
-                        </button>
+                    {/* "Edited" footer text */}
+                    <div className="flex justify-end mt-2">
+                        <span className="text-xs text-gray-500">Edited</span>
                     </div>
 
-                    {/* Inline Reply Composer */}
-                    {isReplying && (
-                        <InlineReplyComposer
-                            onSubmit={async (content) => {
-                                await onReply(update.id, content);
-                                setIsReplying(false);
-                            }}
-                            onCancel={() => setIsReplying(false)}
-                        />
-                    )}
+                    {/* Actions Divider */}
+                    <div className="h-px bg-[#2c2d65] my-3" />
 
-                    {/* Replies List */}
+                    {/* Post Actions */}
+                    <div className="flex items-center gap-4">
+                        <button className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+                            <ThumbsUp size={16} />
+                            <span>Like</span>
+                        </button>
+                        <button
+                            onClick={() => setIsReplying(true)} // Focus reply input
+                            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                        >
+                            <CornerUpLeft size={16} />
+                            <span>Reply</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* --- REPLIES SECTION --- */}
+                {/* Reference shows a separator line between post actions and replies/reply-input */}
+                <div className="border-t border-[#2c2d65] bg-[#1a1b4b]"> {/* Maybe slightly darker? Reference looks same bg */}
+
+                    {/* Existing Replies */}
                     {update.replies && update.replies.length > 0 && (
-                        <div className="mt-3 space-y-3 relative">
-                            {/* Vertical Thread Line */}
-                            <div className="absolute left-[11px] top-[-10px] bottom-4 w-px bg-white/10 -z-10" />
-
+                        <div className="p-5 pb-0 space-y-4"> {/* Added padding */}
                             {update.replies.map((reply: any) => (
                                 <ReplyItem key={reply.id} reply={reply} onDelete={onDelete} />
                             ))}
                         </div>
                     )}
+
+                    {/* Reply Composer Area - Always visible at bottom of card */}
+                    <div className="p-5">
+                        <InlineReplyComposer
+                            currentUser={currentUser}
+                            onSubmit={async (content) => {
+                                await onReply(update.id, content);
+                            }}
+                            autoFocus={isReplying}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

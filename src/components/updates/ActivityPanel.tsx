@@ -34,7 +34,7 @@ export default function ActivityPanel({
                or bottom for chat. 
                User request: "Update Composer (top)"
             */}
-            <div className="p-5 border-b border-[#2c2d65] shrink-0 z-10 bg-[#151642]/80 backdrop-blur-md sticky top-0">
+            <div className="p-5 shrink-0 z-10 bg-[#1a1b4b] sticky top-0">
                 <UpdateComposer
                     currentUser={currentUser}
                     onSubmit={onPostUpdate}

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Avatar, IconButton } from '@vibe/core';
-import { Trash2 } from 'lucide-react';
+import { Avatar } from '@vibe/core';
+import { ThumbsUp, CornerUpLeft, Trash2 } from 'lucide-react';
 
 interface Reply {
     id: string;
@@ -22,45 +22,50 @@ export default function ReplyItem({ reply, onDelete }: ReplyItemProps) {
     };
 
     return (
-        <div className="relative flex gap-3 group/reply pl-6">
-            {/* Guide Line */}
-            <div className="absolute left-[11px] top-0 bottom-0 w-px bg-white/10 -z-10" />
-            {/* Curve */}
-            <div className="absolute left-[11px] top-4 w-4 h-px bg-white/10" />
-
-            <div className="shrink-0 mt-1 relative z-10">
+        <div className="flex gap-3 group/reply">
+            <div className="shrink-0">
                 <Avatar
-                    size="small"
+                    size="medium" // Size per reference (looks similar to main user)
                     type="text"
                     text={reply.user?.name || 'U'}
-                    className="ring-2 ring-[#1a1b4b]" // Ring to mask guide line behind avatar
+                    className="bg-gray-700 ring-2 ring-[#1a1b4b]"
                 />
             </div>
 
             <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">{reply.user?.name || 'Unknown'}</span>
-                    <span className="text-xs text-gray-500">
-                        {new Date(reply.createdAt).toLocaleString('en-US', {
-                            month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
-                        })}
-                    </span>
+                {/* Content Box */}
+                <div className="bg-[#24265a] rounded-xl p-3 border border-[#2c2d65]/50">
+                    <div className="flex items-baseline justify-between mb-1">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-white font-bold text-sm">{reply.user?.name || 'Unknown'}</span>
+                            <span className="text-gray-400 text-xs">
+                                {/* Reference says "Just now" */}
+                                {new Date(reply.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                            </span>
+                        </div>
+
+                        {/* Optional delete for owner */}
+                        <button onClick={handleDeleteClick} className="opacity-0 group-hover/reply:opacity-100 text-gray-500 hover:text-red-400 transition-opacity">
+                            <Trash2 size={12} />
+                        </button>
+                    </div>
+
+                    <div className="text-gray-300 text-[14px] leading-relaxed whitespace-pre-wrap break-words">
+                        {reply.content}
+                    </div>
                 </div>
 
-                <div className="text-gray-300 text-sm mt-0.5 leading-relaxed whitespace-pre-wrap break-words">
-                    {reply.content}
+                {/* Actions Below Box: Like, Reply */}
+                <div className="flex items-center gap-4 mt-1.5 ml-1">
+                    <button className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-300 transition-colors">
+                        <ThumbsUp size={12} />
+                        <span>Like</span>
+                    </button>
+                    <button className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-300 transition-colors">
+                        <CornerUpLeft size={12} />
+                        <span>Reply</span>
+                    </button>
                 </div>
-            </div>
-
-            <div className="opacity-0 group-hover/reply:opacity-100 transition-opacity">
-                <IconButton
-                    icon={Trash2 as any}
-                    size="small"
-                    kind="tertiary"
-                    className="text-gray-500 hover:text-red-400"
-                    ariaLabel="Delete reply"
-                    onClick={handleDeleteClick}
-                />
             </div>
         </div>
     );
