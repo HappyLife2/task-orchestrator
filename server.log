@@ -202,3 +202,190 @@ Import trace for requested module:
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
  GET /api/org/me 200 in 3ms
  GET /api/org/me 200 in 3ms
+ ✓ Compiled in 593ms (6627 modules)
+ ✓ Compiled in 317ms (3385 modules)
+ ✓ Compiled in 159ms (3385 modules)
+ ✓ Compiled /api/boards/[boardId] in 928ms (6643 modules)
+ ✓ Compiled in 0ms (3370 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 692ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 695ms
+ GET /api/employees 200 in 699ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
+ ✓ Compiled in 168ms (3386 modules)
+ ✓ Compiled in 267ms (3386 modules)
+ ✓ Compiled /favicon.ico in 425ms (3288 modules)
+ GET /favicon.ico 200 in 461ms
+ ✓ Compiled /api/tasks/[id] in 328ms (3442 modules)
+ PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 450ms
+ PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 7ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 127ms
+ ✓ Compiled /api/boards/[boardId] in 282ms (3444 modules)
+ ✓ Compiled (3450 modules)
+ GET /api/employees 200 in 501ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 500ms
+ GET /api/org/me 200 in 502ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 502ms
+ GET /api/employees 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/org/me 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 5ms
+ ✓ Compiled in 576ms (6643 modules)
+ ✓ Compiled /api/boards/[boardId] in 147ms (3366 modules)
+ ✓ Compiled (3370 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 273ms
+ GET /api/employees 200 in 278ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 274ms
+ GET /api/employees 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 5ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 6ms
+ ✓ Compiled in 98ms (3386 modules)
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 103ms
+ ✓ Compiled /api/boards/[boardId] in 268ms (3368 modules)
+ ✓ Compiled (3372 modules)
+ GET /api/employees 200 in 376ms
+ GET /api/org/me 200 in 380ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 383ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 384ms
+ GET /api/employees 200 in 4ms
+ GET /api/org/me 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
+ GET /api/org/me 200 in 5ms
+ GET /api/org/me 200 in 3ms
+ ✓ Compiled in 350ms (3386 modules)
+ ✓ Compiled /api/boards/[boardId] in 455ms (6643 modules)
+ ✓ Compiled in 0ms (3370 modules)
+ GET /api/employees 200 in 412ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 407ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 407ms
+ GET /api/employees 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ GET /dashboard 200 in 60ms
+ ✓ Compiled /favicon.ico in 418ms (3398 modules)
+ GET /favicon.ico 200 in 454ms
+ ✓ Compiled /api/org/me in 226ms (3400 modules)
+ GET /api/org/me 200 in 279ms
+ GET /api/org/me 200 in 50ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 4ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 60ms
+ GET /api/org/me 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/employees 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
+ GET /api/org/me 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
+ GET /api/employees 200 in 11ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 12ms
+ GET /api/org/me 200 in 6ms
+ GET /api/org/me 200 in 8ms
+ ✓ Compiled /api/tasks/[id] in 201ms (3478 modules)
+ PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 248ms
+ GET /api/employees 200 in 11ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 14ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
+ GET /api/employees 200 in 12ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 14ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
+ GET /api/employees 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 12ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 13ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 55ms
+ GET /api/org/me 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 13ms
+ GET /api/employees 200 in 14ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
+ GET /api/org/me 200 in 10ms
+ GET /api/employees 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
+ GET /api/org/me 200 in 5ms
+ GET /api/org/me 200 in 9ms
+ ✓ Compiled in 369ms (3386 modules)
+ ✓ Compiled in 610ms (6643 modules)
+ ✓ Compiled /api/boards/[boardId] in 153ms (3366 modules)
+ ✓ Compiled (3370 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 287ms
+ GET /api/employees 200 in 290ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 289ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 4ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 6ms
+ GET /api/employees 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
+ GET /api/employees 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 4ms
+ ✓ Compiled in 134ms (3386 modules)
+ ✓ Compiled in 283ms (3386 modules)
+ ✓ Compiled /favicon.ico in 274ms (3288 modules)
+ GET /favicon.ico 200 in 315ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 99ms
+ ✓ Compiled /api/boards/[boardId] in 338ms (3394 modules)
+ ✓ Compiled (3400 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 493ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 494ms
+ GET /api/employees 200 in 495ms
+ GET /api/org/me 200 in 498ms
+ GET /api/employees 200 in 5ms
+ GET /api/org/me 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ GET /api/org/me 200 in 7ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 665ms (6775 modules)
+ GET /api/file?path=src/components/board/cells/TimelineCell.tsx 404 in 714ms
+ ✓ Compiled /api/tasks/[id] in 217ms (3479 modules)
+ PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 262ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 78ms
+ GET /api/org/me 200 in 7ms
+ GET /api/employees 200 in 13ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 16ms
+ GET /api/org/me 200 in 6ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
+ GET /api/org/me 200 in 16ms
+ GET /api/org/me 200 in 3ms
+ PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 8ms
+ PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 21ms
+ ✓ Compiled /api/boards/[boardId]/tasks in 1358ms (7195 modules)
+ ✓ Compiled in 0ms (3646 modules)
+ GET /api/employees 200 in 823ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 821ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 825ms
+ GET /api/employees 200 in 13ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 12ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 12ms
+ GET /dashboard 200 in 139ms
+ ✓ Compiled /api/org/me in 209ms (3648 modules)
+ GET /api/org/me 200 in 230ms
+ GET /api/org/me 200 in 2ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 2ms
+ ✓ Compiled /favicon.ico in 268ms (3676 modules)
+ GET /favicon.ico 200 in 309ms
+ GET /api/employees 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 12ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 14ms
+ GET /api/employees 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 7ms
+ ✓ Compiled /api/tasks/[id]/updates in 265ms (3718 modules)
+ GET /api/tasks/d9071236-7971-439a-a383-5c6a045c68f3/updates 200 in 341ms

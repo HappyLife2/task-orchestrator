@@ -6,63 +6,13 @@ import ReactDOM from 'react-dom';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, MessageSquare, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2 } from 'lucide-react';
-import { Button, TextField, Dropdown, EditableHeading, IconButton, Counter } from '@vibe/core';
+import { Button, TextField, Dropdown, EditableHeading, IconButton, Counter, Flex, Icon, Divider } from '@vibe/core';
+import { Update, AddUpdate } from '@vibe/icons';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
+import { PortalMenu } from '@/components/PortalMenu';
 
-// ─── Portal Menu ──────────────────────────────────────────────────────────────
-// Renders children into document.body, positioned below the trigger element.
-// This escapes any overflow:hidden ancestor (like table cells).
-function PortalMenu({ triggerRef, onClose, children }: {
-    triggerRef: React.RefObject<HTMLElement>;
-    onClose: () => void;
-    children: React.ReactNode;
-}) {
-    const [style, setStyle] = useState<React.CSSProperties>({ position: 'fixed', top: -9999, left: -9999, zIndex: 9999 });
-    const menuRef = useRef<HTMLDivElement>(null);
-    // Keep onClose in a ref so the event listener always calls the latest version
-    const onCloseRef = useRef(onClose);
-    useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+// ─── Dropdown Cell (Importance / Urgency / Task Load) ────────────────────────
 
-    useLayoutEffect(() => {
-        if (!triggerRef.current) return;
-        const rect = triggerRef.current.getBoundingClientRect();
-        const spaceBelow = window.innerHeight - rect.bottom;
-        const menuHeight = 260;
-        if (spaceBelow >= menuHeight || spaceBelow > rect.top) {
-            setStyle({ position: 'fixed', top: rect.bottom + 4, left: rect.left, minWidth: rect.width, zIndex: 9999 });
-        } else {
-            setStyle({ position: 'fixed', bottom: window.innerHeight - rect.top + 4, left: rect.left, minWidth: rect.width, zIndex: 9999 });
-        }
-    }, [triggerRef]);
-
-    // Use 'click' (not 'mousedown') so option onClick fires BEFORE the outside-click handler
-    useEffect(() => {
-        const handler = (e: MouseEvent) => {
-            if (
-                menuRef.current && !menuRef.current.contains(e.target as Node) &&
-                triggerRef.current && !triggerRef.current.contains(e.target as Node)
-            ) {
-                onCloseRef.current();
-            }
-        };
-        // Defer so the opening click doesn't immediately trigger this handler
-        const id = setTimeout(() => document.addEventListener('click', handler, { capture: false }), 0);
-        return () => {
-            clearTimeout(id);
-            document.removeEventListener('click', handler, { capture: false });
-        };
-    }, [triggerRef]); // stable — onClose handled via ref
-
-    if (typeof document === 'undefined') return null;
-    return ReactDOM.createPortal(
-        // onMouseDown preventDefault stops the browser from moving focus away from
-        // the trigger before the option's onClick fires
-        <div ref={menuRef} style={style} onMouseDown={e => e.preventDefault()}>
-            {children}
-        </div>,
-        document.body
-    );
-}
 
 interface Task {
     id: string;
@@ -818,23 +768,30 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
         if (col.id === 'updates') {
             return (
-                <div className="flex justify-center w-full relative group/chat-icon">
-                    <IconButton
-                        onClick={() => setSelectedTaskForUpdates(task)}
-                        kind="tertiary"
-                        size="small"
-                        icon={MessageSquare as any}
-                        ariaLabel="Updates"
-                        className="text-gray-400 group-hover/chat-icon:text-blue-400 transition-colors"
-                    />
-                    {((task._count?.updates ?? 0) > 0) && (
-                        <div className="absolute -top-1 -right-0 pointer-events-none transform scale-75">
-                            <Counter
-                                count={task._count?.updates}
-                                size="small"
-                                color="negative"
-                                maxDigits={2}
-                            />
+                <div
+                    className="flex justify-center w-full relative group/chat-icon cursor-pointer"
+                    onClick={() => setSelectedTaskForUpdates(task)}
+                >
+                    {(task._count?.updates ?? 0) === 0 ? (
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Icon icon={AddUpdate} iconSize={32} className="text-blue-500" />
+                        </div>
+                    ) : (
+                        <div style={{ position: "relative" }}>
+                            <Icon icon={Update} iconSize={32} className="text-blue-500" />
+                            <div style={{
+                                position: "absolute",
+                                bottom: 0,
+                                right: -3
+                            }}>
+                                <Counter
+                                    count={task._count?.updates}
+                                    size="small"
+                                    color="negative"
+                                    maxDigits={2}
+                                    ariaLabel={`${task._count?.updates} updates`}
+                                />
+                            </div>
                         </div>
                     )}
                 </div>
