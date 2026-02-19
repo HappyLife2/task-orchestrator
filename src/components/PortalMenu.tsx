@@ -59,7 +59,7 @@ export function PortalMenu({ triggerRef, onClose, children, width, height }: Por
     if (typeof document === 'undefined') return null;
 
     return ReactDOM.createPortal(
-        <div ref={menuRef} style={style} onMouseDown={e => e.preventDefault()}>
+        <div ref={menuRef} style={style}>
             {children}
         </div>,
         document.body

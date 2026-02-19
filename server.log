@@ -7,385 +7,392 @@
   - Environments: .env
 
  ✓ Starting...
- ✓ Ready in 1261ms
- ✓ Compiled /src/middleware in 67ms (138 modules)
+ ✓ Ready in 1385ms
+ ✓ Compiled /favicon.ico in 142ms (54 modules)
+ GET /favicon.ico 200 in 210ms
+ ✓ Compiled /src/middleware in 191ms (138 modules)
  ○ Compiling /dashboard ...
- ✓ Compiled /dashboard in 4.8s (6408 modules)
- GET /dashboard 200 in 4984ms
- ✓ Compiled in 169ms (3182 modules)
+ ✓ Compiled /dashboard in 5.1s (6439 modules)
+ GET /dashboard 200 in 5176ms
+ ✓ Compiled in 152ms (3182 modules)
  ○ Compiling /api/org/me ...
- ✓ Compiled /api/org/me in 1838ms (3304 modules)
- GET /api/org/me 200 in 1926ms
- GET /api/org/me 200 in 5ms
- GET /api/org/me 200 in 8ms
- GET /api/org/me 200 in 4ms
- ✓ Compiled /board/[boardId] in 404ms (6511 modules)
- ✓ Compiled /api/boards/[boardId]/tasks in 98ms (3327 modules)
- ✓ Compiled (3331 modules)
- GET /api/employees 200 in 217ms
- GET /api/employees 200 in 3ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 392ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 394ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 6ms
- ✓ Compiled /api/tasks/[id] in 267ms (3409 modules)
- PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 400 in 540ms
- PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 14ms
- PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 12ms
- PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 11ms
- ○ Compiling /favicon.ico ...
- ✓ Compiled /favicon.ico in 581ms (3437 modules)
- GET /favicon.ico 200 in 613ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 92ms
- GET /api/org/me 200 in 21ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 24ms
- GET /api/employees 200 in 25ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 25ms
- GET /api/org/me 200 in 5ms
- GET /api/employees 200 in 6ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
- GET /api/org/me 200 in 3ms
- GET /api/org/me 200 in 4ms
- PATCH /api/tasks/df02b94f-70c9-4f03-a84c-8c4531f1a6e7 200 in 49ms
- PATCH /api/tasks/df02b94f-70c9-4f03-a84c-8c4531f1a6e7 200 in 11ms
- PATCH /api/tasks/df02b94f-70c9-4f03-a84c-8c4531f1a6e7 200 in 11ms
- ✓ Compiled in 853ms (6601 modules)
- ✓ Compiled /api/boards/[boardId]/tasks in 128ms (3403 modules)
- ✓ Compiled (3407 modules)
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 238ms
- GET /api/employees 200 in 239ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 239ms
- ✓ Compiled /favicon.ico in 249ms (3357 modules)
- GET /favicon.ico 200 in 299ms
- ✓ Compiled /api/tasks/[id] in 117ms (3429 modules)
- PATCH /api/tasks/d9071236-7971-439a-a383-5c6a045c68f3 200 in 169ms
- PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 10ms
- ✓ Compiled /api/tasks/[id]/updates in 483ms (3401 modules)
- GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 743ms
- ✓ Compiled in 198ms (3200 modules)
- ⨯ ./src/components/BoardView.tsx
-Error: 
-  [31mx[0m Expression expected
-     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:818:1]
- [2m818[0m | 
- [2m819[0m |         if (col.id === 'updates') {
- [2m820[0m |             return (
- [2m821[0m |             return (
-     : [31;1m            ^^^^^^[0m
- [2m822[0m |                 <div className="flex justify-center w-full relative group/chat-icon">
- [2m823[0m |                     <IconButton
- [2m824[0m |                         onClick={() => setSelectedTaskForUpdates(task)}
-     `----
-
-Caused by:
-    Syntax Error
-
-Import trace for requested module:
-./src/components/BoardView.tsx
-./src/app/(dashboard)/board/[boardId]/page.tsx
-<w> [webpack.cache.PackFileCacheStrategy] Restoring pack failed from /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/cache/webpack/client-development-fallback.pack.gz: Error: invalid code lengths set
- ⨯ ./src/components/BoardView.tsx
-Error: 
-  [31mx[0m Expression expected
-     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:818:1]
- [2m818[0m | 
- [2m819[0m |         if (col.id === 'updates') {
- [2m820[0m |             return (
- [2m821[0m |             return (
-     : [31;1m            ^^^^^^[0m
- [2m822[0m |                 <div className="flex justify-center w-full relative group/chat-icon">
- [2m823[0m |                     <IconButton
- [2m824[0m |                         onClick={() => setSelectedTaskForUpdates(task)}
-     `----
-
-Caused by:
-    Syntax Error
-
-Import trace for requested module:
-./src/components/BoardView.tsx
-./src/app/(dashboard)/board/[boardId]/page.tsx
- ○ Compiling /_error ...
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 500 in 4ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 500 in 6ms
- ⨯ ./src/components/BoardView.tsx
-Error: 
-  [31mx[0m Expression expected
-     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:818:1]
- [2m818[0m | 
- [2m819[0m |         if (col.id === 'updates') {
- [2m820[0m |             return (
- [2m821[0m |             return (
-     : [31;1m            ^^^^^^[0m
- [2m822[0m |                 <div className="flex justify-center w-full relative group/chat-icon">
- [2m823[0m |                     <IconButton
- [2m824[0m |                         onClick={() => setSelectedTaskForUpdates(task)}
-     `----
-
-Caused by:
-    Syntax Error
-
-Import trace for requested module:
-./src/components/BoardView.tsx
-./src/app/(dashboard)/board/[boardId]/page.tsx
- GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 500 in 839ms
- GET / 500 in 860ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- ⨯ ./src/components/BoardView.tsx
-Error: 
-  [31mx[0m Expression expected
-     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:839:1]
- [2m839[0m |                     )}
- [2m840[0m |                 </div>
- [2m841[0m |             );
- [2m842[0m |             );
-     : [31;1m            ^[0m
- [2m843[0m | }
- [2m844[0m | 
- [2m845[0m | if (col.type === 'dropdown') {
-     `----
-
-Caused by:
-    Syntax Error
-
-Import trace for requested module:
-./src/components/BoardView.tsx
-./src/app/(dashboard)/board/[boardId]/page.tsx
- GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 500 in 280ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 500 in 3ms
- ✓ Compiled /_not-found in 887ms (6637 modules)
- GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 404 in 939ms
- ⚠ Fast Refresh had to perform a full reload due to a runtime error.
- GET / 200 in 4ms
- GET / 307 in 14ms
- GET /dashboard 200 in 26ms
- ✓ Compiled /api/org/me in 219ms (3373 modules)
- GET /api/org/me 200 in 257ms
- GET /api/org/me 200 in 3ms
- GET /api/org/me 200 in 4ms
+ ✓ Compiled /api/org/me in 1740ms (3332 modules)
+ GET /api/org/me 200 in 1802ms
  GET /api/org/me 200 in 2ms
- ✓ Compiled /api/boards/[boardId]/tasks in 92ms (3375 modules)
- ✓ Compiled (3379 modules)
- GET /api/employees 200 in 206ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 207ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 209ms
- GET /api/employees 200 in 10ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 12ms
- ✓ Compiled /api/tasks/[id]/updates in 186ms (3457 modules)
- GET /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856/updates 200 in 222ms
- GET /dashboard 200 in 54ms
- ✓ Compiled /favicon.ico in 226ms (3485 modules)
- GET /favicon.ico 200 in 269ms
- GET /api/org/me 200 in 11ms
- GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 3ms
+ ○ Compiling /board/[boardId] ...
+ ✓ Compiled /board/[boardId] in 764ms (7093 modules)
+ ✓ Compiled /api/boards/[boardId]/tasks in 112ms (3632 modules)
+ ✓ Compiled (3636 modules)
+ GET /api/employees 200 in 254ms
+ GET /api/employees 200 in 3ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 431ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 432ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 70ms
+ GET /api/org/me 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
+ GET /api/employees 200 in 14ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
  GET /api/org/me 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 9ms
+ GET /api/employees 200 in 11ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 12ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 8ms
+ ✓ Compiled /api/boards/[boardId] in 660ms (6970 modules)
+ ✓ Compiled in 0ms (3606 modules)
+ ✓ Compiled /_not-found in 440ms (7072 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 404 in 1106ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 404 in 1106ms
+ GET /api/employees 404 in 1110ms
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Femployees%2Froute&page=%2Fapi%2Femployees%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Femployees%2Froute.ts&appDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator%2Fsrc%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:10:121)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Femployees%2Froute&page=%2Fapi%2Femployees%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Femployees%2Froute.ts&appDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator%2Fsrc%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/employees/route.js:92:1)
+    at __webpack_require__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:33:42)
+    at __webpack_exec__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/employees/route.js:122:39)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/employees/route.js:123:530
+    at __webpack_require__.X (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:168:21)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/employees/route.js:123:47
+    at Object.<anonymous> (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/employees/route.js:126:3)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/require.js:109:84)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:1894:24)
+    at async DevServer.renderToResponseImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  page: '/api/employees'
+}
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fboards%2F%5BboardId%5D%2Ftasks%2Froute&page=%2Fapi%2Fboards%2F%5BboardId%5D%2Ftasks%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fboards%2F%5BboardId%5D%2Ftasks%2Froute.ts&appDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator%2Fsrc%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:10:121)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fboards%2F%5BboardId%5D%2Ftasks%2Froute&page=%2Fapi%2Fboards%2F%5BboardId%5D%2Ftasks%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fboards%2F%5BboardId%5D%2Ftasks%2Froute.ts&appDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator%2Fsrc%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/tasks/route.js:92:1)
+    at __webpack_require__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:33:42)
+    at __webpack_exec__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/tasks/route.js:122:39)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/tasks/route.js:123:530
+    at __webpack_require__.X (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:168:21)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/tasks/route.js:123:47
+    at Object.<anonymous> (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/tasks/route.js:126:3)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/require.js:109:84)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:1894:24)
+    at async DevServer.renderToResponseImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  page: '/api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks'
+}
+ ⨯ TypeError: __webpack_modules__[moduleId] is not a function
+    at __webpack_require__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:33:42)
+    at eval (webpack-internal:///(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fboards%2F%5BboardId%5D%2Froute&page=%2Fapi%2Fboards%2F%5BboardId%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fboards%2F%5BboardId%5D%2Froute.ts&appDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator%2Fsrc%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!:10:121)
+    at (rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2Fboards%2F%5BboardId%5D%2Froute&page=%2Fapi%2Fboards%2F%5BboardId%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fboards%2F%5BboardId%5D%2Froute.ts&appDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator%2Fsrc%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2FUsers%2Fhappylife%2FDesktop%2FAntigravity%2Ftask-orchestrator&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D! (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/route.js:92:1)
+    at __webpack_require__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:33:42)
+    at __webpack_exec__ (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/route.js:122:39)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/route.js:123:530
+    at __webpack_require__.X (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/webpack-runtime.js:168:21)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/route.js:123:47
+    at Object.<anonymous> (/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/server/app/api/boards/[boardId]/route.js:126:3)
+    at Module._compile (node:internal/modules/cjs/loader:1760:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1503:12)
+    at mod.require (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/require-hook.js:65:28)
+    at require (node:internal/modules/helpers:152:16)
+    at requirePage (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/require.js:109:84)
+    at /Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/load-components.js:98:84
+    at async loadComponentsImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/load-components.js:98:26)
+    at async DevServer.findPageComponentsImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/next-server.js:709:36)
+    at async DevServer.findPageComponents (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:577:20)
+    at async DevServer.renderPageComponent (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:1894:24)
+    at async DevServer.renderToResponseImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:1946:32)
+    at async DevServer.pipeImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:921:25)
+    at async NextNodeServer.handleCatchallRenderRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/next-server.js:272:17)
+    at async DevServer.handleRequestImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/base-server.js:817:17)
+    at async /Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+    at async Span.traceAsyncFn (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/trace/trace.js:154:20)
+    at async DevServer.handleRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+    at async invokeRender (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:173:21)
+    at async handleRequest (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:350:24)
+    at async requestHandlerImpl (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/router-server.js:374:13)
+    at async Server.requestListener (/Users/happylife/Desktop/Antigravity/task-orchestrator/node_modules/next/dist/server/lib/start-server.js:141:13) {
+  page: '/api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c'
+}
+ ✓ Compiled /_error in 470ms (7297 modules)
+ GET /api/employees 500 in 647ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 500 in 647ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 500 in 647ms
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/cache/webpack/client-development/3.pack.gz_' -> '/Users/happylife/Desktop/Antigravity/task-orchestrator/.next/cache/webpack/client-development/3.pack.gz'
+ ⨯ ./src/components/BoardView.tsx
+Error: 
+  [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:768:1]
+ [2m768[0m | 
+ [2m769[0m |         if (col.id === 'updates') {
+ [2m770[0m |             return (
+ [2m771[0m |                 <div
+     : [31;1m                 ^^^[0m
+ [2m772[0m |                     className="flex justify-center w-full relative group/chat-icon cursor-pointer"
+ [2m773[0m |                     onClick={() => setSelectedTaskForUpdates(task)}
+ [2m774[0m |                 >
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/BoardView.tsx
+./src/app/(dashboard)/board/[boardId]/page.tsx
+ ⨯ ./src/components/BoardView.tsx
+Error: 
+  [31mx[0m Unexpected token `div`. Expected jsx identifier
+     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:768:1]
+ [2m768[0m | 
+ [2m769[0m |         if (col.id === 'updates') {
+ [2m770[0m |             return (
+ [2m771[0m |                 <div
+     : [31;1m                 ^^^[0m
+ [2m772[0m |                     className="flex justify-center w-full relative group/chat-icon cursor-pointer"
+ [2m773[0m |                     onClick={() => setSelectedTaskForUpdates(task)}
+ [2m774[0m |                 >
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/BoardView.tsx
+./src/app/(dashboard)/board/[boardId]/page.tsx
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 500 in 6ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 500 in 7ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_not-found in 830ms (7184 modules)
+ GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 404 in 876ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 404 in 45ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 48ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 16ms
+ ✓ Compiled /api/boards/[boardId] in 119ms (3643 modules)
+ ✓ Compiled (3649 modules)
+ GET /api/org/me 200 in 266ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 265ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 266ms
+ GET /api/employees 200 in 267ms
+ GET /api/org/me 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/employees 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ GET /api/org/me 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
+ GET /api/employees 200 in 12ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 17ms
+ GET /api/org/me 200 in 12ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 16ms
+ GET /api/employees 200 in 16ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 16ms
+ GET /api/org/me 200 in 11ms
+ GET /api/org/me 200 in 7ms
+ GET /api/org/me 200 in 7ms
+ GET /api/org/me 200 in 4ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 49ms
  GET /api/org/me 200 in 5ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
- GET /api/employees 200 in 11ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 13ms
- GET /api/employees 200 in 14ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 16ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 16ms
- GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 34ms
- PATCH /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
- POST /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 201 in 10ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 161ms
- GET /api/org/me 200 in 6ms
- GET /api/employees 200 in 10ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 10ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
- GET /api/org/me 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
  GET /api/employees 200 in 8ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
- GET /api/org/me 200 in 3ms
- GET /api/org/me 200 in 3ms
- ✓ Compiled in 593ms (6627 modules)
- ✓ Compiled in 317ms (3385 modules)
- ✓ Compiled in 159ms (3385 modules)
- ✓ Compiled /api/boards/[boardId] in 928ms (6643 modules)
- ✓ Compiled in 0ms (3370 modules)
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 692ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 695ms
- GET /api/employees 200 in 699ms
- GET /api/employees 200 in 6ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
- ✓ Compiled in 168ms (3386 modules)
- ✓ Compiled in 267ms (3386 modules)
- ✓ Compiled /favicon.ico in 425ms (3288 modules)
- GET /favicon.ico 200 in 461ms
- ✓ Compiled /api/tasks/[id] in 328ms (3442 modules)
- PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 450ms
- PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 7ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 127ms
- ✓ Compiled /api/boards/[boardId] in 282ms (3444 modules)
- ✓ Compiled (3450 modules)
- GET /api/employees 200 in 501ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 500ms
- GET /api/org/me 200 in 502ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 502ms
- GET /api/employees 200 in 5ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
- GET /api/org/me 200 in 9ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
- GET /api/org/me 200 in 3ms
- GET /api/org/me 200 in 5ms
- ✓ Compiled in 576ms (6643 modules)
- ✓ Compiled /api/boards/[boardId] in 147ms (3366 modules)
- ✓ Compiled (3370 modules)
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 273ms
- GET /api/employees 200 in 278ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 274ms
- GET /api/employees 200 in 5ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
- GET /api/employees 200 in 6ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 5ms
- GET /api/employees 200 in 6ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 6ms
- ✓ Compiled in 98ms (3386 modules)
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 103ms
- ✓ Compiled /api/boards/[boardId] in 268ms (3368 modules)
- ✓ Compiled (3372 modules)
- GET /api/employees 200 in 376ms
- GET /api/org/me 200 in 380ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 383ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 384ms
- GET /api/employees 200 in 4ms
  GET /api/org/me 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
- GET /api/org/me 200 in 5ms
- GET /api/org/me 200 in 3ms
- ✓ Compiled in 350ms (3386 modules)
- ✓ Compiled /api/boards/[boardId] in 455ms (6643 modules)
- ✓ Compiled in 0ms (3370 modules)
- GET /api/employees 200 in 412ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 407ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 407ms
- GET /api/employees 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
- GET /dashboard 200 in 60ms
- ✓ Compiled /favicon.ico in 418ms (3398 modules)
- GET /favicon.ico 200 in 454ms
- ✓ Compiled /api/org/me in 226ms (3400 modules)
- GET /api/org/me 200 in 279ms
- GET /api/org/me 200 in 50ms
- GET /api/org/me 200 in 4ms
- GET /api/org/me 200 in 4ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 60ms
- GET /api/org/me 200 in 8ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
  GET /api/employees 200 in 9ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
- GET /api/org/me 200 in 8ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
- GET /api/employees 200 in 11ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 12ms
- GET /api/org/me 200 in 6ms
- GET /api/org/me 200 in 8ms
- ✓ Compiled /api/tasks/[id] in 201ms (3478 modules)
- PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 248ms
- GET /api/employees 200 in 11ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 14ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
- GET /api/employees 200 in 12ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 14ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
- GET /api/employees 200 in 9ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 12ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 13ms
- GET /api/employees 200 in 6ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 55ms
- GET /api/org/me 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 13ms
- GET /api/employees 200 in 14ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
- GET /api/org/me 200 in 10ms
- GET /api/employees 200 in 9ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 10ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
- GET /api/org/me 200 in 5ms
- GET /api/org/me 200 in 9ms
- ✓ Compiled in 369ms (3386 modules)
- ✓ Compiled in 610ms (6643 modules)
- ✓ Compiled /api/boards/[boardId] in 153ms (3366 modules)
- ✓ Compiled (3370 modules)
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 287ms
- GET /api/employees 200 in 290ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 289ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 4ms
- GET /api/employees 200 in 6ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 6ms
- GET /api/employees 200 in 5ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 3ms
+ GET /dashboard 200 in 21ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 3ms
+ ✓ Compiled /favicon.ico in 132ms (3677 modules)
+ GET /favicon.ico 200 in 164ms
+ GET /api/employees 200 in 17ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 19ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 19ms
+ GET /api/employees 200 in 4ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 6ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
- GET /api/employees 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 4ms
- ✓ Compiled in 134ms (3386 modules)
- ✓ Compiled in 283ms (3386 modules)
- ✓ Compiled /favicon.ico in 274ms (3288 modules)
- GET /favicon.ico 200 in 315ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 99ms
- ✓ Compiled /api/boards/[boardId] in 338ms (3394 modules)
- ✓ Compiled (3400 modules)
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 493ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 494ms
- GET /api/employees 200 in 495ms
- GET /api/org/me 200 in 498ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 7ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 80ms
+ GET /api/org/me 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/employees 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 13ms
+ GET /api/org/me 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 9ms
+ GET /api/employees 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 10ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 4ms
+ GET /dashboard 200 in 17ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 3ms
  GET /api/employees 200 in 5ms
- GET /api/org/me 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 10ms
+ GET /api/employees 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ ✓ Compiled in 1026ms (7195 modules)
+ ✓ Compiled /api/boards/[boardId]/tasks in 112ms (3642 modules)
+ ✓ Compiled (3646 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 266ms
+ GET /api/employees 200 in 268ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 267ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 7ms
+ ✓ Compiled in 99ms (3662 modules)
+ ✓ Compiled in 306ms (3662 modules)
+ ✓ Compiled in 140ms (3662 modules)
+ ✓ Compiled in 270ms (7308 modules)
+ GET /dashboard 200 in 46ms
+ ✓ Compiled /api/org/me in 180ms (3642 modules)
+ GET /api/org/me 200 in 198ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 3ms
+ ✓ Compiled /api/boards/[boardId] in 115ms (3644 modules)
+ ✓ Compiled (3648 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 240ms
+ GET /api/employees 200 in 241ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 241ms
+ GET /api/employees 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 49ms
+ GET /api/org/me 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
+ GET /api/employees 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
+ GET /api/employees 200 in 7ms
+ GET /api/org/me 200 in 8ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 9ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
- GET /api/org/me 200 in 7ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 665ms (6775 modules)
- GET /api/file?path=src/components/board/cells/TimelineCell.tsx 404 in 714ms
- ✓ Compiled /api/tasks/[id] in 217ms (3479 modules)
- PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 262ms
- GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 78ms
- GET /api/org/me 200 in 7ms
- GET /api/employees 200 in 13ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 16ms
- GET /api/org/me 200 in 6ms
- GET /api/employees 200 in 6ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
- GET /api/org/me 200 in 16ms
+ GET /api/org/me 200 in 5ms
  GET /api/org/me 200 in 3ms
- PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 8ms
- PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 21ms
- ✓ Compiled /api/boards/[boardId]/tasks in 1358ms (7195 modules)
- ✓ Compiled in 0ms (3646 modules)
- GET /api/employees 200 in 823ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 821ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 825ms
- GET /api/employees 200 in 13ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 12ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 12ms
- GET /dashboard 200 in 139ms
- ✓ Compiled /api/org/me in 209ms (3648 modules)
- GET /api/org/me 200 in 230ms
- GET /api/org/me 200 in 2ms
+ ✓ Compiled /api/tasks/[id] in 263ms (3726 modules)
+ PATCH /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99 200 in 544ms
+ ✓ Compiled /api/tasks/[id]/updates in 123ms (3728 modules)
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 423ms
+ GET /api/tasks/d9071236-7971-439a-a383-5c6a045c68f3/updates 200 in 5ms
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 6ms
+ POST /api/tasks/d9071236-7971-439a-a383-5c6a045c68f3/updates 201 in 8ms
+ GET /dashboard 200 in 29ms
+ GET /api/org/me 200 in 4ms
  GET /api/org/me 200 in 3ms
  GET /api/org/me 200 in 2ms
- ✓ Compiled /favicon.ico in 268ms (3676 modules)
- GET /favicon.ico 200 in 309ms
  GET /api/employees 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 14ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 15ms
+ GET /api/employees 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 22ms
+ GET /api/org/me 200 in 6ms
+ GET /api/employees 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ GET /api/org/me 200 in 7ms
+ GET /api/employees 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ GET /api/org/me 200 in 5ms
+ GET /api/org/me 200 in 4ms
+ ✓ Compiled /api/boards/[boardId]/tasks in 869ms (7195 modules)
+ ✓ Compiled in 1ms (3646 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 602ms
+ GET /api/employees 200 in 605ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 604ms
+ GET /api/employees 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ ✓ Compiled /api/tasks/[id]/updates in 229ms (3724 modules)
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 266ms
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 3ms
+ ✓ Compiled in 268ms (7386 modules)
+ ✓ Compiled in 244ms (7195 modules)
+ ✓ Compiled /favicon.ico in 144ms (3564 modules)
+ GET /favicon.ico 200 in 172ms
+ GET /dashboard 200 in 67ms
+ ✓ Compiled /api/org/me in 115ms (3670 modules)
+ GET /api/org/me 200 in 146ms
+ GET /api/org/me 200 in 2ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 2ms
+ ✓ Compiled /api/boards/[boardId]/tasks in 143ms (3672 modules)
+ ✓ Compiled (3676 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 371ms
+ GET /api/employees 200 in 375ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 374ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 62ms
+ GET /api/org/me 200 in 8ms
+ GET /api/employees 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 9ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 11ms
+ GET /api/org/me 200 in 8ms
+ GET /api/employees 200 in 11ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 12ms
  GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 14ms
- GET /api/employees 200 in 5ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
- GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 7ms
- ✓ Compiled /api/tasks/[id]/updates in 265ms (3718 modules)
- GET /api/tasks/d9071236-7971-439a-a383-5c6a045c68f3/updates 200 in 341ms
+ GET /api/org/me 200 in 5ms
+ GET /api/org/me 200 in 5ms
+ ✓ Compiled /api/tasks/[id]/updates in 227ms (3754 modules)
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 263ms
+ GET /api/tasks/4505c655-2ae4-4265-8b49-9dd8bacfc51d/updates 200 in 5ms
+ POST /api/tasks/4505c655-2ae4-4265-8b49-9dd8bacfc51d/updates 201 in 7ms

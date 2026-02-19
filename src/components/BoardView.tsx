@@ -773,12 +773,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     onClick={() => setSelectedTaskForUpdates(task)}
                 >
                     {(task._count?.updates ?? 0) === 0 ? (
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Icon icon={AddUpdate} iconSize={32} className="text-blue-500" />
+                        <div className="text-gray-400 hover:text-blue-500 transition-colors">
+                            <Icon icon={AddUpdate} iconSize={24} />
                         </div>
                     ) : (
                         <div style={{ position: "relative" }}>
-                            <Icon icon={Update} iconSize={32} className="text-blue-500" />
+                            <Icon icon={Update} iconSize={24} className="text-blue-500" />
                             <div style={{
                                 position: "absolute",
                                 bottom: 0,

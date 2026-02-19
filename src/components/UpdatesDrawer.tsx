@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Heart, Reply, Trash2, MoreVertical, X } from 'lucide-react';
-import { Avatar, Button, TextField, Menu, MenuButton, MenuItem, IconButton } from '@vibe/core';
+import { Heart, Reply, Trash2, MoreVertical, X, ThumbsUp, Smile, Star, Zap } from 'lucide-react';
+import { Avatar, Button, TextField, Menu, MenuButton, MenuItem, IconButton, Tooltip } from '@vibe/core';
 
 interface Update {
     id: string;
@@ -181,20 +181,24 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                     </div>
                 ) : (
                     updates.map((update) => (
-                        <div key={update.id} className="bg-[#0f102a] rounded-xl border border-[#2c2d65] overflow-hidden hover:border-[#3c3d75] transition-colors">
+                        <div key={update.id} className="relative group">
+                            {/* Glassmorphism Card */}
+                            <div className="absolute inset-0 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg -z-10" />
+
                             {/* Update Header */}
-                            <div className="p-4 flex items-start justify-between">
-                                <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="p-6 flex items-start justify-between">
+                                <div className="flex items-start gap-4 flex-1 min-w-0">
                                     <Avatar
                                         size="medium"
                                         type="text"
                                         text={update.user?.name || 'Unknown'}
                                         ariaLabel={update.user?.name}
+                                        className="ring-2 ring-white/10 shadow-md"
                                     />
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-sm font-semibold text-white">{update.user?.name || 'Unknown User'}</span>
-                                            <span className="text-xs text-gray-500">
+                                    <div className="flex-1 min-w-0 pt-1">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-base font-semibold text-white tracking-wide">{update.user?.name || 'Unknown User'}</span>
+                                            <span className="text-xs text-gray-400/80 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
                                                 {new Date(update.createdAt).toLocaleString('en-US', {
                                                     month: 'short',
                                                     day: 'numeric',
@@ -203,14 +207,14 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                                                 })}
                                             </span>
                                         </div>
-                                        <div className="mt-2 text-sm text-gray-300 whitespace-pre-wrap break-words">
+                                        <div className="mt-3 text-sm text-gray-200 whitespace-pre-wrap break-words leading-relaxed font-light tracking-wide">
                                             {update.content}
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* More Menu */}
-                                <div className="relative ml-2">
+                                <div className="relative ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Menu>
                                         <MenuButton
                                             component={IconButton}
@@ -227,35 +231,53 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                                 </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="px-4 pb-3 flex items-center gap-4">
-                                <button
-                                    onClick={() => handleLike(update.id)}
-                                    className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${update.likedByCurrentUser
-                                        ? 'text-[#e0592a]'
-                                        : 'text-gray-500 hover:text-[#e0592a]'
-                                        }`}
-                                >
-                                    <Heart
-                                        size={14}
-                                        fill={update.likedByCurrentUser ? '#e0592a' : 'none'}
-                                    />
-                                    {update.likes ? update.likes : 'Like'}
-                                </button>
+                            {/* Actions with Glassmorphism Emoji Picker */}
+                            <div className="px-6 pb-4 flex items-center gap-6">
+                                <div className="relative group/reactions">
+                                    <button
+                                        onClick={() => handleLike(update.id)}
+                                        className={`flex items-center gap-2 text-sm font-medium transition-colors ${update.likedByCurrentUser
+                                            ? 'text-pink-500'
+                                            : 'text-gray-400 hover:text-pink-400'
+                                            }`}
+                                    >
+                                        <Heart
+                                            size={16}
+                                            fill={update.likedByCurrentUser ? 'currentColor' : 'none'}
+                                        />
+                                        {update.likes ? update.likes : 'Like'}
+                                    </button>
+
+                                    {/* Glassmorphism Emoji Picker Tooltip */}
+                                    <div className="absolute bottom-full left-0 mb-2 p-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full shadow-lg flex items-center gap-2 opacity-0 group-hover/reactions:opacity-100 transition-all duration-300 translate-y-2 group-hover/reactions:translate-y-0 pointer-events-none group-hover/reactions:pointer-events-auto">
+                                        {['👍', '❤️', '😂', '😮', '😢', '😡'].map(emoji => (
+                                            <button
+                                                key={emoji}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleLike(update.id);
+                                                }}
+                                                className="hover:scale-125 transition-transform text-lg px-1"
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
 
                                 <button
                                     onClick={() => setReplyingTo(replyingTo === update.id ? null : update.id)}
-                                    className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-white transition-colors"
+                                    className="flex items-center gap-2 text-sm font-medium text-gray-400 hover:text-white transition-colors"
                                 >
-                                    <Reply size={14} />
+                                    <Reply size={16} />
                                     Reply
                                 </button>
                             </div>
 
                             {/* Reply Input */}
                             {replyingTo === update.id && (
-                                <div className="px-4 pb-4 pt-2 border-t border-[#2c2d65]">
-                                    <div className="bg-[#1a1b4b] rounded-lg p-3 border border-[#2c2d65]">
+                                <div className="px-6 pb-6 pt-2 border-t border-white/10">
+                                    <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 border border-white/10">
                                         <TextField
                                             value={replyText}
                                             onChange={setReplyText}
@@ -288,19 +310,21 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
 
                             {/* Replies */}
                             {update.replies && update.replies.length > 0 && (
-                                <div className="px-4 pb-3 pl-16 space-y-3 border-t border-[#2c2d65] pt-3">
+                                <div className="px-6 pb-6 pl-[4.5rem] space-y-4 border-t border-white/5 pt-4 bg-black/20">
                                     {update.replies.map(reply => (
-                                        <div key={reply.id} className="flex gap-2">
+                                        <div key={reply.id} className="flex gap-3 group/reply relative">
+                                            <div className="absolute left-[-1.5rem] top-3 w-4 h-[1px] bg-white/10" />
                                             <Avatar
                                                 size="small"
                                                 type="text"
                                                 text={reply.user?.name || 'Unknown'}
                                                 ariaLabel={reply.user?.name}
+                                                className="ring-1 ring-white/10"
                                             />
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs font-semibold text-white">{reply.user?.name || 'Unknown'}</span>
-                                                    <span className="text-[10px] text-gray-600">
+                                            <div className="flex-1 min-w-0 bg-white/5 rounded-lg p-3 border border-white/5 hover:border-white/10 transition-colors">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-sm font-medium text-white">{reply.user?.name || 'Unknown'}</span>
+                                                    <span className="text-[10px] text-gray-500">
                                                         {new Date(reply.createdAt).toLocaleString('en-US', {
                                                             month: 'short',
                                                             day: 'numeric',
@@ -309,7 +333,7 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                                                         })}
                                                     </span>
                                                 </div>
-                                                <div className="mt-1 text-xs text-gray-400 break-words">
+                                                <div className="text-sm text-gray-300 break-words leading-relaxed">
                                                     {reply.content}
                                                 </div>
                                             </div>
