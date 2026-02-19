@@ -17,32 +17,61 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 
     const taskId = params.id;
+    const currentUserId = payload.userId;
 
     try {
         const updates = await db.update.findMany({
             where: { taskId },
             include: {
                 user: {
-                    select: { id: true, name: true, email: true }
+                    select: { id: true, name: true, email: true, avatarUrl: true, role: true }
                 },
                 replies: {
                     include: {
-                        user: { select: { id: true, name: true, email: true } }
+                        user: { select: { id: true, name: true, email: true, avatarUrl: true } }
                     },
                     orderBy: { createdAt: 'asc' }
+                },
+                reactions: {
+                    select: {
+                        emoji: true,
+                        userId: true
+                    }
                 }
             },
             orderBy: { createdAt: 'desc' },
         });
 
-        // Filter out replies from top level if we want threaded view, 
-        // but typically we just fetch all and reconstruct or fetch top-level only.
-        // Let's fetch all and filter in UI or query logic.
-        // Actually, let's just return top-level updates and their replies.
-        const topLevelUpdates = updates.filter((u: any) => !u.parentId);
+        const topLevelUpdates = updates
+            .filter((u: any) => !u.parentId)
+            .map((u: any) => {
+                // Group reactions by emoji
+                const reactionCounts: Record<string, number> = {};
+                let userReaction: string | null = null;
+
+                u.reactions.forEach((r: any) => {
+                    reactionCounts[r.emoji] = (reactionCounts[r.emoji] || 0) + 1;
+                    if (r.userId === currentUserId) {
+                        userReaction = r.emoji;
+                    }
+                });
+
+                const formattedReactions = Object.entries(reactionCounts).map(([emoji, count]) => ({
+                    emoji,
+                    count,
+                    reactedByMe: userReaction === emoji // Only true if THIS specific emoji matches user's reaction
+                }));
+
+                return {
+                    ...u,
+                    reactions: formattedReactions,
+                    myReaction: userReaction
+                };
+            });
 
         return NextResponse.json(topLevelUpdates);
-    } catch {
+    } catch (error) {
+        console.error('Failed to fetch updates:', error);
         return NextResponse.json({ error: 'Failed to fetch updates' }, { status: 500 });
     }
 }

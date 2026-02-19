@@ -50,6 +50,7 @@ model User {
   recentItems       RecentItem[]
   documentVersions  DocumentVersion[]
   watchedItems      WatchedItem[]
+  updateReactions   UpdateReaction[]
 }
 
 model Department {
@@ -166,8 +167,24 @@ model Update {
   parentId  String?
   parent    Update?  @relation("UpdateReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Update[] @relation("UpdateReplies")
+  reactions UpdateReaction[]
 
   @@index([taskId])
+  @@index([userId])
+}
+
+model UpdateReaction {
+  id        String   @id @default(uuid())
+  updateId  String
+  userId    String
+  emoji     String   @default("❤️")
+  createdAt DateTime @default(now())
+
+  update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([updateId, userId])
+  @@index([updateId])
   @@index([userId])
 }
 

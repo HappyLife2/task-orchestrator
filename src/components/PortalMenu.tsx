@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { createPortal } from 'react-dom';
 
 interface PortalMenuProps {
     triggerRef: React.RefObject<HTMLElement>;
@@ -58,7 +58,7 @@ export function PortalMenu({ triggerRef, onClose, children, width, height }: Por
 
     if (typeof document === 'undefined') return null;
 
-    return ReactDOM.createPortal(
+    return createPortal(
         <div ref={menuRef} style={style}>
             {children}
         </div>,

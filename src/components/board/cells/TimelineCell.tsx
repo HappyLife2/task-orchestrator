@@ -6,11 +6,7 @@ import { DatePicker } from '@vibe/core/next';
 import moment from 'moment';
 import { PortalMenu } from '../../PortalMenu';
 
-// Define the expected range object structure from @vibe/core/next DatePicker
-interface DatePickerRange {
-    date: Date;
-    endDate: Date;
-}
+
 
 interface TimelineCellProps {
     value: string; // "YYYY-MM-DD - YYYY-MM-DD"
@@ -32,11 +28,15 @@ export const TimelineCell: React.FC<TimelineCellProps> = ({ value, onChange }) =
     const startDate = startStr && moment(startStr).isValid() ? moment(startStr).toDate() : undefined;
     const endDate = endStr && moment(endStr).isValid() ? moment(endStr).toDate() : undefined;
 
-    const handleDateChange = (range: any) => {
+    // Define the expected range object structure from @vibe/core/next DatePicker
+    interface DatePickerRange {
+        date?: Date;
+        endDate?: Date;
+    }
+
+    const handleDateChange = (range: DatePickerRange) => {
         // Range object from Vibe Next DatePicker with mode="range"
         // It provides { date: Date, endDate: Date }
-        // We use 'any' for the argument to avoid strict type mismatch if the exported type isn't available
-        // but the runtime structure is consistent with user request.
 
         const { date: sDate, endDate: eDate } = range;
 

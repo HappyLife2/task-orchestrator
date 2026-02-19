@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useEffect, useState, useCallback, useRef, Fragment, useLayoutEffect } from 'react';
-import ReactDOM from 'react-dom';
+import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Plus, Loader2, MessageSquare, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2 } from 'lucide-react';
-import { Button, TextField, Dropdown, EditableHeading, IconButton, Counter, Flex, Icon, Divider } from '@vibe/core';
+import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2 } from 'lucide-react';
+import { Button, TextField, Dropdown, EditableHeading, IconButton, Counter, Icon } from '@vibe/core';
 import { Update, AddUpdate } from '@vibe/icons';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
