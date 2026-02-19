@@ -396,3 +396,6 @@ Import trace for requested module:
  GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 263ms
  GET /api/tasks/4505c655-2ae4-4265-8b49-9dd8bacfc51d/updates 200 in 5ms
  POST /api/tasks/4505c655-2ae4-4265-8b49-9dd8bacfc51d/updates 201 in 7ms
+ ✓ Compiled in 801ms (7195 modules)
+ ✓ Compiled /api/tasks/[id]/updates in 120ms (3718 modules)
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 156ms
