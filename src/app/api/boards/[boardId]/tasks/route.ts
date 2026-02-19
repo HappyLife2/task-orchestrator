@@ -37,6 +37,9 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
             },
             creator: {
                 select: { id: true, name: true, email: true }
+            },
+            _count: {
+                select: { updates: true }
             }
         },
         orderBy: { createdAt: 'desc' }

@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, MessageSquare, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2 } from 'lucide-react';
-import { Button, TextField, Dropdown, EditableHeading, IconButton } from '@vibe/core';
+import { Button, TextField, Dropdown, EditableHeading, IconButton, Counter } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 
 // ─── Portal Menu ──────────────────────────────────────────────────────────────
@@ -706,6 +706,20 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
             const newValues = { ...currentTask.parsedValues, [columnId]: value };
 
+            // If Status changes to/from Done, update section assignment
+            if (columnId === statusColId) {
+                const isDone = String(value).toLowerCase() === 'done';
+                setTaskSections(prev => {
+                    const next = { ...prev };
+                    if (isDone) {
+                        next[taskId] = 'done';
+                    } else if (next[taskId] === 'done') {
+                        delete next[taskId];
+                    }
+                    return next;
+                });
+            }
+
             // Optimistic update — update UI immediately so user sees the change
             setTasks(prev => prev.map(t => {
                 if (t.id === taskId) return { ...t, parsedValues: newValues };
@@ -804,17 +818,28 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
         if (col.id === 'updates') {
             return (
-                <div className="flex justify-center w-full">
-                    <Button
+                <div className="flex justify-center w-full relative group/chat-icon">
+                    <IconButton
                         onClick={() => setSelectedTaskForUpdates(task)}
                         kind="tertiary"
                         size="small"
-                        leftIcon={MessageSquare as any}
-                    >
-                        {task._count?.updates ?? 0}
-                    </Button>
+                        icon={MessageSquare as any}
+                        ariaLabel="Updates"
+                        className="text-gray-400 group-hover/chat-icon:text-blue-400 transition-colors"
+                    />
+                    {((task._count?.updates ?? 0) > 0) && (
+                        <div className="absolute -top-1 -right-0 pointer-events-none transform scale-75">
+                            <Counter
+                                count={task._count?.updates}
+                                size="small"
+                                color="negative"
+                                maxDigits={2}
+                            />
+                        </div>
+                    )}
                 </div>
             );
+
         }
 
         if (col.type === 'dropdown') {

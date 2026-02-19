@@ -1,0 +1,204 @@
+
+> task-orchestrator@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 1261ms
+ ✓ Compiled /src/middleware in 67ms (138 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 4.8s (6408 modules)
+ GET /dashboard 200 in 4984ms
+ ✓ Compiled in 169ms (3182 modules)
+ ○ Compiling /api/org/me ...
+ ✓ Compiled /api/org/me in 1838ms (3304 modules)
+ GET /api/org/me 200 in 1926ms
+ GET /api/org/me 200 in 5ms
+ GET /api/org/me 200 in 8ms
+ GET /api/org/me 200 in 4ms
+ ✓ Compiled /board/[boardId] in 404ms (6511 modules)
+ ✓ Compiled /api/boards/[boardId]/tasks in 98ms (3327 modules)
+ ✓ Compiled (3331 modules)
+ GET /api/employees 200 in 217ms
+ GET /api/employees 200 in 3ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 392ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 394ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 6ms
+ ✓ Compiled /api/tasks/[id] in 267ms (3409 modules)
+ PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 400 in 540ms
+ PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 14ms
+ PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 12ms
+ PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 11ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 581ms (3437 modules)
+ GET /favicon.ico 200 in 613ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 92ms
+ GET /api/org/me 200 in 21ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 24ms
+ GET /api/employees 200 in 25ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 25ms
+ GET /api/org/me 200 in 5ms
+ GET /api/employees 200 in 6ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 8ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 4ms
+ PATCH /api/tasks/df02b94f-70c9-4f03-a84c-8c4531f1a6e7 200 in 49ms
+ PATCH /api/tasks/df02b94f-70c9-4f03-a84c-8c4531f1a6e7 200 in 11ms
+ PATCH /api/tasks/df02b94f-70c9-4f03-a84c-8c4531f1a6e7 200 in 11ms
+ ✓ Compiled in 853ms (6601 modules)
+ ✓ Compiled /api/boards/[boardId]/tasks in 128ms (3403 modules)
+ ✓ Compiled (3407 modules)
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 238ms
+ GET /api/employees 200 in 239ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 239ms
+ ✓ Compiled /favicon.ico in 249ms (3357 modules)
+ GET /favicon.ico 200 in 299ms
+ ✓ Compiled /api/tasks/[id] in 117ms (3429 modules)
+ PATCH /api/tasks/d9071236-7971-439a-a383-5c6a045c68f3 200 in 169ms
+ PATCH /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856 200 in 10ms
+ ✓ Compiled /api/tasks/[id]/updates in 483ms (3401 modules)
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 743ms
+ ✓ Compiled in 198ms (3200 modules)
+ ⨯ ./src/components/BoardView.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:818:1]
+ [2m818[0m | 
+ [2m819[0m |         if (col.id === 'updates') {
+ [2m820[0m |             return (
+ [2m821[0m |             return (
+     : [31;1m            ^^^^^^[0m
+ [2m822[0m |                 <div className="flex justify-center w-full relative group/chat-icon">
+ [2m823[0m |                     <IconButton
+ [2m824[0m |                         onClick={() => setSelectedTaskForUpdates(task)}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/BoardView.tsx
+./src/app/(dashboard)/board/[boardId]/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Restoring pack failed from /Users/happylife/Desktop/Antigravity/task-orchestrator/.next/cache/webpack/client-development-fallback.pack.gz: Error: invalid code lengths set
+ ⨯ ./src/components/BoardView.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:818:1]
+ [2m818[0m | 
+ [2m819[0m |         if (col.id === 'updates') {
+ [2m820[0m |             return (
+ [2m821[0m |             return (
+     : [31;1m            ^^^^^^[0m
+ [2m822[0m |                 <div className="flex justify-center w-full relative group/chat-icon">
+ [2m823[0m |                     <IconButton
+ [2m824[0m |                         onClick={() => setSelectedTaskForUpdates(task)}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/BoardView.tsx
+./src/app/(dashboard)/board/[boardId]/page.tsx
+ ○ Compiling /_error ...
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 500 in 4ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 500 in 6ms
+ ⨯ ./src/components/BoardView.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:818:1]
+ [2m818[0m | 
+ [2m819[0m |         if (col.id === 'updates') {
+ [2m820[0m |             return (
+ [2m821[0m |             return (
+     : [31;1m            ^^^^^^[0m
+ [2m822[0m |                 <div className="flex justify-center w-full relative group/chat-icon">
+ [2m823[0m |                     <IconButton
+ [2m824[0m |                         onClick={() => setSelectedTaskForUpdates(task)}
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/BoardView.tsx
+./src/app/(dashboard)/board/[boardId]/page.tsx
+ GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 500 in 839ms
+ GET / 500 in 860ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./src/components/BoardView.tsx
+Error: 
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/happylife/Desktop/Antigravity/task-orchestrator/src/components/BoardView.tsx[0m:839:1]
+ [2m839[0m |                     )}
+ [2m840[0m |                 </div>
+ [2m841[0m |             );
+ [2m842[0m |             );
+     : [31;1m            ^[0m
+ [2m843[0m | }
+ [2m844[0m | 
+ [2m845[0m | if (col.type === 'dropdown') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/BoardView.tsx
+./src/app/(dashboard)/board/[boardId]/page.tsx
+ GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 500 in 280ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 500 in 3ms
+ ✓ Compiled /_not-found in 887ms (6637 modules)
+ GET /_next/static/webpack/33145ed4bc179bee.webpack.hot-update.json 404 in 939ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 4ms
+ GET / 307 in 14ms
+ GET /dashboard 200 in 26ms
+ ✓ Compiled /api/org/me in 219ms (3373 modules)
+ GET /api/org/me 200 in 257ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 2ms
+ ✓ Compiled /api/boards/[boardId]/tasks in 92ms (3375 modules)
+ ✓ Compiled (3379 modules)
+ GET /api/employees 200 in 206ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 207ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 209ms
+ GET /api/employees 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 12ms
+ ✓ Compiled /api/tasks/[id]/updates in 186ms (3457 modules)
+ GET /api/tasks/747f117b-a1ef-4a11-9804-53a6d6190856/updates 200 in 222ms
+ GET /dashboard 200 in 54ms
+ ✓ Compiled /favicon.ico in 226ms (3485 modules)
+ GET /favicon.ico 200 in 269ms
+ GET /api/org/me 200 in 11ms
+ GET /api/org/me 200 in 4ms
+ GET /api/org/me 200 in 10ms
+ GET /api/org/me 200 in 5ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 8ms
+ GET /api/employees 200 in 11ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 13ms
+ GET /api/employees 200 in 14ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 16ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 16ms
+ GET /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 200 in 34ms
+ PATCH /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 10ms
+ POST /api/tasks/9ec99655-4ac7-4d3c-bd3c-97128acbcc99/updates 201 in 10ms
+ GET /board/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 161ms
+ GET /api/org/me 200 in 6ms
+ GET /api/employees 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 10ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 11ms
+ GET /api/org/me 200 in 7ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c 200 in 7ms
+ GET /api/employees 200 in 8ms
+ GET /api/boards/db7f7ecb-bb7a-4d7c-bef8-1dc8eabe7a9c/tasks 200 in 9ms
+ GET /api/org/me 200 in 3ms
+ GET /api/org/me 200 in 3ms
