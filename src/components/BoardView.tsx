@@ -5,8 +5,7 @@ import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare } from 'lucide-react';
-import { Button, TextField, Dropdown, EditableHeading, IconButton, Counter, Icon } from '@vibe/core';
-import { Update, AddUpdate } from '@vibe/icons';
+import { Button, TextField, Dropdown, EditableHeading, IconButton } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
 
@@ -416,6 +415,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     // taskSections maps taskId → sectionId ('wip' | 'done' | custom UUID)
     const [taskSections, setTaskSections] = useState<Record<string, string>>({});
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
+    const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
     const newItemBtnRef = useRef<HTMLDivElement>(null);
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -620,80 +620,98 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const handleUpdateTaskColumn = async (taskId: string, columnId: string, value: any) => {
-        // Special case: person column updates assignedUserId directly
-        if (columnId === 'assignedUserId') {
-            try {
-                const res = await fetch(`/api/tasks/${taskId}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ assignedUserId: value })
-                });
-                if (res.ok) {
+        // If the task being edited is part of the current selection, treat it as a bulk action
+        const isBulkUpdate = selectedTaskIds.has(taskId) && selectedTaskIds.size > 1;
+        const targetTaskIds = isBulkUpdate ? Array.from(selectedTaskIds) : [taskId];
+
+        // Optimistic UI updates
+        setTasks(prev => prev.map(t => {
+            const shouldUpdate = targetTaskIds.includes(t.id);
+            const shouldUpdateSubtask = t.subTasks?.some(st => targetTaskIds.includes(st.id));
+
+            if (!shouldUpdate && !shouldUpdateSubtask) return t;
+
+            let updatedTask = { ...t };
+
+            // Update parent task if needed
+            if (shouldUpdate) {
+                if (columnId === 'assignedUserId') {
                     const user = value ? employees.find(e => e.id === value) : null;
-                    setTasks(prev => prev.map(t => {
-                        if (t.id === taskId) return { ...t, assignedUserId: value, assignedUser: user };
-                        if (t.subTasks) return { ...t, subTasks: t.subTasks.map(st => st.id === taskId ? { ...st, assignedUserId: value, assignedUser: user } : st) };
-                        return t;
-                    }));
+                    updatedTask = { ...updatedTask, assignedUserId: value, assignedUser: user };
+                } else {
+                    updatedTask = { ...updatedTask, parsedValues: { ...updatedTask.parsedValues, [columnId]: value } };
                 }
-            } catch (error) { console.error(error); }
-            return;
+            }
+
+            // Update subtasks if needed
+            if (t.subTasks) {
+                updatedTask.subTasks = t.subTasks.map(st => {
+                    if (!targetTaskIds.includes(st.id)) return st;
+                    if (columnId === 'assignedUserId') {
+                        const user = value ? employees.find(e => e.id === value) : null;
+                        return { ...st, assignedUserId: value, assignedUser: user };
+                    }
+                    return { ...st, parsedValues: { ...st.parsedValues, [columnId]: value } };
+                });
+            }
+
+            return updatedTask;
+        }));
+
+        // If Status changes to/from Done, update section assignment optimistically for all targets
+        if (columnId === statusColId && !isBulkUpdate) {
+            // Bulk section reassignment can get messy optimistically, so we only do it easily for single edits. 
+            // For strictly correct bulk section moves, we'll let the user see them shift after.
+            const isDone = String(value).toLowerCase() === 'done';
+            setTaskSections(prev => {
+                const next = { ...prev };
+                if (isDone) {
+                    next[taskId] = 'done';
+                } else if (next[taskId] === 'done') {
+                    delete next[taskId];
+                }
+                return next;
+            });
+        } else if (columnId === statusColId && isBulkUpdate) {
+            const isDone = String(value).toLowerCase() === 'done';
+            setTaskSections(prev => {
+                const next = { ...prev };
+                targetTaskIds.forEach(id => {
+                    if (isDone) {
+                        next[id] = 'done';
+                    } else if (next[id] === 'done') {
+                        delete next[id];
+                    }
+                });
+                return next;
+            });
         }
 
-        // Generic column value update
+        // Send API requests in parallel
         try {
-            const findTask = (id: string): Task | undefined => {
-                const root = tasks.find(t => t.id === id);
-                if (root) return root;
-                for (const t of tasks) {
-                    const sub = t.subTasks?.find(st => st.id === id);
-                    if (sub) return sub;
-                }
-            };
-            const currentTask = findTask(taskId);
-            if (!currentTask) return;
+            await Promise.all(targetTaskIds.map(async id => {
+                const payload = columnId === 'assignedUserId'
+                    ? { assignedUserId: value }
+                    : { columnValues: { [columnId]: value } };
 
-            const newValues = { ...currentTask.parsedValues, [columnId]: value };
-
-            // If Status changes to/from Done, update section assignment
-            if (columnId === statusColId) {
-                const isDone = String(value).toLowerCase() === 'done';
-                setTaskSections(prev => {
-                    const next = { ...prev };
-                    if (isDone) {
-                        next[taskId] = 'done';
-                    } else if (next[taskId] === 'done') {
-                        delete next[taskId];
-                    }
-                    return next;
+                const res = await fetch(`/api/tasks/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-            }
 
-            // Optimistic update — update UI immediately so user sees the change
-            setTasks(prev => prev.map(t => {
-                if (t.id === taskId) return { ...t, parsedValues: newValues };
-                if (t.subTasks) return { ...t, subTasks: t.subTasks.map(st => st.id === taskId ? { ...st, parsedValues: newValues } : st) };
-                return t;
+                if (!res.ok) throw new Error(`Failed to update ${id}`);
             }));
 
-            // Send plain object — API schema expects z.record(z.string(), z.any()), NOT a string
-            const res = await fetch(`/api/tasks/${taskId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ columnValues: newValues })
-            });
+            // Persist selection after bulk action as requested by the user
+            // so they can apply multiple changes to the same group.
 
-            if (!res.ok) {
-                // Revert optimistic update on failure
-                setTasks(prev => prev.map(t => {
-                    if (t.id === taskId) return { ...t, parsedValues: currentTask.parsedValues };
-                    if (t.subTasks) return { ...t, subTasks: t.subTasks.map(st => st.id === taskId ? { ...st, parsedValues: currentTask.parsedValues } : st) };
-                    return t;
-                }));
-                console.error('Failed to update column value:', await res.text());
-            }
-        } catch (error) { console.error(error); }
+        } catch (error) {
+            console.error('Failed column update:', error);
+            fetchData(); // Reset on failure
+        }
     };
+
 
     const toggleExpanded = (taskId: string) => {
         setExpandedTasks(prev => {
@@ -833,7 +851,26 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: sectionColor }} />
                         )}
                         <div className="flex h-full items-center justify-center pl-1">
-                            <div className="w-3.5 h-3.5 border border-gray-500 rounded-sm hover:border-white cursor-pointer" />
+                            <div
+                                className={`w-3.5 h-3.5 border rounded-sm cursor-pointer flex items-center justify-center transition-colors ${selectedTaskIds.has(task.id)
+                                    ? 'bg-blue-500 border-blue-500'
+                                    : 'border-gray-500 hover:border-white'
+                                    }`}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedTaskIds(prev => {
+                                        const next = new Set(prev);
+                                        if (next.has(task.id)) {
+                                            next.delete(task.id);
+                                        } else {
+                                            next.add(task.id);
+                                        }
+                                        return next;
+                                    });
+                                }}
+                            >
+                                {selectedTaskIds.has(task.id) && <Check size={10} className="text-white" />}
+                            </div>
                         </div>
                     </td>
                     {columns.map(col => (
@@ -1032,7 +1069,24 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                 <tr>
                                     {/* Checkbox column header */}
                                     <th className="w-10 relative py-2 pl-[15px] pr-2 text-left border-b border-[#2c2d65] select-none">
-                                        <div className="w-3.5 h-3.5 border border-gray-500 rounded-sm hover:border-white cursor-pointer" />
+                                        <div
+                                            className={`w-3.5 h-3.5 border rounded-sm cursor-pointer flex items-center justify-center transition-colors ${selectedTaskIds.size === tasks.length && tasks.length > 0
+                                                ? 'bg-blue-500 border-blue-500'
+                                                : 'border-gray-500 hover:border-white'
+                                                }`}
+                                            onClick={() => {
+                                                if (selectedTaskIds.size === tasks.length) {
+                                                    setSelectedTaskIds(new Set());
+                                                } else {
+                                                    setSelectedTaskIds(new Set(tasks.map(t => t.id)));
+                                                }
+                                            }}
+                                        >
+                                            {selectedTaskIds.size === tasks.length && tasks.length > 0 && <Check size={10} className="text-white" />}
+                                            {selectedTaskIds.size > 0 && selectedTaskIds.size < tasks.length && (
+                                                <div className="w-2 h-0.5 bg-blue-500 rounded-full" />
+                                            )}
+                                        </div>
                                     </th>
                                     {columns.map(col => (
                                         <th
@@ -1194,12 +1248,24 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                     {/* DragOverlay ghost */}
                     <DragOverlay dropAnimation={null}>
-                        {activeDragId ? (
-                            <div className="bg-[#1a1b4b] border border-[#e0592a] rounded px-4 py-2 text-white text-sm shadow-2xl opacity-90 flex items-center gap-2">
-                                <GripVertical size={13} className="text-[#e0592a]" />
-                                {tasks.find(t => t.id === activeDragId)?.name ?? 'Task'}
-                            </div>
-                        ) : null}
+                        {activeDragId ? (() => {
+                            const task = tasks.find(t => t.id === activeDragId) || tasks.flatMap((t: Task) => t.subTasks || []).find((t: Task) => t.id === activeDragId);
+                            if (!task) return null;
+                            const isSubitem = tasks.flatMap((t: Task) => t.subTasks || []).some(st => st.id === activeDragId);
+                            const sectionId = getTaskSection(task);
+                            const customSection = customSections.find(s => s.id === sectionId);
+                            const color = sectionId === 'done' ? '#00c875' : sectionId === 'wip' ? '#e0592a' : customSection?.color || '#e0592a';
+
+                            return (
+                                <div className="shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] opacity-95 backdrop-blur-md bg-[#1a1b4b]/70 border border-white/10 rounded-lg overflow-hidden transform rotate-2 scale-[1.02] origin-top-left ring-1 ring-[#e0592a]/30">
+                                    <table className="border-collapse w-full" style={{ tableLayout: 'fixed' }}>
+                                        <tbody>
+                                            {renderRow(task, color, isSubitem)}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            );
+                        })() : null}
                     </DragOverlay>
                 </DndContext>
             </div>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { ThumbsUp, CornerUpLeft, Bell, FileText, Trash2, Edit2 } from 'lucide-react';
-import { Avatar, IconButton } from '@vibe/core';
+import { ThumbsUp, CornerUpLeft, Trash2, Edit2 } from 'lucide-react';
+import { Avatar } from '@vibe/core';
 import ReplyItem from './ReplyItem';
 import InlineReplyComposer from './InlineReplyComposer';
 
