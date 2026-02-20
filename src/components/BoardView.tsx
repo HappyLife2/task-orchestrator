@@ -1205,6 +1205,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
             {/* Updates Drawer */}
             <UpdatesDrawer
                 task={selectedTaskForUpdates}
+                board={board}
                 onClose={() => setSelectedTaskForUpdates(null)}
             />
         </div>

@@ -9,6 +9,7 @@ interface ActivityPanelProps {
     onPostUpdate: (content: string) => Promise<void>;
     onReply: (parentId: string, content: string) => Promise<void>;
     onDelete: (id: string) => void;
+    onEdit: (id: string, content: string) => void;
     onReaction: (id: string, emoji: string) => void;
     loading?: boolean;
 }
@@ -19,6 +20,7 @@ export default function ActivityPanel({
     onPostUpdate,
     onReply,
     onDelete,
+    onEdit,
     onReaction,
     loading = false
 }: ActivityPanelProps) {
@@ -63,6 +65,7 @@ export default function ActivityPanel({
                             currentUser={currentUser}
                             onReply={onReply}
                             onDelete={onDelete}
+                            onEdit={onEdit}
                             onReaction={onReaction}
                         />
                     ))

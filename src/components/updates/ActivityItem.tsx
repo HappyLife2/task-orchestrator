@@ -21,16 +21,55 @@ interface ActivityItemProps {
     currentUser: { id: string; name: string };
     onReply: (parentId: string, content: string) => Promise<void>;
     onDelete: (id: string) => void;
+    onEdit: (id: string, content: string) => void;
     onReaction: (id: string, emoji: string) => void;
 }
 
-export default function ActivityItem({ update, currentUser, onReply, onDelete }: ActivityItemProps) {
+export default function ActivityItem({ update, currentUser, onReply, onDelete, onEdit, onReaction }: ActivityItemProps) {
     const [isReplying, setIsReplying] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+    const [editContent, setEditContent] = useState(update.content);
 
-    const handleDelete = () => {
-        if (window.confirm("Delete this post?")) {
-            onDelete(update.id);
+    const handleDelete = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsConfirmingDelete(true);
+    };
+
+    const confirmDelete = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onDelete(update.id);
+        setIsConfirmingDelete(false);
+    };
+
+    const cancelDelete = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsConfirmingDelete(false);
+    };
+
+    const handleEditClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsEditing(true);
+    };
+
+    const handleSaveEdit = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (editContent.trim() !== update.content) {
+            onEdit(update.id, editContent);
         }
+        setIsEditing(false);
+    };
+
+    const handleCancelEdit = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setEditContent(update.content);
+        setIsEditing(false);
     };
 
     return (
@@ -66,42 +105,53 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete }:
 
                         {/* Header Actions (Top Right) */}
                         <div className="flex items-center gap-1 text-gray-400">
-                            <IconButton
-                                icon={FileText as any}
-                                size="small"
-                                kind="tertiary"
-                                className="text-gray-400 hover:text-white"
-                                ariaLabel="Log"
-                            />
-                            <IconButton
-                                icon={Bell as any}
-                                size="small"
-                                kind="tertiary"
-                                className="text-gray-400 hover:text-white"
-                                ariaLabel="Subscribe"
-                            />
-                            {/* Direct Edit and Delete icons instead of a menu */}
-                            <IconButton
-                                icon={Edit2 as any}
-                                size="small"
-                                kind="tertiary"
-                                className="text-gray-400 hover:text-white"
-                                ariaLabel="Edit"
-                            />
-                            <IconButton
-                                icon={Trash2 as any}
-                                size="small"
-                                kind="tertiary"
-                                className="text-red-400/80 hover:text-red-400 hover:bg-red-500/10"
-                                ariaLabel="Delete"
-                                onClick={handleDelete}
-                            />
+                            {isConfirmingDelete ? (
+                                <div className="flex items-center gap-2 bg-[#2c2d65] px-3 py-1 rounded-md">
+                                    <span className="text-xs text-gray-300">Delete?</span>
+                                    <button type="button" onClick={confirmDelete} className="text-xs text-red-400 hover:text-red-300 font-bold transition-colors">Yes</button>
+                                    <button type="button" onClick={cancelDelete} className="text-xs text-gray-400 hover:text-white transition-colors">No</button>
+                                </div>
+                            ) : (
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={handleEditClick}
+                                        className="p-1.5 text-gray-400 hover:text-white rounded hover:bg-white/10 transition-colors"
+                                        aria-label="Edit"
+                                    >
+                                        <Edit2 size={16} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={handleDelete}
+                                        className="p-1.5 text-red-500/80 hover:text-red-500 rounded hover:bg-red-500/10 transition-colors"
+                                        aria-label="Delete"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
 
                     {/* Content */}
-                    <div className="mt-4 text-[#d1d5db] text-[15px] leading-relaxed whitespace-pre-wrap break-words font-normal">
-                        {update.content}
+                    <div className="mt-4 text-white text-[15px] leading-relaxed whitespace-pre-wrap break-words font-normal">
+                        {isEditing ? (
+                            <div className="flex flex-col gap-2">
+                                <textarea
+                                    className="w-full bg-[#24265a] border border-[#2c2d65] rounded-md p-3 text-white focus:outline-none focus:border-blue-500 resize-none min-h-[80px]"
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}
+                                    autoFocus
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <button onClick={handleCancelEdit} className="px-3 py-1 text-sm text-gray-400 hover:text-white transition-colors">Cancel</button>
+                                    <button onClick={handleSaveEdit} className="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">Save</button>
+                                </div>
+                            </div>
+                        ) : (
+                            update.content
+                        )}
                     </div>
 
                     {/* "Edited" footer text */}
@@ -114,12 +164,23 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete }:
 
                     {/* Post Actions */}
                     <div className="flex items-center gap-4">
-                        <button className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onReaction(update.id, '👍');
+                            }}
+                            className={`flex items-center gap-2 text-sm transition-colors ${update.myReaction === '👍' ? 'text-blue-500 hover:text-blue-400' : 'text-gray-400 hover:text-white'}`}
+                        >
                             <ThumbsUp size={16} />
-                            <span>Like</span>
+                            <span>{update.reactions?.some(r => r.emoji === '👍') ? update.reactions.find(r => r.emoji === '👍')?.count || '' : 'Like'}</span>
                         </button>
                         <button
-                            onClick={() => setIsReplying(true)} // Focus reply input
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsReplying(true);
+                            }}
                             className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
                         >
                             <CornerUpLeft size={16} />
@@ -136,7 +197,7 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete }:
                     {update.replies && update.replies.length > 0 && (
                         <div className="p-5 pb-0 space-y-4"> {/* Added padding */}
                             {update.replies.map((reply: any) => (
-                                <ReplyItem key={reply.id} reply={reply} onDelete={onDelete} />
+                                <ReplyItem key={reply.id} reply={reply} onDelete={onDelete} onEdit={onEdit} />
                             ))}
                         </div>
                     )}

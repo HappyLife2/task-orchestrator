@@ -14,10 +14,11 @@ interface Task {
 
 interface UpdatesDrawerProps {
     task: Task | null;
+    board?: any;
     onClose: () => void;
 }
 
-export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
+export default function UpdatesDrawer({ task, board, onClose }: UpdatesDrawerProps) {
     const [updates, setUpdates] = useState<ActivityUpdate[]>([]);
     const [loading, setLoading] = useState(false);
     const [currentUser, setCurrentUser] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
@@ -146,10 +147,48 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
             });
 
             if (res.ok) {
-                setUpdates(prev => prev.filter(u => u.id !== updateId));
+                setUpdates(prev => {
+                    if (prev.some(u => u.id === updateId)) {
+                        return prev.filter(u => u.id !== updateId);
+                    }
+                    return prev.map(u => ({
+                        ...u,
+                        replies: u.replies ? u.replies.filter((r: any) => r.id !== updateId) : []
+                    }));
+                });
             }
         } catch (error) {
             console.error('Failed to delete update:', error);
+        }
+    };
+
+    const handleEdit = async (updateId: string, content: string) => {
+        try {
+            const res = await fetch(`/api/updates/${updateId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            });
+
+            if (res.ok) {
+                const updated = await res.json();
+                setUpdates(prev => {
+                    if (prev.some(u => u.id === updateId)) {
+                        return prev.map(u => u.id === updateId ? updated : u);
+                    }
+                    return prev.map(u => {
+                        if (u.replies && u.replies.some((r: any) => r.id === updateId)) {
+                            return {
+                                ...u,
+                                replies: u.replies.map((r: any) => r.id === updateId ? updated : r)
+                            };
+                        }
+                        return u;
+                    });
+                });
+            }
+        } catch (error) {
+            console.error('Failed to edit update:', error);
         }
     };
 
@@ -161,7 +200,7 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
             <div className="p-5 border-b border-[#2c2d65] flex justify-between items-center bg-[#151642]">
                 <div className="flex-1 min-w-0">
                     <h2 className="text-xl font-bold text-white truncate">{task.name}</h2>
-                    <p className="text-xs text-gray-400 mt-1">Updates & Activity</p>
+                    <p className="text-xs text-gray-400 mt-1">{board?.name ?? 'Updates & Activity'}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     {/* Maybe close button */}
@@ -183,6 +222,7 @@ export default function UpdatesDrawer({ task, onClose }: UpdatesDrawerProps) {
                     onPostUpdate={handlePostUpdate}
                     onReply={handleReply}
                     onDelete={handleDelete}
+                    onEdit={handleEdit}
                     onReaction={handleReaction}
                     loading={loading}
                 />
