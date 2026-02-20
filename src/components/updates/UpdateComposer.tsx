@@ -11,7 +11,7 @@ interface UpdateComposerProps {
     onCancel?: () => void;
 }
 
-export default function UpdateComposer({ onSubmit, placeholder = "Write an update and mention others with @", autoFocus = false }: UpdateComposerProps) {
+export default function UpdateComposer({ onSubmit, placeholder = "Write an update and mention others with @", autoFocus = false, onCancel }: UpdateComposerProps) {
     const [content, setContent] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,6 +89,30 @@ export default function UpdateComposer({ onSubmit, placeholder = "Write an updat
                 {/* Blue Dot Indicator? Reference has a blue dot near the sparkles... maybe an active state or notification? 
                      I'll add a small blue dot absolute positioned if needed, but for now the icon color is blue.
                  */}
+
+                <div className="flex-1" />
+
+                <div className="flex items-center gap-2">
+                    {onCancel && (
+                        <button
+                            onClick={onCancel}
+                            disabled={isSubmitting}
+                            className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+                        >
+                            Cancel
+                        </button>
+                    )}
+                    <button
+                        onClick={handleSubmit}
+                        disabled={!content.trim() || isSubmitting}
+                        className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${content.trim() && !isSubmitting
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
+                            : 'bg-[#2c2d65] text-gray-400 cursor-not-allowed'
+                            }`}
+                    >
+                        {isSubmitting ? 'Posting...' : 'Update'}
+                    </button>
+                </div>
             </div>
         </div>
     );

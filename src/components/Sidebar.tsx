@@ -11,7 +11,8 @@ import {
     User,
     ChevronRight,
     ChevronDown,
-    LayoutDashboard
+    LayoutDashboard,
+    Trash2
 } from 'lucide-react';
 import {
     EditableText,
@@ -146,6 +147,39 @@ export default function Sidebar() {
         }
     };
 
+    const handleDeleteBoard = async (e: React.MouseEvent, boardId: string, deptId: string) => {
+        e.stopPropagation();
+        if (!confirm('Are you sure you want to delete this board? This action cannot be undone.')) return;
+
+        // Optimistic update
+        const oldOrg = org;
+        if (org) {
+            setOrg({
+                ...org,
+                departments: org.departments.map(d => ({
+                    ...d,
+                    boards: d.id === deptId ? d.boards.filter(b => b.id !== boardId) : d.boards
+                }))
+            });
+        }
+
+        try {
+            const res = await fetch(`/api/boards/${boardId}`, {
+                method: 'DELETE',
+            });
+            if (res.ok) {
+                if (pathname === `/board/${boardId}`) {
+                    router.push('/dashboard');
+                }
+            } else {
+                throw new Error('Failed to delete');
+            }
+        } catch (error) {
+            console.error('Failed to delete board', error);
+            setOrg(oldOrg); // Revert
+        }
+    };
+
     if (loading) return <div className="w-64 bg-[#1a1b4b] border-r border-[rgba(255,255,255,0.12)] p-4 text-white">Loading...</div>;
     if (!org) return <div className="w-64 bg-[#1a1b4b] border-r border-[rgba(255,255,255,0.12)] p-4 text-white">Error loading organization</div>;
 
@@ -238,6 +272,13 @@ export default function Sidebar() {
                                                     className="w-full [&_div]:!text-white [&_input]:!text-white [&_span]:!text-white"
                                                 />
                                             </div>
+                                            <button
+                                                onClick={(e) => handleDeleteBoard(e, board.id, dept.id)}
+                                                className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all ml-1 shrink-0"
+                                                title="Delete Board"
+                                            >
+                                                <Trash2 size={12} />
+                                            </button>
                                         </div>
                                     ))}
                                 </div>

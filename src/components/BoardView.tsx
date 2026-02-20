@@ -5,9 +5,10 @@ import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare } from 'lucide-react';
-import { Button, TextField, Dropdown, EditableHeading, IconButton } from '@vibe/core';
+import { Button, TextField, EditableHeading, IconButton } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
+import { PersonCell } from '@/components/board/cells/PersonCell';
 
 // ─── Dropdown Cell (Importance / Urgency / Task Load) ────────────────────────
 
@@ -317,29 +318,6 @@ function InlineTextCell({ value, onChange, placeholder }: {
 }
 
 // ─── Person Cell ──────────────────────────────────────────────────────────────
-function PersonCell({ value, onChange, employees }: {
-    value: string | null;
-    onChange: (v: string | null) => void;
-    employees: any[];
-}) {
-    const options = [
-        { value: '___unassign', label: 'Unassign' },
-        ...employees.map(e => ({ value: e.id, label: e.name }))
-    ];
-
-    return (
-        <div className="px-1 w-full">
-            <Dropdown
-                placeholder="Assign..."
-                options={options}
-                value={value ?? undefined}
-                onChange={(opt: any) => onChange(opt?.value === '___unassign' ? null : opt?.value ?? null)}
-                size="small"
-                className="w-full"
-            />
-        </div>
-    );
-}
 
 // ─── Draggable Task Row ───────────────────────────────────────────────────────
 function DraggableTaskRow({ taskId, isDragging, isSubitem, children }: {
@@ -762,7 +740,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                     <div className="flex-1" />
 
-                    <div className="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1.5 transition-opacity">
                         <button className="text-gray-500 hover:text-yellow-400 transition-colors p-1">
                             <Sparkles size={14} />
                         </button>
@@ -877,7 +855,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                         <td
                             key={col.id}
                             style={{ width: widths[col.id] ?? col.width ?? 150, minWidth: 80 }}
-                            className={`border-b border-[#2c2d65] h-[36px] overflow-hidden relative ${col.id !== 'item' ? 'border-r' : ''}`}
+                            className={`border-b border-r border-[#2c2d65] h-[36px] overflow-hidden relative`}
                         >
                             {col === columns[0] && !isSubitem && (
                                 <span className="absolute left-0 top-0 h-full flex items-center pl-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing z-10">
@@ -948,6 +926,52 @@ export default function BoardView({ boardId }: { boardId: string }) {
         );
     };
 
+    const renderHeaderRow = (sectionTasks: Task[]) => (
+        <tr className="bg-[#151642] group/thead sticky top-0 z-10 border-b border-[#2c2d65]">
+            <th className="w-10 relative py-2 pl-[15px] pr-2 text-left select-none border-r border-[#2c2d65]">
+                <div
+                    className={`w-3.5 h-3.5 border rounded-sm cursor-pointer flex items-center justify-center transition-colors ${sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id))
+                            ? 'bg-blue-500 border-blue-500'
+                            : 'border-gray-500 hover:border-white'
+                        }`}
+                    onClick={() => {
+                        const allSelected = sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id));
+                        setSelectedTaskIds(prev => {
+                            const next = new Set(prev);
+                            if (allSelected) {
+                                sectionTasks.forEach(t => next.delete(t.id));
+                            } else {
+                                sectionTasks.forEach(t => next.add(t.id));
+                            }
+                            return next;
+                        });
+                    }}
+                >
+                    {sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id)) && <Check size={10} className="text-white" />}
+                    {sectionTasks.some(t => selectedTaskIds.has(t.id)) && !sectionTasks.every(t => selectedTaskIds.has(t.id)) && (
+                        <div className="w-2 h-0.5 bg-blue-500 rounded-full" />
+                    )}
+                </div>
+            </th>
+            {columns.map(col => (
+                <th
+                    key={col.id}
+                    style={{ width: widths[col.id] ?? col.width ?? 150 }}
+                    className={`relative py-2 px-3 text-[11px] font-semibold text-gray-400 capitalize border-r border-[#2c2d65] select-none ${col.id !== 'item' ? 'text-center' : 'text-left'}`}
+                >
+                    {col.title}
+                    <div
+                        onMouseDown={e => { e.preventDefault(); startResize(col.id, e.clientX); }}
+                        className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize group/resize flex items-center justify-center hover:bg-[#e0592a]/60 transition-colors z-20"
+                        title="Drag to resize"
+                    >
+                        <GripVertical size={10} className="text-gray-600 group-hover/resize:text-[#e0592a] opacity-0 group-hover/resize:opacity-100 transition-opacity" />
+                    </div>
+                </th>
+            ))}
+        </tr>
+    );
+
     if (loading) {
         return (
             <div className="flex h-full items-center justify-center text-white bg-[#0f102a]">
@@ -1010,7 +1034,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                 {/* DnD Table */}
                 <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <div className="flex-1 overflow-auto">
+                    <div className="flex-1 overflow-auto px-8 pt-4 pb-20">
 
                         {/* WIP section header (above table) */}
                         <div className="flex items-center border-b border-[#2c2d65] bg-[#0f102a]">
@@ -1065,47 +1089,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                         )}
 
                         <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content', minWidth: '100%' }}>
-                            <thead className="sticky top-0 z-10 bg-[#151642] group/thead">
-                                <tr>
-                                    {/* Checkbox column header */}
-                                    <th className="w-10 relative py-2 pl-[15px] pr-2 text-left border-b border-[#2c2d65] select-none">
-                                        <div
-                                            className={`w-3.5 h-3.5 border rounded-sm cursor-pointer flex items-center justify-center transition-colors ${selectedTaskIds.size === tasks.length && tasks.length > 0
-                                                ? 'bg-blue-500 border-blue-500'
-                                                : 'border-gray-500 hover:border-white'
-                                                }`}
-                                            onClick={() => {
-                                                if (selectedTaskIds.size === tasks.length) {
-                                                    setSelectedTaskIds(new Set());
-                                                } else {
-                                                    setSelectedTaskIds(new Set(tasks.map(t => t.id)));
-                                                }
-                                            }}
-                                        >
-                                            {selectedTaskIds.size === tasks.length && tasks.length > 0 && <Check size={10} className="text-white" />}
-                                            {selectedTaskIds.size > 0 && selectedTaskIds.size < tasks.length && (
-                                                <div className="w-2 h-0.5 bg-blue-500 rounded-full" />
-                                            )}
-                                        </div>
-                                    </th>
-                                    {columns.map(col => (
-                                        <th
-                                            key={col.id}
-                                            style={{ width: widths[col.id] ?? col.width ?? 150 }}
-                                            className={`relative py-2 px-3 text-left text-[11px] font-semibold text-gray-400 capitalize bg-[#151642] border-b border-[#2c2d65] select-none ${col.id !== 'item' ? 'border-r text-center' : ''}`}
-                                        >
-                                            {col.title}
-                                            <div
-                                                onMouseDown={e => { e.preventDefault(); startResize(col.id, e.clientX); }}
-                                                className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize group/resize flex items-center justify-center hover:bg-[#e0592a]/60 transition-colors"
-                                                title="Drag to resize"
-                                            >
-                                                <GripVertical size={10} className="text-gray-600 group-hover/resize:text-[#e0592a] opacity-0 group-hover/resize:opacity-100 transition-opacity" />
-                                            </div>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
+
 
                             <tbody>
                                 {/* New Task Input Row */}
@@ -1139,9 +1123,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                                 {/* WIP droppable zone */}
                                 {!isWipSectionCollapsed && (
-                                    <DroppableSection sectionId="wip" colSpan={columns.length + 1}>
-                                        {wipTasks.map(task => renderRow(task, '#e0592a'))}
-                                    </DroppableSection>
+                                    <>
+                                        {renderHeaderRow(wipTasks)}
+                                        <DroppableSection sectionId="wip" colSpan={columns.length + 1}>
+                                            {wipTasks.map(task => renderRow(task, '#e0592a'))}
+                                        </DroppableSection>
+                                    </>
                                 )}
                                 {isWipSectionCollapsed && wipTasks.map(task => renderRow(task, '#e0592a'))}
 
@@ -1176,9 +1163,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                 </td>
                                             </tr>
                                             {!section.collapsed && (
-                                                <DroppableSection sectionId={section.id} colSpan={columns.length + 1}>
-                                                    {secTasks.map(task => renderRow(task, section.color))}
-                                                </DroppableSection>
+                                                <>
+                                                    {renderHeaderRow(secTasks)}
+                                                    <DroppableSection sectionId={section.id} colSpan={columns.length + 1}>
+                                                        {secTasks.map(task => renderRow(task, section.color))}
+                                                    </DroppableSection>
+                                                </>
                                             )}
                                         </Fragment>
                                     );
@@ -1223,18 +1213,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                         </tr>
                                         {!isDoneSectionCollapsed && (
                                             <>
-                                                <tr className="bg-[#0d0e24]">
-                                                    <td className="border-b border-r border-[#2c2d65]" />
-                                                    {columns.map(col => (
-                                                        <td
-                                                            key={col.id}
-                                                            style={{ width: widths[col.id] ?? col.width ?? 150 }}
-                                                            className="py-1.5 px-3 text-[10px] font-semibold text-gray-500 uppercase tracking-wide border-b border-r border-[#2c2d65]"
-                                                        >
-                                                            {col.title}
-                                                        </td>
-                                                    ))}
-                                                </tr>
+                                                {renderHeaderRow(doneTasks)}
                                                 <DroppableSection sectionId="done" colSpan={columns.length + 1}>
                                                     {doneTasks.map(task => renderRow(task, '#00c875'))}
                                                 </DroppableSection>
