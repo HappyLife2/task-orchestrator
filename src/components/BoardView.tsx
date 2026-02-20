@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2 } from 'lucide-react';
+import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare } from 'lucide-react';
 import { Button, TextField, Dropdown, EditableHeading, IconButton, Counter, Icon } from '@vibe/core';
 import { Update, AddUpdate } from '@vibe/icons';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
@@ -420,7 +420,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
-    const columns: Column[] = board?.columns ?? [];
+    const columns: Column[] = (board?.columns ?? []).filter((c: Column) => c.id !== 'updates');
     const { widths, startResize } = useColumnWidths(columns);
 
     // ── Split tasks into active and done ───────────────────────────────────────
@@ -711,7 +711,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
             const isExpanded = expandedTasks.has(task.id);
             const isEditing = editingTaskId === task.id;
             return (
-                <div className={`flex items-center gap-2 h-full ${isSubitem ? 'pl-10' : 'pl-3'} pr-2`}>
+                <div className={`flex items-center gap-2 h-full ${isSubitem ? 'pl-10' : 'pl-3'} pr-2 group/item`}>
                     {!isSubitem && (
                         <IconButton
                             icon={(isExpanded ? ChevronDown : ChevronRight) as any}
@@ -736,11 +736,30 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     ) : (
                         <button
                             onClick={() => { setEditingTaskId(task.id); setTaskNameInput(task.name); }}
-                            className="flex-1 text-left text-white text-sm hover:text-[#e0592a] transition-colors font-medium truncate"
+                            className="text-left text-white text-[13px] hover:text-[#e0592a] transition-colors font-medium truncate"
                         >
                             {task.name}
                         </button>
                     )}
+
+                    <div className="flex-1" />
+
+                    <div className="flex items-center gap-1.5 opacity-0 group-hover/item:opacity-100 transition-opacity">
+                        <button className="text-gray-500 hover:text-yellow-400 transition-colors p-1">
+                            <Sparkles size={14} />
+                        </button>
+                        <div
+                            className="relative cursor-pointer flex items-center justify-center p-1 rounded hover:bg-[#2c2d65] transition-colors"
+                            onClick={() => setSelectedTaskForUpdates(task)}
+                        >
+                            <MessageSquare size={14} className={(task._count?.updates ?? 0) > 0 ? 'text-blue-400' : 'text-gray-500'} />
+                            {(task._count?.updates ?? 0) > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-[#151642] text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full border border-[#2c2d65]">
+                                    {task._count?.updates}
+                                </span>
+                            )}
+                        </div>
+                    </div>
                 </div>
             );
         }
@@ -765,38 +784,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
             );
         }
 
-        if (col.id === 'updates') {
-            return (
-                <div
-                    className="flex justify-center w-full relative group/chat-icon cursor-pointer"
-                    onClick={() => setSelectedTaskForUpdates(task)}
-                >
-                    {(task._count?.updates ?? 0) === 0 ? (
-                        <div className="text-gray-400 hover:text-blue-500 transition-colors">
-                            <Icon icon={AddUpdate} iconSize={24} />
-                        </div>
-                    ) : (
-                        <div style={{ position: "relative" }}>
-                            <Icon icon={Update} iconSize={24} className="text-blue-500" />
-                            <div style={{
-                                position: "absolute",
-                                bottom: 0,
-                                right: -3
-                            }}>
-                                <Counter
-                                    count={task._count?.updates}
-                                    size="small"
-                                    color="negative"
-                                    maxDigits={2}
-                                    ariaLabel={`${task._count?.updates} updates`}
-                                />
-                            </div>
-                        </div>
-                    )}
-                </div>
-            );
-
-        }
+        // Legacy updates column hidden by filter, logic moved to 'item' column
 
         if (col.type === 'dropdown') {
             return (
@@ -832,18 +820,27 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
 
     // ── Row Renderer ───────────────────────────────────────────────────────────
-    const renderRow = (task: Task, isSubitem = false, parentId?: string) => {
+    const renderRow = (task: Task, sectionColor?: string, isSubitem = false, parentId?: string) => {
         const isExpanded = expandedTasks.has(task.id);
         const isDragging = activeDragId === task.id;
 
         return (
             <Fragment key={task.id}>
                 <DraggableTaskRow taskId={task.id} isDragging={isDragging} isSubitem={isSubitem}>
+                    {/* Checkbox column */}
+                    <td className="w-10 relative bg-[#1c1d4f] border-b border-[#2c2d65]">
+                        {!isSubitem && sectionColor && (
+                            <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: sectionColor }} />
+                        )}
+                        <div className="flex h-full items-center justify-center pl-1">
+                            <div className="w-3.5 h-3.5 border border-gray-500 rounded-sm hover:border-white cursor-pointer" />
+                        </div>
+                    </td>
                     {columns.map(col => (
                         <td
                             key={col.id}
                             style={{ width: widths[col.id] ?? col.width ?? 150, minWidth: 80 }}
-                            className="border-r border-[#2c2d65] h-10 overflow-hidden relative"
+                            className={`border-b border-[#2c2d65] h-[36px] overflow-hidden relative ${col.id !== 'item' ? 'border-r' : ''}`}
                         >
                             {col === columns[0] && !isSubitem && (
                                 <span className="absolute left-0 top-0 h-full flex items-center pl-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing z-10">
@@ -866,11 +863,11 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                 {isExpanded && !isSubitem && (
                     <>
-                        {task.subTasks?.map(st => renderRow(st, true, task.id))}
+                        {task.subTasks?.map(st => renderRow(st, sectionColor, true, task.id))}
 
                         {addingSubitemFor === task.id ? (
                             <tr className="border-b border-[#2c2d65]">
-                                <td colSpan={columns.length} className="py-2 px-3 pl-14">
+                                <td colSpan={columns.length + 1} className="py-2 px-3 pl-14">
                                     <div className="flex items-center gap-2">
                                         <TextField
                                             value={newSubitemName}
@@ -896,7 +893,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             </tr>
                         ) : (
                             <tr className="border-b border-[#2c2d65]">
-                                <td colSpan={columns.length} className="py-1 pl-14">
+                                <td colSpan={columns.length + 1} className="py-1 pl-14">
                                     <Button
                                         onClick={() => setAddingSubitemFor(task.id)}
                                         kind="tertiary"
@@ -1031,13 +1028,17 @@ export default function BoardView({ boardId }: { boardId: string }) {
                         )}
 
                         <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content', minWidth: '100%' }}>
-                            <thead className="sticky top-0 z-10">
+                            <thead className="sticky top-0 z-10 bg-[#151642] group/thead">
                                 <tr>
+                                    {/* Checkbox column header */}
+                                    <th className="w-10 relative py-2 pl-[15px] pr-2 text-left border-b border-[#2c2d65] select-none">
+                                        <div className="w-3.5 h-3.5 border border-gray-500 rounded-sm hover:border-white cursor-pointer" />
+                                    </th>
                                     {columns.map(col => (
                                         <th
                                             key={col.id}
                                             style={{ width: widths[col.id] ?? col.width ?? 150 }}
-                                            className="relative py-2 px-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide border-b border-r border-[#2c2d65] bg-[#151642] select-none"
+                                            className={`relative py-2 px-3 text-left text-[11px] font-semibold text-gray-400 capitalize bg-[#151642] border-b border-[#2c2d65] select-none ${col.id !== 'item' ? 'border-r text-center' : ''}`}
                                         >
                                             {col.title}
                                             <div
@@ -1056,7 +1057,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                 {/* New Task Input Row */}
                                 {isAddingTask && (
                                     <tr className="border-b border-[#2c2d65] bg-[#1a1b4b]/30">
-                                        <td colSpan={columns.length} className="py-2 px-2.5">
+                                        <td colSpan={columns.length + 1} className="py-2 px-2.5">
                                             <div className="flex items-center gap-2">
                                                 <TextField
                                                     value={newTaskName}
@@ -1084,20 +1085,20 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                                 {/* WIP droppable zone */}
                                 {!isWipSectionCollapsed && (
-                                    <DroppableSection sectionId="wip" colSpan={columns.length}>
-                                        {wipTasks.map(task => renderRow(task))}
+                                    <DroppableSection sectionId="wip" colSpan={columns.length + 1}>
+                                        {wipTasks.map(task => renderRow(task, '#e0592a'))}
                                     </DroppableSection>
                                 )}
-                                {isWipSectionCollapsed && wipTasks.map(task => renderRow(task))}
+                                {isWipSectionCollapsed && wipTasks.map(task => renderRow(task, '#e0592a'))}
 
                                 {/* Custom Sections */}
                                 {customSections.map(section => {
                                     const secTasks = sectionTasks(section.id);
                                     return (
                                         <Fragment key={section.id}>
-                                            <tr><td colSpan={columns.length} className="h-5 bg-[#0a0b1e] border-none" /></tr>
+                                            <tr><td colSpan={columns.length + 1} className="h-5 bg-[#0a0b1e] border-none" /></tr>
                                             <tr className="border-t-2 border-[#2c2d65]">
-                                                <td colSpan={columns.length} className="bg-[#0f102a] py-0">
+                                                <td colSpan={columns.length + 1} className="bg-[#0f102a] py-0">
                                                     <div className="flex items-center gap-2 px-3 py-2 group">
                                                         <button
                                                             onClick={() => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, collapsed: !s.collapsed } : s))}
@@ -1121,8 +1122,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                 </td>
                                             </tr>
                                             {!section.collapsed && (
-                                                <DroppableSection sectionId={section.id} colSpan={columns.length}>
-                                                    {secTasks.map(task => renderRow(task))}
+                                                <DroppableSection sectionId={section.id} colSpan={columns.length + 1}>
+                                                    {secTasks.map(task => renderRow(task, section.color))}
                                                 </DroppableSection>
                                             )}
                                         </Fragment>
@@ -1132,7 +1133,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                 {/* Empty state */}
                                 {tasks.length === 0 && !isAddingTask && (
                                     <tr>
-                                        <td colSpan={columns.length} className="p-16 text-center text-gray-500">
+                                        <td colSpan={columns.length + 1} className="p-16 text-center text-gray-500">
                                             <div className="flex flex-col items-center gap-4">
                                                 <div className="w-16 h-16 bg-[#1a1b4b] rounded-full flex items-center justify-center">
                                                     <Plus size={32} className="text-gray-600" />
@@ -1145,14 +1146,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                                 {/* Spacer before Done */}
                                 {doneTasks.length > 0 && (
-                                    <tr><td colSpan={columns.length} className="h-6 bg-[#0a0b1e] border-none" /></tr>
+                                    <tr><td colSpan={columns.length + 1} className="h-6 bg-[#0a0b1e] border-none" /></tr>
                                 )}
 
                                 {/* Done Section */}
                                 {doneTasks.length > 0 && (
                                     <>
                                         <tr className="border-t-2 border-[#2c2d65]">
-                                            <td colSpan={columns.length} className="bg-[#0f102a] py-0">
+                                            <td colSpan={columns.length + 1} className="bg-[#0f102a] py-0">
                                                 <button
                                                     onClick={() => setIsDoneSectionCollapsed(c => !c)}
                                                     className="flex items-center gap-2 px-3 py-2 w-full text-left hover:bg-[#1a1b4b]/40 transition-colors"
@@ -1169,6 +1170,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                         {!isDoneSectionCollapsed && (
                                             <>
                                                 <tr className="bg-[#0d0e24]">
+                                                    <td className="border-b border-r border-[#2c2d65]" />
                                                     {columns.map(col => (
                                                         <td
                                                             key={col.id}
@@ -1179,8 +1181,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                         </td>
                                                     ))}
                                                 </tr>
-                                                <DroppableSection sectionId="done" colSpan={columns.length}>
-                                                    {doneTasks.map(task => renderRow(task))}
+                                                <DroppableSection sectionId="done" colSpan={columns.length + 1}>
+                                                    {doneTasks.map(task => renderRow(task, '#00c875'))}
                                                 </DroppableSection>
                                             </>
                                         )}

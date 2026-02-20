@@ -17,10 +17,10 @@ export const StatusCell: React.FC<StatusCellProps> = ({ value, onChange, setting
     const statusLabel = value ? (value.charAt(0).toUpperCase() + value.slice(1)) : 'Default';
 
     return (
-        <div className="relative w-full h-full p-1">
+        <div className="relative w-full h-full">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full h-full rounded-md text-white font-medium text-sm transition-opacity hover:opacity-90 flex items-center justify-center"
+                className="w-full h-full text-white text-[13px] font-normal transition-opacity hover:opacity-90 flex items-center justify-center m-0 outline-none"
                 style={{ backgroundColor: statusColor }}
             >
                 {statusLabel}

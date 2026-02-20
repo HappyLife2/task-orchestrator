@@ -80,14 +80,14 @@ export const TimelineCell: React.FC<TimelineCellProps> = ({ value, onChange }) =
     const hasDates = !!(startDate || endDate);
 
     return (
-        <div className="w-full h-full flex items-center justify-center relative group">
+        <div className="w-full h-full flex items-center justify-center relative group p-1">
             <div
                 ref={triggerRef}
                 onClick={() => setOpen(true)}
-                className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-gray-100/10 transition-colors"
+                className={`w-full h-[26px] flex items-center justify-center cursor-pointer transition-colors rounded-full ${hasDates ? 'bg-[#1a1b4b] hover:bg-[#2c2d65]' : 'bg-[#c4c4c4]/20 hover:bg-[#c4c4c4]/30'}`}
             >
-                <span className={`text-[13px] truncate ${hasDates ? 'text-white' : 'text-gray-500'}`}>
-                    {displayValue() || <span className="opacity-0 group-hover:opacity-100 text-gray-400 text-xs">Set Dates</span>}
+                <span className={`text-[12px] truncate font-medium ${hasDates ? 'text-white' : 'text-gray-400'}`}>
+                    {displayValue() || '-'}
                 </span>
             </div>
 
