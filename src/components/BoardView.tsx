@@ -941,7 +941,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             type="h2"
                             value={board.name}
                             onChange={handleUpdateBoardName}
-                            className="!text-white !font-bold !text-2xl"
+                            className="!font-bold !text-2xl [&_h2]:!text-white [&_input]:!text-white [&_span]:!text-white"
                         />
                         <p className="text-xs text-gray-400 mt-0.5">Department: {board.department?.name}</p>
                     </div>

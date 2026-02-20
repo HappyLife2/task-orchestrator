@@ -194,7 +194,7 @@ export default function Sidebar() {
                                             onChange={(val: string) => handleRenameDepartment(dept.id, val)}
                                             type="text2"
                                             weight="medium"
-                                            className="!text-white [&_div]:!text-white"
+                                            className="w-full [&_div]:!text-white [&_input]:!text-white [&_span]:!text-white"
                                         />
                                     </div>
                                 </div>
@@ -235,7 +235,7 @@ export default function Sidebar() {
                                                     value={board.name}
                                                     onChange={(val: string) => handleRenameBoard(board.id, val)}
                                                     type="text2"
-                                                    className="w-full !text-white [&_div]:!text-white"
+                                                    className="w-full [&_div]:!text-white [&_input]:!text-white [&_span]:!text-white"
                                                 />
                                             </div>
                                         </div>
