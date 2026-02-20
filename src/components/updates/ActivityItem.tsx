@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
-import { MoreHorizontal, ThumbsUp, CornerUpLeft, Bell, FileText, Trash2, Edit2 } from 'lucide-react';
-import { Avatar, IconButton, Menu, MenuItem, MenuButton } from '@vibe/core';
+import { ThumbsUp, CornerUpLeft, Bell, FileText, Trash2, Edit2 } from 'lucide-react';
+import { Avatar, IconButton } from '@vibe/core';
 import ReplyItem from './ReplyItem';
 import InlineReplyComposer from './InlineReplyComposer';
 
@@ -80,20 +80,22 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete }:
                                 className="text-gray-400 hover:text-white"
                                 ariaLabel="Subscribe"
                             />
-                            <Menu>
-                                <MenuButton
-                                    component={IconButton}
-                                    ariaLabel="More options"
-                                    {...({
-                                        icon: MoreHorizontal,
-                                        size: "small",
-                                        kind: "tertiary",
-                                        className: "text-gray-400 hover:text-white"
-                                    } as object)}
-                                />
-                                <MenuItem icon={Edit2 as any} onClick={() => { }} title="Edit" />
-                                <MenuItem icon={Trash2 as any} onClick={handleDelete} title="Delete" className="text-red-400 hover:bg-red-500/10" />
-                            </Menu>
+                            {/* Direct Edit and Delete icons instead of a menu */}
+                            <IconButton
+                                icon={Edit2 as any}
+                                size="small"
+                                kind="tertiary"
+                                className="text-gray-400 hover:text-white"
+                                ariaLabel="Edit"
+                            />
+                            <IconButton
+                                icon={Trash2 as any}
+                                size="small"
+                                kind="tertiary"
+                                className="text-red-400/80 hover:text-red-400 hover:bg-red-500/10"
+                                ariaLabel="Delete"
+                                onClick={handleDelete}
+                            />
                         </div>
                     </div>
 

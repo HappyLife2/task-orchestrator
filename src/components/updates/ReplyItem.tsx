@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar } from '@vibe/core';
-import { ThumbsUp, CornerUpLeft, Trash2 } from 'lucide-react';
+import { ThumbsUp, CornerUpLeft, Trash2, Edit2 } from 'lucide-react';
 
 interface Reply {
     id: string;
@@ -44,10 +44,15 @@ export default function ReplyItem({ reply, onDelete }: ReplyItemProps) {
                             </span>
                         </div>
 
-                        {/* Optional delete for owner */}
-                        <button onClick={handleDeleteClick} className="opacity-0 group-hover/reply:opacity-100 text-gray-500 hover:text-red-400 transition-opacity">
-                            <Trash2 size={12} />
-                        </button>
+                        {/* Top-right icons: Edit and Delete raw icons only */}
+                        <div className="opacity-0 group-hover/reply:opacity-100 flex items-center gap-2 transition-opacity place-self-start">
+                            <button className="text-gray-500 hover:text-white p-1 rounded hover:bg-white/5 transition-colors">
+                                <Edit2 size={14} />
+                            </button>
+                            <button onClick={handleDeleteClick} className="text-gray-500 hover:text-red-400 p-1 rounded hover:bg-red-500/10 transition-colors">
+                                <Trash2 size={14} />
+                            </button>
+                        </div>
                     </div>
 
                     <div className="text-gray-300 text-[14px] leading-relaxed whitespace-pre-wrap break-words">
