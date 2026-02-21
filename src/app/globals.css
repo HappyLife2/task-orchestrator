@@ -5,23 +5,42 @@
 :root {
   --background: #0f102a;
   --foreground: #ffffff;
-  
+
   /* Deep Blue */
-  --primary: #2c2d65; 
+  --primary: #2c2d65;
   --primary-foreground: #ffffff;
 
   /* Orange Accent */
   --accent: #e0592a;
   --accent-foreground: #ffffff;
-  
-  /* Font Family - Fallback to sans until Google Font is loaded */
-  --font-alexandria: 'Inter', sans-serif;
+
+  /* Font Family */
+  --font-figtree: 'Figtree', sans-serif;
+
+  /* Spacing Tokens (Vibe Foundations) */
+  --spacing-xs: 4px;
+  --spacing-small: 8px;
+  --spacing-medium: 16px;
+  --spacing-large: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-xxxl: 64px;
+
+  /* Font Weights */
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+  --font-weight-extra-bold: 700;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-alexandria);
+  font-family: var(--font-figtree);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {

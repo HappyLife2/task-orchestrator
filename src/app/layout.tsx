@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Alexandria, Inter } from "next/font/google";
+import { Figtree, Inter } from "next/font/google";
 import "./globals.css";
 import "@vibe/core/tokens";
 
-const alexandria = Alexandria({
+const figtree = Figtree({
   subsets: ["latin"],
-  variable: "--font-alexandria",
+  variable: "--font-figtree",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
 const inter = Inter({
@@ -26,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${alexandria.variable} ${inter.variable} antialiased`}
+        className={`${figtree.variable} ${inter.variable} antialiased`}
       >
         {children}
       </body>

@@ -931,8 +931,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
             <th className="w-10 relative py-2 pl-[15px] pr-2 text-left select-none border-r border-[#2c2d65]">
                 <div
                     className={`w-3.5 h-3.5 border rounded-sm cursor-pointer flex items-center justify-center transition-colors ${sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id))
-                            ? 'bg-blue-500 border-blue-500'
-                            : 'border-gray-500 hover:border-white'
+                        ? 'bg-blue-500 border-blue-500'
+                        : 'border-gray-500 hover:border-white'
                         }`}
                     onClick={() => {
                         const allSelected = sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id));
@@ -992,16 +992,20 @@ export default function BoardView({ boardId }: { boardId: string }) {
         <div className="flex h-full w-full bg-[#0f102a] overflow-hidden">
             <div className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${selectedTaskForUpdates ? 'mr-[450px]' : ''}`}>
 
-                {/* Header */}
-                <div className="py-3 px-5 border-b border-[#2c2d65] flex justify-between items-center bg-[#0f102a] sticky top-0 z-20">
-                    <div className="flex-1">
+                {/* Header Container */}
+                <div className="px-8 pt-6 pb-2 flex justify-between items-start bg-[#0f102a] sticky top-0 z-20">
+                    <div className="flex-1 min-w-0 pr-4">
                         <EditableHeading
                             type="h2"
                             value={board.name}
                             onChange={handleUpdateBoardName}
-                            className="!font-bold !text-2xl [&_h2]:!text-white [&_input]:!text-white [&_span]:!text-white"
+                            className="!font-black !text-4xl tracking-tighter mb-3 [&_h2]:!text-white [&_input]:!text-white [&_span]:!text-white [&_h2]:!font-black"
                         />
-                        <p className="text-xs text-gray-400 mt-0.5">Department: {board.department?.name}</p>
+                        <div className="flex items-center gap-3">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 bg-[#1a1b4b] px-2.5 py-1 rounded-full border border-[#2c2d65]">
+                                {board.department?.name} Department
+                            </span>
+                        </div>
                     </div>
                     {/* New Item button with dropdown */}
                     <div className="relative" ref={newItemBtnRef}>
@@ -1034,26 +1038,11 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                 {/* DnD Table */}
                 <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <div className="flex-1 overflow-auto px-8 pt-4 pb-20">
-
-                        {/* WIP section header (above table) */}
-                        <div className="flex items-center border-b border-[#2c2d65] bg-[#0f102a]">
-                            <button
-                                onClick={() => setIsWipSectionCollapsed(c => !c)}
-                                className="flex items-center gap-2 px-3 py-2 text-left hover:bg-[#1a1b4b]/40 transition-colors"
-                            >
-                                {isWipSectionCollapsed
-                                    ? <ChevronRight size={14} className="text-[#e0592a] flex-shrink-0" />
-                                    : <ChevronDown size={14} className="text-[#e0592a] flex-shrink-0" />
-                                }
-                                <span className="text-[#e0592a] text-sm font-semibold tracking-wide">Work in Progress</span>
-                                <span className="text-gray-500 text-xs ml-1">({wipTasks.length})</span>
-                            </button>
-                        </div>
+                    <div className="flex-1 overflow-auto px-8 pt-0 pb-20">
 
                         {/* Add Section input */}
                         {isAddingSection && (
-                            <div className="flex flex-col gap-2 px-3 py-3 bg-[#1a1b4b]/30 border-b border-[#2c2d65]">
+                            <div className="flex flex-col gap-2 px-3 py-3 bg-[#1a1b4b]/30 border-b border-[#2c2d65] mb-4 rounded-lg">
                                 <div className="flex items-center gap-2">
                                     <input
                                         autoFocus
@@ -1089,9 +1078,23 @@ export default function BoardView({ boardId }: { boardId: string }) {
                         )}
 
                         <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content', minWidth: '100%' }}>
-
-
                             <tbody>
+                                {/* WIP Section Header */}
+                                <tr className="border-t-2 border-[#2c2d65]">
+                                    <td colSpan={columns.length + 1} className="bg-[#0f102a] py-0">
+                                        <button
+                                            onClick={() => setIsWipSectionCollapsed(c => !c)}
+                                            className="flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-[#1a1b4b]/40 transition-colors w-full"
+                                        >
+                                            {isWipSectionCollapsed
+                                                ? <ChevronRight size={16} className="text-[#e0592a] flex-shrink-0" />
+                                                : <ChevronDown size={16} className="text-[#e0592a] flex-shrink-0" />
+                                            }
+                                            <span className="text-[#e0592a] text-[15px] font-bold tracking-wide">Work in Progress</span>
+                                            <span className="text-gray-500 text-xs font-semibold ml-1">({wipTasks.length})</span>
+                                        </button>
+                                    </td>
+                                </tr>
                                 {/* New Task Input Row */}
                                 {isAddingTask && (
                                     <tr className="border-b border-[#2c2d65] bg-[#1a1b4b]/30">
@@ -1130,31 +1133,29 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                         </DroppableSection>
                                     </>
                                 )}
-                                {isWipSectionCollapsed && wipTasks.map(task => renderRow(task, '#e0592a'))}
 
                                 {/* Custom Sections */}
                                 {customSections.map(section => {
                                     const secTasks = sectionTasks(section.id);
                                     return (
                                         <Fragment key={section.id}>
-                                            <tr><td colSpan={columns.length + 1} className="h-5 bg-[#0a0b1e] border-none" /></tr>
                                             <tr className="border-t-2 border-[#2c2d65]">
                                                 <td colSpan={columns.length + 1} className="bg-[#0f102a] py-0">
-                                                    <div className="flex items-center gap-2 px-3 py-2 group">
+                                                    <div className="flex items-center group relative">
                                                         <button
                                                             onClick={() => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, collapsed: !s.collapsed } : s))}
-                                                            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                                                            className="flex items-center gap-2.5 px-3 py-2.5 w-full text-left hover:bg-[#1a1b4b]/40 transition-opacity"
                                                         >
                                                             {section.collapsed
-                                                                ? <ChevronRight size={14} style={{ color: section.color }} className="flex-shrink-0" />
-                                                                : <ChevronDown size={14} style={{ color: section.color }} className="flex-shrink-0" />
+                                                                ? <ChevronRight size={16} style={{ color: section.color }} className="flex-shrink-0" />
+                                                                : <ChevronDown size={16} style={{ color: section.color }} className="flex-shrink-0" />
                                                             }
-                                                            <span className="text-sm font-semibold tracking-wide" style={{ color: section.color }}>{section.name}</span>
-                                                            <span className="text-gray-500 text-xs">({secTasks.length})</span>
+                                                            <span className="text-[15px] font-bold tracking-wide" style={{ color: section.color }}>{section.name}</span>
+                                                            <span className="text-gray-500 text-xs font-semibold ml-1">({secTasks.length})</span>
                                                         </button>
                                                         <button
                                                             onClick={() => setCustomSections(prev => prev.filter(s => s.id !== section.id))}
-                                                            className="ml-auto p-1 rounded hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100"
+                                                            className="absolute right-4 p-1 rounded hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100"
                                                             title="Remove section"
                                                         >
                                                             <X size={12} />
@@ -1189,9 +1190,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                 )}
 
                                 {/* Spacer before Done */}
-                                {doneTasks.length > 0 && (
-                                    <tr><td colSpan={columns.length + 1} className="h-6 bg-[#0a0b1e] border-none" /></tr>
-                                )}
+                                {doneTasks.length > 0 && <tr className="h-4" />}
 
                                 {/* Done Section */}
                                 {doneTasks.length > 0 && (

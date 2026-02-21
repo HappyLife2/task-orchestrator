@@ -36,7 +36,7 @@ export default function ActivityPanel({
                or bottom for chat. 
                User request: "Update Composer (top)"
             */}
-            <div className="p-5 shrink-0 z-10 bg-[#1a1b4b] sticky top-0">
+            <div className="px-6 py-4 shrink-0 z-10 bg-[#1a1b4b] sticky top-0">
                 <UpdateComposer
                     currentUser={currentUser}
                     onSubmit={onPostUpdate}
@@ -48,7 +48,7 @@ export default function ActivityPanel({
             </div>
 
             {/* Feed Area */}
-            <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8" ref={scrollRef}>
+            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6" ref={scrollRef}>
                 {loading && updates.length === 0 ? (
                     <div className="flex justify-center py-10">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500" />

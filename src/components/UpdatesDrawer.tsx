@@ -197,10 +197,10 @@ export default function UpdatesDrawer({ task, board, onClose }: UpdatesDrawerPro
     return (
         <div className="fixed top-0 right-0 h-screen w-[450px] bg-[#1a1b4b] border-l border-[#2c2d65] shadow-2xl flex flex-col z-50">
             {/* Header */}
-            <div className="p-5 border-b border-[#2c2d65] flex justify-between items-center bg-[#151642]">
+            <div className="px-8 pt-6 pb-4 border-b border-[#2c2d65] flex justify-between items-start bg-[#151642]">
                 <div className="flex-1 min-w-0">
-                    <h2 className="text-xl font-bold text-white truncate">{task.name}</h2>
-                    <p className="text-xs text-gray-400 mt-1">{board?.name ?? 'Updates & Activity'}</p>
+                    <h2 className="text-2xl font-black text-white truncate tracking-tight mb-1">{task.name}</h2>
+                    <p className="text-[11px] font-black uppercase tracking-[0.15em] text-gray-400">{board?.name ?? 'Updates & Activity'}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     {/* Maybe close button */}

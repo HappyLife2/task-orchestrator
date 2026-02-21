@@ -78,9 +78,8 @@ export default function ReplyItem({ reply, onDelete, onEdit }: ReplyItemProps) {
                 <div className="bg-[#24265a] rounded-xl p-3 border border-[#2c2d65]/50">
                     <div className="flex items-baseline justify-between mb-1">
                         <div className="flex items-baseline gap-2">
-                            <span className="text-white font-bold text-sm">{reply.user?.name || 'Unknown'}</span>
-                            <span className="text-gray-400 text-xs">
-                                {/* Reference says "Just now" */}
+                            <span className="text-white font-black text-sm">{reply.user?.name || 'Unknown'}</span>
+                            <span className="text-gray-500 text-[10px] font-black uppercase tracking-wider">
                                 {new Date(reply.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}
                             </span>
                         </div>

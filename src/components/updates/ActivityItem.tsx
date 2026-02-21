@@ -85,7 +85,7 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
             <div className="rounded-xl border border-[#2c2d65] bg-[#1a1b4b] overflow-hidden">
 
                 {/* --- POST SECTION --- */}
-                <div className="p-5">
+                <div className="p-6">
                     {/* Header Row */}
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
@@ -97,9 +97,8 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
                             />
                             <div>
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-white font-bold text-[15px]">{update.user?.name || 'Unknown'}</span>
-                                    <span className="text-gray-500 text-sm">
-                                        {/* Reference: "21d" */}
+                                    <span className="text-white font-black text-base">{update.user?.name || 'Unknown'}</span>
+                                    <span className="text-gray-500 text-[11px] font-black uppercase tracking-wider">
                                         {new Date(update.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                     </span>
                                 </div>
