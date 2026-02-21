@@ -40,6 +40,10 @@ export default function ActivityPanel({
                 <UpdateComposer
                     currentUser={currentUser}
                     onSubmit={onPostUpdate}
+                    onCancel={() => {
+                        // The UpdateComposer handles its own internal state clearing
+                        // but we need to provide the prop to show the button.
+                    }}
                 />
             </div>
 

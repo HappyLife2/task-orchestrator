@@ -95,7 +95,14 @@ export default function UpdateComposer({ onSubmit, placeholder = "Write an updat
                 <div className="flex items-center gap-2">
                     {onCancel && (
                         <button
-                            onClick={onCancel}
+                            onClick={() => {
+                                onCancel();
+                                setContent('');
+                                if (textareaRef.current) {
+                                    textareaRef.current.style.height = 'auto';
+                                }
+                                setIsFocused(false);
+                            }}
                             disabled={isSubmitting}
                             className="px-3 py-1.5 text-sm font-medium text-gray-400 hover:text-white transition-colors"
                         >

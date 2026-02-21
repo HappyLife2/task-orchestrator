@@ -18,9 +18,9 @@ import {
     EditableText,
     IconButton,
     Text,
-    ListItemIcon
+    ListItemIcon,
 } from '@vibe/core';
-import { ListItem } from '@vibe/core/next';
+import { ListItem, Modal, ModalHeader, ModalContent, ModalFooter, ModalBasicLayout } from '@vibe/core/next';
 
 // Types
 interface Board {
@@ -46,6 +46,8 @@ export default function Sidebar() {
     const [org, setOrg] = useState<Organization | null>(null);
     const [loading, setLoading] = useState(true);
     const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
+    const [boardToDelete, setBoardToDelete] = useState<{ id: string, name: string, deptId: string } | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // Fetch Data
     const fetchOrg = useCallback(() => {
@@ -147,9 +149,11 @@ export default function Sidebar() {
         }
     };
 
-    const handleDeleteBoard = async (e: React.MouseEvent, boardId: string, deptId: string) => {
-        e.stopPropagation();
-        if (!confirm('Are you sure you want to delete this board? This action cannot be undone.')) return;
+    const confirmDeleteBoard = async () => {
+        if (!boardToDelete) return;
+
+        setIsDeleting(true);
+        const { id: boardId, deptId } = boardToDelete;
 
         // Optimistic update
         const oldOrg = org;
@@ -177,7 +181,15 @@ export default function Sidebar() {
         } catch (error) {
             console.error('Failed to delete board', error);
             setOrg(oldOrg); // Revert
+        } finally {
+            setIsDeleting(false);
+            setBoardToDelete(null);
         }
+    };
+
+    const handleDeleteBoard = async (e: React.MouseEvent, boardId: string, deptId: string) => {
+        e.stopPropagation();
+        setBoardToDelete({ id: boardId, name: org?.departments.find(d => d.id === deptId)?.boards.find(b => b.id === boardId)?.name || 'Board', deptId });
     };
 
     if (loading) return <div className="w-64 bg-[#1a1b4b] border-r border-[rgba(255,255,255,0.12)] p-4 text-white">Loading...</div>;
@@ -299,6 +311,35 @@ export default function Sidebar() {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                id="delete-board-modal"
+                show={!!boardToDelete}
+                alertModal
+                size="medium"
+                onClose={() => !isDeleting && setBoardToDelete(null)}
+            >
+                <ModalBasicLayout>
+                    <ModalHeader title="Delete Dashboard" />
+                    <ModalContent>
+                        <Text type="text1" element="p">
+                            Are you sure you want to delete the dashboard "{boardToDelete?.name}"? This action cannot be undone.
+                        </Text>
+                    </ModalContent>
+                </ModalBasicLayout>
+                <ModalFooter
+                    primaryButton={{
+                        text: isDeleting ? "Deleting..." : "Delete",
+                        color: "negative",
+                        onClick: confirmDeleteBoard
+                    }}
+                    secondaryButton={{
+                        text: "Cancel",
+                        onClick: () => !isDeleting && setBoardToDelete(null)
+                    }}
+                />
+            </Modal>
         </div>
     );
 }

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react';
-import { ThumbsUp, CornerUpLeft, Trash2, Edit2 } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { CornerUpLeft, Trash2, Edit2, Plus } from 'lucide-react';
 import { Avatar } from '@vibe/core';
 import ReplyItem from './ReplyItem';
 import InlineReplyComposer from './InlineReplyComposer';
+import EmojiPicker from './EmojiPicker';
 
 export interface ActivityUpdate {
     id: string;
@@ -30,6 +31,8 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
     const [isEditing, setIsEditing] = useState(false);
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
     const [editContent, setEditContent] = useState(update.content);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const emojiBtnRef = useRef<HTMLButtonElement>(null);
 
     const handleDelete = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -163,27 +166,62 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
                     <div className="h-px bg-[#2c2d65] my-3" />
 
                     {/* Post Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center flex-wrap gap-2">
+                        {/* Render existing reactions as pills */}
+                        {update.reactions?.map(r => (
+                            <button
+                                key={r.emoji}
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    onReaction(update.id, r.emoji);
+                                }}
+                                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm transition-all border ${r.reactedByMe
+                                    ? 'bg-blue-600/20 border-blue-500/50 text-blue-400'
+                                    : 'bg-[#2c2d65]/30 border-[#2c2d65] text-gray-400 hover:text-white hover:bg-[#2c2d65]'
+                                    }`}
+                            >
+                                <span>{r.emoji}</span>
+                                <span className={`text-[11px] font-bold ${r.reactedByMe ? 'text-blue-300' : 'text-gray-500'}`}>{r.count}</span>
+                            </button>
+                        ))}
+
+                        <div className="relative">
+                            <button
+                                ref={emojiBtnRef}
+                                type="button"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setShowEmojiPicker(true);
+                                }}
+                                className="p-1.5 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors flex items-center justify-center"
+                                aria-label="Add reaction"
+                            >
+                                <Plus size={16} />
+                            </button>
+                            {showEmojiPicker && (
+                                <EmojiPicker
+                                    triggerRef={emojiBtnRef}
+                                    onSelect={(emoji) => onReaction(update.id, emoji)}
+                                    onClose={() => setShowEmojiPicker(false)}
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex-1 min-w-[12px]" />
+
                         <button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onReaction(update.id, '👍');
-                            }}
-                            className={`flex items-center gap-2 text-sm transition-colors ${update.myReaction === '👍' ? 'text-blue-500 hover:text-blue-400' : 'text-gray-400 hover:text-white'}`}
-                        >
-                            <ThumbsUp size={16} />
-                            <span>{update.reactions?.some(r => r.emoji === '👍') ? update.reactions.find(r => r.emoji === '👍')?.count || '' : 'Like'}</span>
-                        </button>
-                        <button
+                            type="button"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 setIsReplying(true);
                             }}
-                            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                            className="flex items-center gap-2 text-[13px] font-medium text-gray-400 hover:text-white transition-colors px-2 py-1.5 rounded hover:bg-white/5"
                         >
-                            <CornerUpLeft size={16} />
+                            <CornerUpLeft size={14} />
                             <span>Reply</span>
                         </button>
                     </div>
