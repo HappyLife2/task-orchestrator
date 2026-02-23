@@ -815,12 +815,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
             );
         }
 
-        if (col.id === 'status') {
+        if (col.type === 'status') {
             return (
                 <StatusCell
                     value={val}
                     onChange={v => handleUpdateTaskColumn(task.id, col.id, v)}
-                    settings={col.settings?.status ?? { labels: {} }}
+                    settings={col.settings?.status || col.settings || { labels: {} }}
                 />
             );
         }

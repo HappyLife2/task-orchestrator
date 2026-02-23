@@ -120,7 +120,7 @@ export default function ReplyItem({ reply, onDelete, onEdit }: ReplyItemProps) {
                                 </div>
                             </div>
                         ) : (
-                            reply.content
+                            <div dangerouslySetInnerHTML={{ __html: reply.content }} />
                         )}
                     </div>
                 </div>

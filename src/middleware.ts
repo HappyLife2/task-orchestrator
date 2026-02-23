@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
 
     // 1. n8n Integration Handling (API Key)
-    if (path.startsWith('/api/integrations/n8n')) {
+    if (path.startsWith('/api/integrations/n8n') || path.startsWith('/api/n8n')) {
         const apiKey = req.headers.get('x-api-key');
         if (!apiKey) {
             return NextResponse.json({ error: 'Missing API Key' }, { status: 401 });

@@ -152,7 +152,7 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
                                 </div>
                             </div>
                         ) : (
-                            update.content
+                            <div dangerouslySetInnerHTML={{ __html: update.content }} />
                         )}
                     </div>
 

@@ -355,7 +355,7 @@ export default function Sidebar() {
                             <ModalHeader title="Delete Sequence" />
                             <ModalContent>
                                 <Text type="text1" element="p" className="text-gray-300">
-                                    Confirm destruction of archive <span className="text-red-400 font-bold">"{boardToDelete?.name}"</span>. This protocol is irreversible.
+                                    Confirm destruction of archive <span className="text-red-400 font-bold">&quot;{boardToDelete?.name}&quot;</span>. This protocol is irreversible.
                                 </Text>
                             </ModalContent>
                         </ModalBasicLayout>

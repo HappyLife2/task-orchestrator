@@ -1,7 +1,6 @@
 'use client';
 
 import { PortalMenu } from '../PortalMenu';
-import { Plus } from 'lucide-react';
 
 interface EmojiPickerProps {
     onSelect: (emoji: string) => void;

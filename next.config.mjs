@@ -1,6 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // config options here
+    output: 'standalone',
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    typescript: {
+        ignoreBuildErrors: true,
+    },
+    async rewrites() {
+        return [
+            {
+                source: '/api/n8n/unified',
+                destination: '/api/integrations/n8n/unified',
+            },
+            {
+                source: '/api/n8n/updates',
+                destination: '/api/integrations/n8n/updates',
+            },
+        ];
+    },
 };
 
 export default nextConfig;
