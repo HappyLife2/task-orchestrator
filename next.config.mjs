@@ -17,6 +17,10 @@ const nextConfig = {
                 source: '/api/n8n/updates',
                 destination: '/api/integrations/n8n/updates',
             },
+            {
+                source: '/api/n8n/metadata',
+                destination: '/api/integrations/n8n/metadata',
+            },
         ];
     },
 };
