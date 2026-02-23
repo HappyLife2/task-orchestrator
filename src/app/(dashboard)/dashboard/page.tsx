@@ -6,6 +6,7 @@ import {
     PieChart, Pie, Cell
 } from 'recharts';
 import { Loader2, TrendingUp, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface AnalyticsData {
     ongoing: {
@@ -26,7 +27,29 @@ interface AnalyticsData {
     };
 }
 
-const COLORS = ['#579bfc', '#00c875', '#e0592a', '#a25ddc', '#ff7575', '#ffcb00', '#ff642e', '#9aadbd'];
+const COLORS = ['#6366f1', '#8b5cf6', '#06b6d4', '#d946ef', '#ec4899', '#10b981', '#f59e0b', '#94a3b8'];
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const itemVariants: any = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+        y: 0,
+        opacity: 1,
+        transition: {
+            duration: 0.5,
+            ease: "circOut"
+        }
+    }
+};
 
 export default function DashboardPage() {
     const [data, setData] = useState<AnalyticsData | null>(null);
@@ -47,10 +70,23 @@ export default function DashboardPage() {
 
     if (loading) {
         return (
-            <div className="flex h-full items-center justify-center bg-[#0a0b1e] text-white">
-                <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="animate-spin text-[#e0592a]" size={40} />
-                    <p className="text-gray-400 font-medium tracking-wide">Orchestrating your analytics...</p>
+            <div className="flex h-full items-center justify-center bg-background text-white">
+                <div className="flex flex-col items-center gap-6">
+                    <motion.div
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 180, 360],
+                            opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                    >
+                        <Loader2 className="text-accent-indigo" size={48} />
+                    </motion.div>
+                    <p className="text-gray-400 font-medium tracking-[0.2em] uppercase text-xs animate-pulse">Orchestrating Intelligence</p>
                 </div>
             </div>
         );
@@ -67,71 +103,89 @@ export default function DashboardPage() {
     const ongoingByType = prepareChartData(data.ongoing.byType);
 
     const doneByBoard = prepareChartData(data.done.byBoard);
-    const doneByType = prepareChartData(data.done.byType);
 
     return (
-        <div className="flex-1 overflow-auto bg-[#0a0b1e] text-white p-8">
-            <div className="max-w-[1400px] mx-auto space-y-8">
+        <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex-1 overflow-auto bg-transparent text-white p-8"
+        >
+            <div className="max-w-[1400px] mx-auto space-y-10">
                 {/* Header Stats */}
-                <div className="flex items-center justify-between mb-2">
+                <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-4">
                     <div>
-                        <h1 className="text-[32px] font-bold tracking-tight">System Integrity Dashboard</h1>
-                        <p className="text-gray-400 mt-1">Real-time task synchronization and performance metrics across all boards.</p>
+                        <h1 className="text-[42px] font-black tracking-tighter leading-none spectral-text mb-2">
+                            System Integrity
+                        </h1>
+                        <p className="text-gray-400 font-medium text-sm">Real-time task synchronization across the enterprise architecture.</p>
                     </div>
                     <div className="flex gap-4">
-                        <div className="bg-[#1a1b4b]/40 border border-[#2c2d65] rounded-xl px-4 py-3 flex items-center gap-3">
-                            <div className="bg-blue-500/10 p-2 rounded-lg">
-                                <TrendingUp className="text-blue-400" size={20} />
+                        <div className="glass-card px-6 py-4 flex items-center gap-4 group cursor-default">
+                            <div className="bg-indigo-500/20 p-2.5 rounded-xl group-hover:bg-indigo-500/30 transition-colors">
+                                <TrendingUp className="text-accent-indigo" size={24} />
                             </div>
                             <div>
-                                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Ongoing Tasks</p>
-                                <p className="text-xl font-bold leading-none">{data.ongoing.total}</p>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-0.5">Active Pulse</p>
+                                <p className="text-3xl font-black leading-none tabular-nums text-glow">{data.ongoing.total}</p>
                             </div>
                         </div>
-                        <div className="bg-[#1a1b4b]/40 border border-[#2c2d65] rounded-xl px-4 py-3 flex items-center gap-3">
-                            <div className="bg-green-500/10 p-2 rounded-lg">
-                                <CheckCircle className="text-green-400" size={20} />
+                        <div className="glass-card px-6 py-4 flex items-center gap-4 group cursor-default">
+                            <div className="bg-emerald-500/20 p-2.5 rounded-xl group-hover:bg-emerald-500/30 transition-colors">
+                                <CheckCircle className="text-accent-cyan" size={24} />
                             </div>
                             <div>
-                                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Completed</p>
-                                <p className="text-xl font-bold leading-none">{data.done.total}</p>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-0.5">Nodes Restored</p>
+                                <p className="text-3xl font-black leading-none tabular-nums text-glow">{data.done.total}</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Section 1: Ongoing Portfolio */}
                 <div className="space-y-6">
-                    <div className="flex items-center gap-2 px-1">
-                        <Clock className="text-[#e0592a]" size={20} />
-                        <h2 className="text-xl font-bold">Ongoing Portfolio Analytics</h2>
-                    </div>
+                    <motion.div variants={itemVariants} className="flex items-center gap-3 px-1">
+                        <div className="w-1.5 h-6 bg-accent-indigo rounded-full" />
+                        <h2 className="text-2xl font-black tracking-tight uppercase">Operational Portfolio</h2>
+                    </motion.div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Board Distribution */}
-                        <div className="bg-[#1a1b4b]/30 border border-[#2c2d65] rounded-2xl p-6 hover:bg-[#1a1b4b]/40 transition-colors">
-                            <h3 className="text-sm font-semibold text-gray-300 mb-6 uppercase tracking-widest">Active Tasks by Board</h3>
+                        <motion.div variants={itemVariants} className="glass-card glass-card-hover p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Active Nodes per Board</h3>
+                                <div className="h-1.5 w-1.5 rounded-full bg-accent-indigo animate-pulse" />
+                            </div>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={ongoingByBoard}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#2c2d65" vertical={false} />
-                                        <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                                        <defs>
+                                            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#6366f1" stopOpacity={1} />
+                                                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                        <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} dy={10} />
                                         <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
                                         <Tooltip
-                                            contentStyle={{ backgroundColor: '#151642', border: '1px solid #2c2d65', borderRadius: '8px', fontSize: '12px', color: '#fff' }}
+                                            contentStyle={{ backgroundColor: '#0d0e26', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px', color: '#fff', backdropFilter: 'blur(8px)' }}
                                             itemStyle={{ color: '#fff' }}
                                             labelStyle={{ color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}
-                                            cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                            cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }}
                                         />
-                                        <Bar dataKey="value" fill="#579bfc" radius={[4, 4, 0, 0]} barSize={40} />
+                                        <Bar dataKey="value" fill="url(#barGradient)" radius={[6, 6, 0, 0]} barSize={45} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Status Breakdown */}
-                        <div className="bg-[#1a1b4b]/30 border border-[#2c2d65] rounded-2xl p-6 hover:bg-[#1a1b4b]/40 transition-colors">
-                            <h3 className="text-sm font-semibold text-gray-300 mb-6 uppercase tracking-widest">Operational Status Distribution</h3>
+                        <motion.div variants={itemVariants} className="glass-card glass-card-hover p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Status Matrix</h3>
+                                <div className="h-1.5 w-1.5 rounded-full bg-accent-cyan animate-pulse" />
+                            </div>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -139,50 +193,63 @@ export default function DashboardPage() {
                                             data={ongoingByStatus}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
-                                            paddingAngle={5}
+                                            innerRadius={70}
+                                            outerRadius={95}
+                                            paddingAngle={8}
                                             dataKey="value"
+                                            stroke="none"
                                         >
                                             {ongoingByStatus.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                             ))}
                                         </Pie>
                                         <Tooltip
-                                            contentStyle={{ backgroundColor: '#151642', border: '1px solid #2c2d65', borderRadius: '8px', fontSize: '12px', color: '#fff' }}
+                                            contentStyle={{ backgroundColor: '#0d0e26', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px', color: '#fff', backdropFilter: 'blur(8px)' }}
                                             itemStyle={{ color: '#fff' }}
                                             labelStyle={{ color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}
                                         />
-                                        <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '20px', color: '#fff' }} />
+                                        <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '30px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }} />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Importance Hierarchy */}
-                        <div className="bg-[#1a1b4b]/30 border border-[#2c2d65] rounded-2xl p-6 hover:bg-[#1a1b4b]/40 transition-colors">
-                            <h3 className="text-sm font-semibold text-gray-300 mb-6 uppercase tracking-widest">Strategic Importance levels</h3>
+                        <motion.div variants={itemVariants} className="glass-card glass-card-hover p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Strategic Weight</h3>
+                                <div className="h-1.5 w-1.5 rounded-full bg-accent-violet animate-pulse" />
+                            </div>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={ongoingByImportance} layout="vertical">
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#2c2d65" horizontal={false} />
-                                        <XAxis type="number" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
+                                        <defs>
+                                            <linearGradient id="importanceGradient" x1="0" y1="0" x2="1" y2="0">
+                                                <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                                <stop offset="100%" stopColor="#d946ef" stopOpacity={1} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" horizontal={false} />
+                                        <XAxis type="number" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} dy={10} />
                                         <YAxis type="category" dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} width={100} />
                                         <Tooltip
-                                            contentStyle={{ backgroundColor: '#151642', border: '1px solid #2c2d65', borderRadius: '8px', fontSize: '12px', color: '#fff' }}
+                                            contentStyle={{ backgroundColor: '#0d0e26', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px', color: '#fff', backdropFilter: 'blur(8px)' }}
                                             itemStyle={{ color: '#fff' }}
                                             labelStyle={{ color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}
-                                            cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                            cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }}
                                         />
-                                        <Bar dataKey="value" fill="#a25ddc" radius={[0, 4, 4, 0]} barSize={20} />
+                                        <Bar dataKey="value" fill="url(#importanceGradient)" radius={[0, 6, 6, 0]} barSize={24} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
-                        </div>
+                        </motion.div>
 
                         {/* Task Type Breakdown */}
-                        <div className="bg-[#1a1b4b]/30 border border-[#2c2d65] rounded-2xl p-6 hover:bg-[#1a1b4b]/40 transition-colors">
-                            <h3 className="text-sm font-semibold text-gray-300 mb-6 uppercase tracking-widest">Ongoing Tasks by Category</h3>
+                        <motion.div variants={itemVariants} className="glass-card glass-card-hover p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Categorical DNA</h3>
+                                <div className="h-1.5 w-1.5 rounded-full bg-accent-magenta animate-pulse" />
+                            </div>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -190,58 +257,68 @@ export default function DashboardPage() {
                                             data={ongoingByType}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={80}
-                                            paddingAngle={5}
+                                            innerRadius={70}
+                                            outerRadius={95}
+                                            paddingAngle={8}
                                             dataKey="value"
+                                            stroke="none"
                                         >
                                             {ongoingByType.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} stroke="none" />
+                                                <Cell key={`cell-${index}`} fill={COLORS[(index + 3) % COLORS.length]} />
                                             ))}
                                         </Pie>
                                         <Tooltip
-                                            contentStyle={{ backgroundColor: '#151642', border: '1px solid #2c2d65', borderRadius: '8px', fontSize: '12px', color: '#fff' }}
+                                            contentStyle={{ backgroundColor: '#0d0e26', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px', color: '#fff', backdropFilter: 'blur(8px)' }}
                                             itemStyle={{ color: '#fff' }}
                                             labelStyle={{ color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}
                                         />
-                                        <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '20px', color: '#fff' }} />
+                                        <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '11px', paddingTop: '30px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }} />
                                     </PieChart>
                                 </ResponsiveContainer>
                             </div>
-                        </div>
+                        </motion.div>
                     </div>
                 </div>
 
                 {/* Section 2: Done Analytics */}
-                <div className="pt-4 space-y-6">
-                    <div className="flex items-center gap-2 px-1">
-                        <CheckCircle className="text-green-500" size={20} />
-                        <h2 className="text-xl font-bold">Historical Done Performance</h2>
-                    </div>
+                <div className="pt-6 space-y-6">
+                    <motion.div variants={itemVariants} className="flex items-center gap-3 px-1">
+                        <div className="w-1.5 h-6 bg-accent-cyan rounded-full" />
+                        <h2 className="text-2xl font-black tracking-tight uppercase">Restoration Archives</h2>
+                    </motion.div>
 
-                    <div className="grid grid-cols-1 gap-6">
-                        <div className="bg-[#1a1b4b]/30 border border-[#2c2d65] rounded-2xl p-6 hover:bg-[#1a1b4b]/40 transition-colors">
-                            <h3 className="text-sm font-semibold text-gray-300 mb-6 uppercase tracking-widest">Completed Items per Board</h3>
-                            <div className="h-[300px] w-full">
+                    <motion.div variants={itemVariants} className="grid grid-cols-1 gap-6">
+                        <div className="glass-card glass-card-hover p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Efficiency per Node</h3>
+                                <div className="h-1.5 w-1.5 rounded-full bg-accent-cyan animate-pulse" />
+                            </div>
+                            <div className="h-[350px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={doneByBoard}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#2c2d65" vertical={false} />
-                                        <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+                                        <defs>
+                                            <linearGradient id="restoredGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="#06b6d4" stopOpacity={1} />
+                                                <stop offset="100%" stopColor="#06b6d4" stopOpacity={0.3} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                                        <XAxis dataKey="name" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} dy={10} />
                                         <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
                                         <Tooltip
-                                            contentStyle={{ backgroundColor: '#151642', border: '1px solid #2c2d65', borderRadius: '8px', fontSize: '12px', color: '#fff' }}
+                                            contentStyle={{ backgroundColor: '#0d0e26', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', fontSize: '12px', color: '#fff', backdropFilter: 'blur(8px)' }}
                                             itemStyle={{ color: '#fff' }}
                                             labelStyle={{ color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}
-                                            cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                                            cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }}
                                         />
-                                        <Bar dataKey="value" fill="#00c875" radius={[4, 4, 0, 0]} barSize={40} />
+                                        <Bar dataKey="value" fill="url(#restoredGradient)" radius={[8, 8, 0, 0]} barSize={60} />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }

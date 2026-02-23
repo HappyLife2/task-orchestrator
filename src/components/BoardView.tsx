@@ -9,10 +9,9 @@ import { Button, TextField, EditableHeading, IconButton } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
 import { PersonCell } from '@/components/board/cells/PersonCell';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// ─── Dropdown Cell (Importance / Urgency / Task Load) ────────────────────────
-
-
+// Types
 interface Task {
     id: string;
     name: string;
@@ -84,40 +83,55 @@ function DropdownCell({ value, onChange, options }: {
 
     return (
         <div className="w-full h-full flex items-center justify-center px-1">
-            <button
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 ref={btnRef}
                 onClick={() => setOpen(o => !o)}
-                className="w-full h-7 rounded-md text-white text-xs font-medium flex items-center justify-center gap-1 transition-opacity hover:opacity-80 px-2"
-                style={{ backgroundColor: selected?.color ?? '#2c2d65' }}
+                className="w-full h-8 rounded-xl text-white text-xs font-black flex items-center justify-center gap-1.5 transition-all shadow-lg group relative overflow-hidden"
+                style={{
+                    background: selected?.color
+                        ? `linear-gradient(135deg, ${selected.color} 0%, ${selected.color}cc 100%)`
+                        : 'var(--surface-3)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                }}
             >
-                {selected?.label ?? <span className="text-gray-500">—</span>}
-            </button>
+                <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                {selected?.label ?? <span className="text-gray-500 font-bold">—</span>}
+            </motion.button>
 
-            {open && (
-                <PortalMenu triggerRef={btnRef} onClose={() => setOpen(false)}>
-                    <div className="bg-[#1a1b4b] border border-[#2c2d65] rounded-lg shadow-2xl overflow-hidden">
-                        <button
-                            onClick={() => { onChange(''); setOpen(false); }}
-                            className="w-full px-3 py-2 text-left hover:bg-[#2c2d65] text-xs text-gray-400"
+            <AnimatePresence>
+                {open && (
+                    <PortalMenu triggerRef={btnRef} onClose={() => setOpen(false)}>
+                        <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            className="bg-[var(--surface-1)] border border-[var(--glass-border)] rounded-2xl shadow-2xl overflow-hidden backdrop-blur-3xl min-w-[160px]"
                         >
-                            — Clear
-                        </button>
-                        {options.map(opt => (
                             <button
-                                key={opt.value}
-                                onClick={() => { onChange(opt.value); setOpen(false); }}
-                                className="w-full px-3 py-2 text-left hover:bg-[#2c2d65] transition-colors flex items-center justify-between"
+                                onClick={() => { onChange(''); setOpen(false); }}
+                                className="w-full px-4 py-3 text-left hover:bg-white/10 text-[10px] font-black text-gray-500 uppercase tracking-widest border-b border-white/5"
                             >
-                                <div className="flex items-center gap-2">
-                                    {opt.color && <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: opt.color }} />}
-                                    <span className="text-xs text-gray-200">{opt.label}</span>
-                                </div>
-                                {value === opt.value && <Check size={12} className="text-[#e0592a]" />}
+                                — Protocol Clear
                             </button>
-                        ))}
-                    </div>
-                </PortalMenu>
-            )}
+                            {options.map(opt => (
+                                <button
+                                    key={opt.value}
+                                    onClick={() => { onChange(opt.value); setOpen(false); }}
+                                    className="w-full px-4 py-3 text-left hover:bg-white/10 transition-all flex items-center justify-between group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        {opt.color && <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: opt.color }} />}
+                                        <span className="text-[12px] font-bold text-gray-200 group-hover:text-white">{opt.label}</span>
+                                    </div>
+                                    {value === opt.value && <Check size={14} className="text-accent-cyan" />}
+                                </button>
+                            ))}
+                        </motion.div>
+                    </PortalMenu>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
@@ -131,39 +145,60 @@ function StatusCell({ value, onChange, settings }: {
     const [open, setOpen] = useState(false);
     const btnRef = useRef<HTMLButtonElement>(null);
     const labels = settings?.labels ?? {};
-    const color = labels[value?.toLowerCase()] ?? '#c4c4c4';
-    const label = value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Select status';
+    const color = labels[value?.toLowerCase()] ?? 'var(--surface-3)';
+    const label = value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Select state';
+
+    // Special spectral gradient for "Done" or active states
+    const isDone = value?.toLowerCase() === 'done';
+    const isWorking = value?.toLowerCase() === 'working on it' || value?.toLowerCase() === 'wip';
+
+    let gradient = `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`;
+    if (isDone) gradient = 'var(--grad-aurora)';
+    if (isWorking) gradient = 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)';
 
     return (
         <div className="w-full h-full flex items-center px-1">
-            <button
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 ref={btnRef}
                 onClick={() => setOpen(o => !o)}
-                className="w-full h-7 rounded-md text-white text-xs font-semibold flex items-center justify-center transition-opacity hover:opacity-80"
-                style={{ backgroundColor: color }}
+                className="w-full h-8 rounded-xl text-white text-[11px] font-black uppercase tracking-wider flex items-center justify-center transition-all shadow-lg group relative overflow-hidden"
+                style={{
+                    background: gradient,
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                }}
             >
-                {label}
-            </button>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="relative z-10">{label}</span>
+            </motion.button>
 
-            {open && (
-                <PortalMenu triggerRef={btnRef} onClose={() => setOpen(false)}>
-                    <div className="bg-[#1a1b4b] border border-[#2c2d65] rounded-lg shadow-2xl overflow-hidden">
-                        {Object.entries(labels).map(([key, clr]) => (
-                            <button
-                                key={key}
-                                onClick={() => { onChange(key); setOpen(false); }}
-                                className="w-full px-3 py-2.5 text-left hover:bg-[#2c2d65] transition-colors flex items-center justify-between"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: clr as string }} />
-                                    <span className="text-xs text-gray-200 capitalize">{key}</span>
-                                </div>
-                                {value?.toLowerCase() === key.toLowerCase() && <Check size={12} className="text-[#e0592a]" />}
-                            </button>
-                        ))}
-                    </div>
-                </PortalMenu>
-            )}
+            <AnimatePresence>
+                {open && (
+                    <PortalMenu triggerRef={btnRef} onClose={() => setOpen(false)}>
+                        <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            className="bg-[var(--surface-1)] border border-[var(--glass-border)] rounded-2xl shadow-2xl overflow-hidden backdrop-blur-3xl min-w-[180px]"
+                        >
+                            {Object.entries(labels).map(([key, clr]) => (
+                                <button
+                                    key={key}
+                                    onClick={() => { onChange(key); setOpen(false); }}
+                                    className="w-full px-4 py-3 text-left hover:bg-white/10 transition-all flex items-center justify-between group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: clr as string }} />
+                                        <span className="text-[12px] font-black text-gray-200 group-hover:text-white uppercase tracking-tight">{key}</span>
+                                    </div>
+                                    {value?.toLowerCase() === key.toLowerCase() && <Check size={14} className="text-accent-cyan" />}
+                                </button>
+                            ))}
+                        </motion.div>
+                    </PortalMenu>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
@@ -208,73 +243,77 @@ function TimelineCell({ value, onChange }: { value: string; onChange: (v: string
 
     return (
         <div className="w-full h-full flex items-center px-1">
-            <button
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 ref={btnRef}
                 onClick={() => setOpen(o => !o)}
-                className="w-full h-7 rounded-md bg-[#2c2d65] text-xs text-gray-300 flex items-center justify-center gap-1.5 hover:bg-[#33345c] transition-colors px-2"
+                className="w-full h-8 rounded-xl bg-[var(--surface-3)] text-[11px] font-bold text-gray-200 flex items-center justify-center gap-2 hover:bg-white/10 transition-all px-3 border border-white/5"
             >
-                <Calendar size={11} className="text-[#e0592a] flex-shrink-0" />
-                <span className="truncate">{displayText ?? <span className="text-gray-500">Set dates</span>}</span>
-            </button>
+                <Calendar size={13} className="text-accent-indigo flex-shrink-0" />
+                <span className="truncate">{displayText ?? <span className="text-gray-500">Scheduled Pulse</span>}</span>
+            </motion.button>
 
-            {open && (
-                <PortalMenu triggerRef={btnRef} onClose={() => setOpen(false)}>
-                    <div
-                        className="w-64 bg-[#1a1b4b] border border-[#2c2d65] rounded-xl shadow-2xl p-4 flex flex-col gap-3"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <p className="text-[11px] font-semibold text-gray-300 uppercase tracking-wider">Select Date Range</p>
-
-                        <div className="flex flex-col gap-2">
-                            <div>
-                                <label className="text-[10px] text-gray-500 uppercase tracking-wide block mb-1">From</label>
-                                <input
-                                    type="date"
-                                    value={start}
-                                    onChange={e => setStart(e.target.value)}
-                                    className="w-full bg-[#0f102a] border border-[#2c2d65] focus:border-[#e0592a] rounded-lg px-3 py-1.5 text-xs text-white outline-none transition-colors cursor-pointer"
-                                    style={{ colorScheme: 'dark' }}
-                                />
+            <AnimatePresence>
+                {open && (
+                    <PortalMenu triggerRef={btnRef} onClose={() => setOpen(false)}>
+                        <motion.div
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            className="w-72 bg-[var(--surface-1)] border border-[var(--glass-border)] rounded-2xl shadow-2xl p-5 flex flex-col gap-4 backdrop-blur-3xl"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="w-1 h-4 bg-accent-indigo rounded-full" />
+                                <p className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Temporal Range</p>
                             </div>
-                            <div>
-                                <label className="text-[10px] text-gray-500 uppercase tracking-wide block mb-1">To</label>
-                                <input
-                                    type="date"
-                                    value={end}
-                                    min={start}
-                                    onChange={e => setEnd(e.target.value)}
-                                    className="w-full bg-[#0f102a] border border-[#2c2d65] focus:border-[#e0592a] rounded-lg px-3 py-1.5 text-xs text-white outline-none transition-colors cursor-pointer"
-                                    style={{ colorScheme: 'dark' }}
-                                />
-                            </div>
-                        </div>
 
-                        {start && end && (
-                            <div className="bg-[#0f102a] rounded-lg px-3 py-2 text-center">
-                                <span className="text-xs text-[#e0592a] font-medium">
-                                    {formatDisplay(start)} → {formatDisplay(end)}
-                                </span>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] text-gray-500 uppercase font-black tracking-widest pl-1">Ingress</label>
+                                    <input
+                                        type="date"
+                                        value={start}
+                                        onChange={e => setStart(e.target.value)}
+                                        className="w-full bg-black/40 border border-white/10 focus:border-accent-indigo rounded-xl px-2 py-2 text-[11px] text-white outline-none transition-all cursor-pointer"
+                                        style={{ colorScheme: 'dark' }}
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[9px] text-gray-500 uppercase font-black tracking-widest pl-1">Egress</label>
+                                    <input
+                                        type="date"
+                                        value={end}
+                                        min={start}
+                                        onChange={e => setEnd(e.target.value)}
+                                        className="w-full bg-black/40 border border-white/10 focus:border-accent-indigo rounded-xl px-2 py-2 text-[11px] text-white outline-none transition-all cursor-pointer"
+                                        style={{ colorScheme: 'dark' }}
+                                    />
+                                </div>
                             </div>
-                        )}
 
-                        <div className="flex gap-2">
-                            <button
-                                onClick={apply}
-                                disabled={!start || !end}
-                                className="flex-1 bg-[#e0592a] hover:bg-[#c94d22] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold py-1.5 rounded-lg transition-colors"
-                            >
-                                Apply
-                            </button>
-                            <button
-                                onClick={clear}
-                                className="px-3 bg-[#2c2d65] hover:bg-[#33345c] text-gray-400 text-xs py-1.5 rounded-lg transition-colors"
-                            >
-                                Clear
-                            </button>
-                        </div>
-                    </div>
-                </PortalMenu>
-            )}
+                            <div className="flex gap-2 pt-2">
+                                <motion.button
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={apply}
+                                    disabled={!start || !end}
+                                    className="flex-1 bg-accent-indigo hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[11px] font-black uppercase py-2.5 rounded-xl transition-all shadow-lg"
+                                >
+                                    Sync Timeline
+                                </motion.button>
+                                <button
+                                    onClick={clear}
+                                    className="px-4 bg-white/5 hover:bg-white/10 text-gray-400 text-[11px] font-bold py-2.5 rounded-xl transition-all"
+                                >
+                                    Reset
+                                </button>
+                            </div>
+                        </motion.div>
+                    </PortalMenu>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
@@ -292,7 +331,9 @@ function InlineTextCell({ value, onChange, placeholder }: {
 
     if (editing) {
         return (
-            <input
+            <motion.input
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
                 autoFocus
                 value={draft}
                 onChange={e => setDraft(e.target.value)}
@@ -302,7 +343,7 @@ function InlineTextCell({ value, onChange, placeholder }: {
                     if (e.key === 'Escape') { setEditing(false); setDraft(value ?? ''); }
                 }}
                 placeholder={placeholder}
-                className="w-full bg-[#1a1b4b] border border-[#e0592a] rounded px-2 py-1 text-xs text-white outline-none"
+                className="w-full bg-black/60 border border-accent-indigo rounded-xl px-3 py-1.5 text-xs text-white outline-none ring-2 ring-indigo-500/20"
             />
         );
     }
@@ -310,14 +351,14 @@ function InlineTextCell({ value, onChange, placeholder }: {
     return (
         <div
             onClick={() => setEditing(true)}
-            className="w-full h-7 flex items-center px-2 text-xs text-gray-300 cursor-text hover:bg-[#1a1b4b] rounded transition-colors truncate"
+            className="w-full h-8 flex items-center px-3 text-[13px] text-gray-300 font-medium cursor-text hover:bg-white/5 rounded-xl transition-all truncate"
         >
-            {draft || <span className="text-gray-600">{placeholder ?? '—'}</span>}
+            {draft || <span className="text-gray-600 font-normal italic">{placeholder ?? '—'}</span>}
         </div>
     );
 }
 
-// ─── Person Cell ──────────────────────────────────────────────────────────────
+// ... existing PersonCell (kept as is)
 
 // ─── Draggable Task Row ───────────────────────────────────────────────────────
 function DraggableTaskRow({ taskId, isDragging, isSubitem, children }: {
@@ -327,46 +368,50 @@ function DraggableTaskRow({ taskId, isDragging, isSubitem, children }: {
     children: React.ReactNode;
 }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: taskId, disabled: isSubitem });
-    const style = transform ? { transform: CSS.Translate.toString(transform), opacity: 0.4 } : undefined;
+    const style = transform ? { transform: CSS.Translate.toString(transform), zIndex: 50 } : undefined;
+
     return (
-        <tr
+        <motion.tr
+            layout
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
             ref={setNodeRef}
             style={style}
             {...(isSubitem ? {} : { ...attributes, ...listeners })}
-            className={`group hover:bg-[#1a1b4b]/50 transition-colors border-b border-[#2c2d65] ${isDragging ? 'opacity-40' : ''}`}
+            className={`group transition-all border-b border-[var(--glass-border)] ${isDragging ? 'opacity-40 scale-[0.98] !bg-white/10' : ''} ${isSubitem ? 'bg-black/20' : ''}`}
         >
             {children}
-        </tr>
+        </motion.tr>
     );
 }
 
 // ─── Droppable Section ────────────────────────────────────────────────────────
-function DroppableSection({ sectionId, colSpan, children }: {
-    sectionId: string;
-    colSpan: number;
-    children: React.ReactNode;
-}) {
+const DroppableSection = ({ sectionId, children, colSpan }: { sectionId: string, children: React.ReactNode, colSpan: number }) => {
     const { setNodeRef, isOver } = useDroppable({ id: sectionId });
+
     return (
         <>
             {children}
-            {/* Drop target row — always present so the section is droppable even when empty */}
-            <tr ref={setNodeRef}>
-                <td
-                    colSpan={colSpan}
-                    className={`h-8 transition-colors border-b border-dashed border-[#2c2d65] ${isOver ? 'bg-blue-500/10 border-blue-500/50' : 'bg-transparent'
-                        }`}
-                >
+            <tr ref={setNodeRef} className={`transition-all duration-300 ${isOver ? 'bg-accent-indigo/10' : ''}`}>
+                <td colSpan={colSpan} className="p-0 border-none">
                     {isOver && (
-                        <div className="flex items-center justify-center h-full text-xs text-blue-400 opacity-70">
-                            Drop here
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="h-10 bg-accent-indigo/5 border-2 border-dashed border-accent-indigo/20 rounded-xl mx-2 my-1 flex items-center justify-center"
+                        >
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-indigo/50">
+                                Release to distribute node here
+                            </span>
+                        </motion.div>
                     )}
                 </td>
             </tr>
         </>
     );
-}
+};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function BoardView({ boardId }: { boardId: string }) {
@@ -829,10 +874,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: sectionColor }} />
                         )}
                         <div className="flex h-full items-center justify-center pl-1">
-                            <div
+                            <motion.div
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
                                 className={`w-3.5 h-3.5 border rounded-sm cursor-pointer flex items-center justify-center transition-colors ${selectedTaskIds.has(task.id)
-                                    ? 'bg-blue-500 border-blue-500'
-                                    : 'border-gray-500 hover:border-white'
+                                    ? 'bg-accent-indigo border-accent-indigo'
+                                    : 'border-white/20 hover:border-white/40'
                                     }`}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -848,18 +895,18 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                 }}
                             >
                                 {selectedTaskIds.has(task.id) && <Check size={10} className="text-white" />}
-                            </div>
+                            </motion.div>
                         </div>
                     </td>
                     {columns.map(col => (
                         <td
                             key={col.id}
                             style={{ width: widths[col.id] ?? col.width ?? 150, minWidth: 80 }}
-                            className={`border-b border-r border-[#2c2d65] h-[36px] overflow-hidden relative`}
+                            className={`border-b border-r border-[var(--glass-border)] h-[36px] overflow-hidden relative`}
                         >
                             {col === columns[0] && !isSubitem && (
                                 <span className="absolute left-0 top-0 h-full flex items-center pl-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing z-10">
-                                    <GripVertical size={13} className="text-gray-500" />
+                                    <GripVertical size={13} className="text-white/40" />
                                 </span>
                             )}
                             {renderCell(col, task, isSubitem)}
@@ -927,12 +974,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const renderHeaderRow = (sectionTasks: Task[]) => (
-        <tr className="bg-[#151642] group/thead sticky top-0 z-10 border-b border-[#2c2d65]">
-            <th className="w-10 relative py-2 pl-[15px] pr-2 text-left select-none border-r border-[#2c2d65]">
-                <div
+        <tr className="bg-[var(--surface-1)] backdrop-blur-md group/thead sticky top-0 z-10 border-b border-[var(--glass-border)]">
+            <th className="w-10 relative py-2 pl-[15px] pr-2 text-left select-none border-r border-[var(--glass-border)]">
+                <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     className={`w-3.5 h-3.5 border rounded-sm cursor-pointer flex items-center justify-center transition-colors ${sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id))
-                        ? 'bg-blue-500 border-blue-500'
-                        : 'border-gray-500 hover:border-white'
+                        ? 'bg-accent-indigo border-accent-indigo'
+                        : 'border-white/20 hover:border-white/40'
                         }`}
                     onClick={() => {
                         const allSelected = sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id));
@@ -949,23 +998,23 @@ export default function BoardView({ boardId }: { boardId: string }) {
                 >
                     {sectionTasks.length > 0 && sectionTasks.every(t => selectedTaskIds.has(t.id)) && <Check size={10} className="text-white" />}
                     {sectionTasks.some(t => selectedTaskIds.has(t.id)) && !sectionTasks.every(t => selectedTaskIds.has(t.id)) && (
-                        <div className="w-2 h-0.5 bg-blue-500 rounded-full" />
+                        <div className="w-2 h-0.5 bg-accent-indigo rounded-full" />
                     )}
-                </div>
+                </motion.div>
             </th>
             {columns.map(col => (
                 <th
                     key={col.id}
                     style={{ width: widths[col.id] ?? col.width ?? 150 }}
-                    className={`relative py-2 px-3 text-[11px] font-semibold text-gray-400 capitalize border-r border-[#2c2d65] select-none ${col.id !== 'item' ? 'text-center' : 'text-left'}`}
+                    className={`relative py-2 px-3 text-[10px] uppercase tracking-wider font-black text-white/40 border-r border-[var(--glass-border)] select-none ${col.id !== 'item' ? 'text-center' : 'text-left'}`}
                 >
                     {col.title}
                     <div
                         onMouseDown={e => { e.preventDefault(); startResize(col.id, e.clientX); }}
-                        className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize group/resize flex items-center justify-center hover:bg-[#e0592a]/60 transition-colors z-20"
+                        className="absolute right-0 top-0 h-full w-1 cursor-col-resize group/resize flex items-center justify-center hover:bg-accent-indigo/60 transition-colors z-20"
                         title="Drag to resize"
                     >
-                        <GripVertical size={10} className="text-gray-600 group-hover/resize:text-[#e0592a] opacity-0 group-hover/resize:opacity-100 transition-opacity" />
+                        <div className="w-px h-1/2 bg-white/10 group-hover/resize:bg-accent-indigo transition-colors" />
                     </div>
                 </th>
             ))}
@@ -989,11 +1038,11 @@ export default function BoardView({ boardId }: { boardId: string }) {
     }
 
     return (
-        <div className="flex h-full w-full bg-[#0f102a] overflow-hidden">
+        <div className="flex h-full w-full bg-background overflow-hidden relative">
             <div className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${selectedTaskForUpdates ? 'mr-[450px]' : ''}`}>
 
                 {/* Header Container */}
-                <div className="px-8 pt-6 pb-2 flex justify-between items-start bg-[#0f102a] sticky top-0 z-20">
+                <div className="px-8 pt-8 pb-4 flex justify-between items-start sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-[var(--glass-border)]">
                     <div className="flex-1 min-w-0 pr-4">
                         <EditableHeading
                             type="h2"
@@ -1009,36 +1058,46 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     </div>
                     {/* New Item button with dropdown */}
                     <div className="relative" ref={newItemBtnRef}>
-                        <button
+                        <motion.button
+                            whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)' }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => setIsNewItemMenuOpen(o => !o)}
-                            className="flex items-center gap-2 px-4 py-2 bg-[#e0592a] hover:bg-[#c04a22] text-white text-sm font-medium rounded-lg transition-colors"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--grad-aurora)] text-white text-sm font-black rounded-xl transition-all shadow-xl"
                         >
-                            <Plus size={15} />
-                            New Item
-                            <ChevronDown size={13} className={`transition-transform ${isNewItemMenuOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        {isNewItemMenuOpen && (
-                            <div className="absolute right-0 top-full mt-1 bg-[#1a1b4b] border border-[#2c2d65] rounded-lg shadow-2xl overflow-hidden min-w-[180px] z-50">
-                                <button
-                                    onClick={() => { setIsAddingTask(true); setIsNewItemMenuOpen(false); }}
-                                    className="w-full px-4 py-2.5 text-left hover:bg-[#2c2d65] transition-colors flex items-center gap-2 text-sm text-gray-200"
+                            <Plus size={16} strokeWidth={3} />
+                            NEW ITEM
+                            <ChevronDown size={14} className={`transition-transform duration-300 ${isNewItemMenuOpen ? 'rotate-180' : ''}`} />
+                        </motion.button>
+
+                        <AnimatePresence>
+                            {isNewItemMenuOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    className="absolute right-0 top-full mt-2 bg-[var(--surface-1)] border border-[var(--glass-border)] rounded-2xl shadow-2xl overflow-hidden min-w-[200px] z-50 backdrop-blur-3xl"
                                 >
-                                    <Plus size={14} className="text-[#e0592a]" /> Add Task
-                                </button>
-                                <button
-                                    onClick={() => { setIsAddingSection(true); setIsNewItemMenuOpen(false); }}
-                                    className="w-full px-4 py-2.5 text-left hover:bg-[#2c2d65] transition-colors flex items-center gap-2 text-sm text-gray-200"
-                                >
-                                    <Plus size={14} className="text-blue-400" /> Add New Section
-                                </button>
-                            </div>
-                        )}
+                                    <button
+                                        onClick={() => { setIsAddingTask(true); setIsNewItemMenuOpen(false); }}
+                                        className="w-full px-5 py-3.5 text-left hover:bg-white/10 transition-colors flex items-center gap-3 text-sm text-white font-medium group"
+                                    >
+                                        <Plus size={16} className="text-accent-indigo group-hover:scale-110 transition-transform" /> Add Task
+                                    </button>
+                                    <button
+                                        onClick={() => { setIsAddingSection(true); setIsNewItemMenuOpen(false); }}
+                                        className="w-full px-5 py-3.5 text-left hover:bg-white/10 transition-colors flex items-center gap-3 text-sm text-white font-medium group"
+                                    >
+                                        <Plus size={16} className="text-accent-cyan group-hover:scale-110 transition-transform" /> Add New Section
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 
                 {/* DnD Table */}
                 <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <div className="flex-1 overflow-auto px-8 pt-0 pb-20">
+                    <div className="flex-1 overflow-auto px-8 pt-8 pb-32">
 
                         {/* Add Section input */}
                         {isAddingSection && (
@@ -1080,49 +1139,72 @@ export default function BoardView({ boardId }: { boardId: string }) {
                         <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content', minWidth: '100%' }}>
                             <tbody>
                                 {/* WIP Section Header */}
-                                <tr className="border-t-2 border-[#2c2d65]">
-                                    <td colSpan={columns.length + 1} className="bg-[#0f102a] py-0">
-                                        <button
+                                <tr className="border-t-2 border-[var(--glass-border)]">
+                                    <td colSpan={columns.length + 1} className="bg-transparent py-0">
+                                        <motion.button
+                                            whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
                                             onClick={() => setIsWipSectionCollapsed(c => !c)}
-                                            className="flex items-center gap-2.5 px-3 py-2.5 text-left hover:bg-[#1a1b4b]/40 transition-colors w-full"
+                                            className="flex items-center gap-3 px-4 py-4 text-left transition-colors w-full group"
                                         >
-                                            {isWipSectionCollapsed
-                                                ? <ChevronRight size={16} className="text-[#e0592a] flex-shrink-0" />
-                                                : <ChevronDown size={16} className="text-[#e0592a] flex-shrink-0" />
-                                            }
-                                            <span className="text-[#e0592a] text-[15px] font-bold tracking-wide">Work in Progress</span>
-                                            <span className="text-gray-500 text-xs font-semibold ml-1">({wipTasks.length})</span>
-                                        </button>
+                                            <motion.div
+                                                animate={{ rotate: isWipSectionCollapsed ? 0 : 90 }}
+                                                className="flex-shrink-0"
+                                            >
+                                                <ChevronRight size={18} className="text-accent-indigo" />
+                                            </motion.div>
+                                            <span className="text-white text-[15px] font-black tracking-wider uppercase group-hover:text-accent-indigo transition-colors">
+                                                Active Nodes
+                                            </span>
+                                            <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
+                                                {wipTasks.length}
+                                            </span>
+                                        </motion.button>
                                     </td>
                                 </tr>
                                 {/* New Task Input Row */}
-                                {isAddingTask && (
-                                    <tr className="border-b border-[#2c2d65] bg-[#1a1b4b]/30">
-                                        <td colSpan={columns.length + 1} className="py-2 px-2.5">
-                                            <div className="flex items-center gap-2">
-                                                <TextField
-                                                    value={newTaskName}
-                                                    onChange={setNewTaskName}
-                                                    onKeyDown={(e: any) => {
-                                                        if (e.key === 'Enter') handleCreateTask();
-                                                        if (e.key === 'Escape') { setIsAddingTask(false); setNewTaskName(''); }
-                                                    }}
-                                                    placeholder="Enter task name..."
-                                                    autoFocus
-                                                    size="medium"
-                                                />
-                                                <Button onClick={handleCreateTask}>Add Task</Button>
-                                                <IconButton
-                                                    icon={X as any}
-                                                    onClick={() => { setIsAddingTask(false); setNewTaskName(''); }}
-                                                    size="medium"
-                                                    kind="tertiary"
-                                                    ariaLabel="Cancel"
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )}
+                                <AnimatePresence>
+                                    {isAddingTask && (
+                                        <motion.tr
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: 'auto' }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="border-b border-[var(--glass-border)] bg-white/5"
+                                        >
+                                            <td colSpan={columns.length + 1} className="py-4 px-6">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-1.5 focus-within:border-accent-indigo transition-all">
+                                                        <input
+                                                            value={newTaskName}
+                                                            onChange={e => setNewTaskName(e.target.value)}
+                                                            onKeyDown={(e: any) => {
+                                                                if (e.key === 'Enter') handleCreateTask();
+                                                                if (e.key === 'Escape') { setIsAddingTask(false); setNewTaskName(''); }
+                                                            }}
+                                                            placeholder="New Node Identifier..."
+                                                            autoFocus
+                                                            className="w-full bg-transparent border-none text-white outline-none text-sm placeholder:text-gray-600 font-medium"
+                                                        />
+                                                    </div>
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        onClick={handleCreateTask}
+                                                        className="px-5 py-2.5 bg-accent-indigo text-white text-xs font-black rounded-xl hover:bg-accent-indigo/80 transition-all shadow-lg shadow-accent-indigo/20 uppercase tracking-widest"
+                                                    >
+                                                        Initialize
+                                                    </motion.button>
+                                                    <IconButton
+                                                        icon={X as any}
+                                                        onClick={() => { setIsAddingTask(false); setNewTaskName(''); }}
+                                                        size="medium"
+                                                        kind="tertiary"
+                                                        ariaLabel="Cancel"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    )}
+                                </AnimatePresence>
 
                                 {/* WIP droppable zone */}
                                 {!isWipSectionCollapsed && (
@@ -1139,26 +1221,33 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                     const secTasks = sectionTasks(section.id);
                                     return (
                                         <Fragment key={section.id}>
-                                            <tr className="border-t-2 border-[#2c2d65]">
-                                                <td colSpan={columns.length + 1} className="bg-[#0f102a] py-0">
+                                            <tr className="border-t-2 border-[var(--glass-border)]">
+                                                <td colSpan={columns.length + 1} className="bg-transparent py-0">
                                                     <div className="flex items-center group relative">
-                                                        <button
+                                                        <motion.button
+                                                            whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
                                                             onClick={() => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, collapsed: !s.collapsed } : s))}
-                                                            className="flex items-center gap-2.5 px-3 py-2.5 w-full text-left hover:bg-[#1a1b4b]/40 transition-opacity"
+                                                            className="flex items-center gap-3 px-4 py-4 w-full text-left transition-colors group"
                                                         >
-                                                            {section.collapsed
-                                                                ? <ChevronRight size={16} style={{ color: section.color }} className="flex-shrink-0" />
-                                                                : <ChevronDown size={16} style={{ color: section.color }} className="flex-shrink-0" />
-                                                            }
-                                                            <span className="text-[15px] font-bold tracking-wide" style={{ color: section.color }}>{section.name}</span>
-                                                            <span className="text-gray-500 text-xs font-semibold ml-1">({secTasks.length})</span>
-                                                        </button>
+                                                            <motion.div
+                                                                animate={{ rotate: section.collapsed ? 0 : 90 }}
+                                                                className="flex-shrink-0"
+                                                            >
+                                                                <ChevronRight size={18} style={{ color: section.color }} />
+                                                            </motion.div>
+                                                            <span className="text-white text-[15px] font-black tracking-wider uppercase group-hover:opacity-80 transition-opacity" style={{ color: section.color }}>
+                                                                {section.name}
+                                                            </span>
+                                                            <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
+                                                                {secTasks.length}
+                                                            </span>
+                                                        </motion.button>
                                                         <button
                                                             onClick={() => setCustomSections(prev => prev.filter(s => s.id !== section.id))}
-                                                            className="absolute right-4 p-1 rounded hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100"
+                                                            className="absolute right-6 p-2 rounded-xl hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 backdrop-blur-md"
                                                             title="Remove section"
                                                         >
-                                                            <X size={12} />
+                                                            <X size={14} />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -1189,25 +1278,29 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                     </tr>
                                 )}
 
-                                {/* Spacer before Done */}
-                                {doneTasks.length > 0 && <tr className="h-4" />}
-
                                 {/* Done Section */}
                                 {doneTasks.length > 0 && (
                                     <>
-                                        <tr className="border-t-2 border-[#2c2d65]">
-                                            <td colSpan={columns.length + 1} className="bg-[#0f102a] py-0">
-                                                <button
+                                        <tr className="border-t-2 border-[var(--glass-border)]">
+                                            <td colSpan={columns.length + 1} className="bg-transparent py-0">
+                                                <motion.button
+                                                    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
                                                     onClick={() => setIsDoneSectionCollapsed(c => !c)}
-                                                    className="flex items-center gap-2 px-3 py-2 w-full text-left hover:bg-[#1a1b4b]/40 transition-colors"
+                                                    className="flex items-center gap-3 px-4 py-4 w-full text-left transition-colors group"
                                                 >
-                                                    {isDoneSectionCollapsed
-                                                        ? <ChevronRight size={14} className="text-[#00c875] flex-shrink-0" />
-                                                        : <ChevronDown size={14} className="text-[#00c875] flex-shrink-0" />
-                                                    }
-                                                    <span className="text-[#00c875] text-sm font-semibold tracking-wide">Done</span>
-                                                    <span className="text-gray-500 text-xs ml-1">({doneTasks.length})</span>
-                                                </button>
+                                                    <motion.div
+                                                        animate={{ rotate: isDoneSectionCollapsed ? 0 : 90 }}
+                                                        className="flex-shrink-0"
+                                                    >
+                                                        <ChevronRight size={18} className="text-accent-cyan" />
+                                                    </motion.div>
+                                                    <span className="text-white text-[15px] font-black tracking-wider uppercase group-hover:text-accent-cyan transition-colors">
+                                                        Nodes Restored
+                                                    </span>
+                                                    <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
+                                                        {doneTasks.length}
+                                                    </span>
+                                                </motion.button>
                                             </td>
                                         </tr>
                                         {!isDoneSectionCollapsed && (
@@ -1235,7 +1328,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             const color = sectionId === 'done' ? '#00c875' : sectionId === 'wip' ? '#e0592a' : customSection?.color || '#e0592a';
 
                             return (
-                                <div className="shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] opacity-95 backdrop-blur-md bg-[#1a1b4b]/70 border border-white/10 rounded-lg overflow-hidden transform rotate-2 scale-[1.02] origin-top-left ring-1 ring-[#e0592a]/30">
+                                <div className="shadow-[0_25px_50px_-12px_rgba(0,0,0,0.8)] opacity-95 backdrop-blur-3xl bg-[var(--surface-1)] border border-white/20 rounded-2xl overflow-hidden transform rotate-2 scale-[1.02] origin-top-left ring-2 ring-accent-indigo/40">
                                     <table className="border-collapse w-full" style={{ tableLayout: 'fixed' }}>
                                         <tbody>
                                             {renderRow(task, color, isSubitem)}
