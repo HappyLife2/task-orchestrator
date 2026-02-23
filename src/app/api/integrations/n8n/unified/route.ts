@@ -31,6 +31,16 @@ const unifiedRequestSchema = z.object({
     customColumns: z.record(z.string(), z.any()).optional(),
 });
 
+export async function GET() {
+    return NextResponse.json({
+        status: 'online',
+        service: 'Unified Automation API',
+        description: 'This endpoint is designed for POST requests from automation tools like n8n.',
+        authentication: 'Requires x-api-key header',
+        documentation: 'See project walkthrough for payload structure'
+    });
+}
+
 export async function POST(req: NextRequest) {
     const apiKey = req.headers.get('x-api-key');
 

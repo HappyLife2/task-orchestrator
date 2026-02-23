@@ -9,15 +9,15 @@ export async function middleware(req: NextRequest) {
 
     // 1. n8n Integration Handling (API Key)
     if (path.startsWith('/api/integrations/n8n') || path.startsWith('/api/n8n')) {
+        // Allow GET for status checks/documentation
+        if (req.method === 'GET') {
+            return NextResponse.next();
+        }
+
         const apiKey = req.headers.get('x-api-key');
         if (!apiKey) {
             return NextResponse.json({ error: 'Missing API Key' }, { status: 401 });
         }
-        // Note: We cannot query Prisma in Middleware (Edge). 
-        // We should either verify key signature (if it was a token) or pass this check to the route handler.
-        // Since we need to look up the key in DB, we MUST pass this to the route handler.
-        // So for now, we just ensure the header is present or skip this check in middleware and let route handler do it.
-        // Let's let the route handler handle DB lookup.
         return NextResponse.next();
     }
 
