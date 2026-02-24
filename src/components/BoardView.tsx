@@ -1063,13 +1063,13 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     {/* New Item button with dropdown */}
                     <div className="relative" ref={newItemBtnRef}>
                         <motion.button
-                            whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(99, 102, 241, 0.3)' }}
+                            whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(224, 89, 42, 0.3)' }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setIsNewItemMenuOpen(o => !o)}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--grad-aurora)] text-white text-sm font-black rounded-xl transition-all shadow-xl"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-[#e0592a] text-white text-sm font-bold rounded-xl transition-all shadow-lg"
                         >
                             <Plus size={16} strokeWidth={3} />
-                            NEW ITEM
+                            New Item
                             <ChevronDown size={14} className={`transition-transform duration-300 ${isNewItemMenuOpen ? 'rotate-180' : ''}`} />
                         </motion.button>
 
@@ -1140,15 +1140,17 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-10 pb-20">
+                        <div className="flex flex-col gap-14 pb-24">
                             {/* WIP Section Card */}
-                            <div className="bg-[var(--surface-1)]/50 backdrop-blur-xl rounded-2xl border border-[var(--glass-border)] shadow-2xl w-fit min-w-full">
+                            <div className="bg-[var(--surface-1)]/40 backdrop-blur-[24px] saturate-[180%] contrast-[95%] rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] w-fit min-w-full transition-all duration-500 hover:scale-[1.002] hover:shadow-[0_30px_70px_rgba(0,0,0,0.4)] relative overflow-visible">
+                                {/* Edge highlight */}
+                                <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />
                                 <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
                                     <tbody>
                                         {/* WIP Section Header */}
                                         <tr className="border-b border-[var(--glass-border)]">
                                             <td colSpan={columns.length + 1} className="bg-transparent py-0">
-                                                <div className="flex items-center gap-3 px-4 py-5 w-full group">
+                                                <div className="flex items-center gap-3 px-4 py-3.5 w-full group">
                                                     <motion.button
                                                         whileHover={{ scale: 1.1 }}
                                                         onClick={() => setIsWipSectionCollapsed(c => !c)}
@@ -1157,26 +1159,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                         <ChevronRight size={18} className={`text-accent-indigo transition-transform duration-300 ${isWipSectionCollapsed ? '' : 'rotate-90'}`} />
                                                     </motion.button>
 
-                                                    {editingSectionId === 'wip' ? (
-                                                        <input
-                                                            autoFocus
-                                                            value={sectionNameInput}
-                                                            onChange={e => setSectionNameInput(e.target.value)}
-                                                            onBlur={() => { setWipSectionName(sectionNameInput || 'Active Tasks'); setEditingSectionId(null); }}
-                                                            onKeyDown={e => {
-                                                                if (e.key === 'Enter') { setWipSectionName(sectionNameInput || 'Active Tasks'); setEditingSectionId(null); }
-                                                                if (e.key === 'Escape') setEditingSectionId(null);
-                                                            }}
-                                                            className="bg-white/10 border border-accent-indigo rounded-lg px-2 py-1 text-[15px] font-black text-white outline-none w-64 uppercase tracking-wider"
+                                                    <div className="flex-1 min-w-0 vibe-header-inherit">
+                                                        <EditableHeading
+                                                            type="h3"
+                                                            value={wipSectionName}
+                                                            onChange={val => setWipSectionName(val || 'Active Tasks')}
+                                                            className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
                                                         />
-                                                    ) : (
-                                                        <span
-                                                            onClick={() => { setEditingSectionId('wip'); setSectionNameInput(wipSectionName); }}
-                                                            className="text-[#e0592a] text-[15px] font-black tracking-wider uppercase cursor-text hover:opacity-80 transition-opacity"
-                                                        >
-                                                            {wipSectionName}
-                                                        </span>
-                                                    )}
+                                                    </div>
 
                                                     <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
                                                         {wipTasks.length}
@@ -1246,12 +1236,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             {customSections.map(section => {
                                 const secTasks = sectionTasks(section.id);
                                 return (
-                                    <div key={section.id} className="bg-[var(--surface-1)]/50 backdrop-blur-xl rounded-2xl border border-[var(--glass-border)] shadow-2xl w-fit min-w-full">
+                                    <div key={section.id} className="bg-[var(--surface-1)]/40 backdrop-blur-[24px] saturate-[180%] contrast-[95%] rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] w-fit min-w-full transition-all duration-500 hover:scale-[1.002] hover:shadow-[0_30px_70px_rgba(0,0,0,0.4)] relative overflow-visible">
+                                        {/* Edge highlight */}
+                                        <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />
                                         <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
                                             <tbody>
                                                 <tr className="border-b border-[var(--glass-border)]">
                                                     <td colSpan={columns.length + 1} className="bg-transparent py-0">
-                                                        <div className="flex items-center group relative gap-3 px-4 py-5 w-full">
+                                                        <div className="flex items-center group relative gap-3 px-4 py-3.5 w-full">
                                                             <motion.button
                                                                 whileHover={{ scale: 1.1 }}
                                                                 onClick={() => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, collapsed: !s.collapsed } : s))}
@@ -1260,33 +1252,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                 <ChevronRight size={18} style={{ color: section.color }} className={`transition-transform duration-300 ${section.collapsed ? '' : 'rotate-90'}`} />
                                                             </motion.button>
 
-                                                            {editingSectionId === section.id ? (
-                                                                <input
-                                                                    autoFocus
-                                                                    value={sectionNameInput}
-                                                                    onChange={e => setSectionNameInput(e.target.value)}
-                                                                    onBlur={() => {
-                                                                        setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: sectionNameInput || s.name } : s));
-                                                                        setEditingSectionId(null);
-                                                                    }}
-                                                                    onKeyDown={e => {
-                                                                        if (e.key === 'Enter') {
-                                                                            setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: sectionNameInput || s.name } : s));
-                                                                            setEditingSectionId(null);
-                                                                        }
-                                                                        if (e.key === 'Escape') setEditingSectionId(null);
-                                                                    }}
-                                                                    className="bg-white/10 border border-accent-indigo rounded-lg px-2 py-1 text-[15px] font-black text-white outline-none w-64 uppercase tracking-wider"
+                                                            <div className="flex-1 min-w-0 vibe-header-inherit" style={{ color: section.color }}>
+                                                                <EditableHeading
+                                                                    type="h3"
+                                                                    value={section.name}
+                                                                    onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
+                                                                    className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
                                                                 />
-                                                            ) : (
-                                                                <span
-                                                                    onClick={() => { setEditingSectionId(section.id); setSectionNameInput(section.name); }}
-                                                                    className="text-[15px] font-black tracking-wider uppercase cursor-text hover:opacity-80 transition-opacity"
-                                                                    style={{ color: section.color }}
-                                                                >
-                                                                    {section.name}
-                                                                </span>
-                                                            )}
+                                                            </div>
 
                                                             <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
                                                                 {secTasks.length}
@@ -1318,12 +1291,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                             {/* Done Section Card */}
                             {doneTasks.length > 0 && (
-                                <div className="bg-[var(--surface-1)]/50 backdrop-blur-xl rounded-2xl border border-[var(--glass-border)] shadow-2xl w-fit min-w-full">
+                                <div className="bg-[var(--surface-1)]/40 backdrop-blur-[24px] saturate-[180%] contrast-[95%] rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] w-fit min-w-full transition-all duration-500 hover:scale-[1.002] hover:shadow-[0_30px_70px_rgba(0,0,0,0.4)] relative overflow-visible">
+                                    {/* Edge highlight */}
+                                    <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />
                                     <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
                                         <tbody>
                                             <tr className="border-b border-[var(--glass-border)]">
                                                 <td colSpan={columns.length + 1} className="bg-transparent py-0">
-                                                    <div className="flex items-center gap-3 px-4 py-5 w-full group">
+                                                    <div className="flex items-center gap-3 px-4 py-3.5 w-full group">
                                                         <motion.button
                                                             whileHover={{ scale: 1.1 }}
                                                             onClick={() => setIsDoneSectionCollapsed(c => !c)}
@@ -1332,26 +1307,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                             <ChevronRight size={18} className={`text-accent-cyan transition-transform duration-300 ${isDoneSectionCollapsed ? '' : 'rotate-90'}`} />
                                                         </motion.button>
 
-                                                        {editingSectionId === 'done' ? (
-                                                            <input
-                                                                autoFocus
-                                                                value={sectionNameInput}
-                                                                onChange={e => setSectionNameInput(e.target.value)}
-                                                                onBlur={() => { setDoneSectionName(sectionNameInput || 'Done'); setEditingSectionId(null); }}
-                                                                onKeyDown={e => {
-                                                                    if (e.key === 'Enter') { setDoneSectionName(sectionNameInput || 'Done'); setEditingSectionId(null); }
-                                                                    if (e.key === 'Escape') setEditingSectionId(null);
-                                                                }}
-                                                                className="bg-white/10 border border-accent-indigo rounded-lg px-2 py-1 text-[15px] font-black text-white outline-none w-64 uppercase tracking-wider"
+                                                        <div className="flex-1 min-w-0 vibe-header-inherit">
+                                                            <EditableHeading
+                                                                type="h3"
+                                                                value={doneSectionName}
+                                                                onChange={val => setDoneSectionName(val || 'Done')}
+                                                                className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
                                                             />
-                                                        ) : (
-                                                            <span
-                                                                onClick={() => { setEditingSectionId('done'); setSectionNameInput(doneSectionName); }}
-                                                                className="text-[#00c875] text-[15px] font-black tracking-wider uppercase cursor-text hover:opacity-80 transition-opacity"
-                                                            >
-                                                                {doneSectionName}
-                                                            </span>
-                                                        )}
+                                                        </div>
 
                                                         <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
                                                             {doneTasks.length}

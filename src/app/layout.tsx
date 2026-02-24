@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Figtree, Inter } from "next/font/google";
+import { Figtree, Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import "@vibe/core/tokens";
 
@@ -12,6 +12,12 @@ const figtree = Figtree({
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${figtree.variable} ${inter.variable} antialiased`}
+        className={`${figtree.variable} ${inter.variable} ${outfit.variable} antialiased`}
       >
         {children}
       </body>

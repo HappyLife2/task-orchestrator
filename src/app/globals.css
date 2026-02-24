@@ -26,6 +26,7 @@
 
   /* Font Family */
   --font-figtree: 'Figtree', sans-serif;
+  --font-outfit: 'Outfit', var(--font-figtree);
 
   /* Spacing Tokens */
   --spacing-xs: 4px;
@@ -104,4 +105,13 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Vibe EditableHeading color inheritance fix */
+.vibe-header-inherit h1,
+.vibe-header-inherit h2,
+.vibe-header-inherit h3,
+.vibe-header-inherit [role="heading"] {
+  color: inherit !important;
+  font-family: var(--font-outfit) !important;
 }
