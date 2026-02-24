@@ -1063,10 +1063,10 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     {/* New Item button with dropdown */}
                     <div className="relative" ref={newItemBtnRef}>
                         <motion.button
-                            whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(224, 89, 42, 0.3)' }}
+                            whileHover={{ scale: 1.02, boxShadow: '0 0 25px rgba(224, 89, 42, 0.4)' }}
                             whileTap={{ scale: 0.98 }}
                             onClick={() => setIsNewItemMenuOpen(o => !o)}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-[#e0592a] text-white text-sm font-bold rounded-xl transition-all shadow-lg"
+                            className="flex items-center gap-2 px-5 py-2.5 bg-[#e0592a]/80 backdrop-blur-xl border border-white/20 text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:bg-[#e0592a]/90"
                         >
                             <Plus size={16} strokeWidth={3} />
                             New Item
