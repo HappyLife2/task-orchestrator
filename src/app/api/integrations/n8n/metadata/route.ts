@@ -4,7 +4,8 @@ import { db } from '@/lib/auth';
 export async function GET(req: NextRequest) {
     const apiKey = req.headers.get('x-api-key');
     const acceptHeader = req.headers.get('accept') || '';
-    const isBrowser = acceptHeader.includes('text/html');
+    // Only treat as browser if text/html is explicitly requested AND application/json is NOT.
+    const isBrowser = acceptHeader.includes('text/html') && !acceptHeader.includes('application/json');
 
     if (!apiKey) {
         if (isBrowser) {
@@ -47,20 +48,16 @@ export async function GET(req: NextRequest) {
             }
         });
 
-        // Grouped & Flattened Maps for easy n8n usage
-        const boardsMap: Record<string, string> = {};
-        const groupsMap: Record<string, Record<string, string>> = {};
-        const statusChoicesMap: Record<string, Record<string, any>> = {};
+        const users = await db.user.findMany({
+            where: { organizationId: orgId },
+            select: { id: true, name: true, email: true }
+        });
 
-        departments.forEach(dept => {
-            dept.boards.forEach(board => {
-                boardsMap[board.name] = board.id;
-
+        // Re-engineer the discovery structure to be more intuitive
+        const boardDiscovery = departments.flatMap(dept =>
+            dept.boards.map(board => {
                 const gMap: Record<string, string> = {};
-                board.groups.forEach(g => {
-                    gMap[g.title] = g.id;
-                });
-                groupsMap[board.id] = gMap;
+                board.groups.forEach(g => { gMap[g.title] = g.id; });
 
                 let columns = [];
                 try {
@@ -69,33 +66,50 @@ export async function GET(req: NextRequest) {
                     columns = [];
                 }
 
-                const sMap: Record<string, any> = {};
-                columns.filter((c: any) => c.type === 'status').forEach((col: any) => {
+                const cMap: Record<string, any> = {};
+                columns.filter((c: any) => ['status', 'dropdown'].includes(c.type)).forEach((col: any) => {
                     const choices: Record<string, string> = {};
-                    Object.entries(col.settings?.labels || col.settings || {}).forEach(([label, color]) => {
-                        choices[label] = label; // In our system labels are the IDs for status
-                    });
-                    sMap[col.title || col.id] = choices;
-                });
-                statusChoicesMap[board.id] = sMap;
-            });
-        });
 
-        const users = await db.user.findMany({
-            where: { organizationId: orgId },
-            select: { id: true, name: true, email: true }
-        });
+                    // Handle different nesting patterns for choices/labels
+                    let options = col.settings?.labels || col.settings?.options || col.settings?.status?.labels || col.settings || {};
+
+                    if (Array.isArray(options)) {
+                        // Dropdown style: [{label: "X", value: "y"}]
+                        options.forEach((opt: any) => {
+                            choices[opt.label] = opt.value || opt.label;
+                        });
+                    } else {
+                        // Status style: { "Label": "Color" }
+                        Object.entries(options).forEach(([label]) => {
+                            if (typeof label === 'string' && label !== 'status' && label !== 'labels') {
+                                choices[label] = label;
+                            }
+                        });
+                    }
+                    cMap[col.title || col.id] = choices;
+                });
+
+                return {
+                    boardName: board.name,
+                    boardId: board.id,
+                    department: dept.name,
+                    groups: gMap,
+                    columns: cMap
+                };
+            })
+        );
 
         return NextResponse.json({
             organization: keyRecord.organization.name,
-            boards: boardsMap,
-            groupsByBoardId: groupsMap,
-            statusChoicesByBoardId: statusChoicesMap,
+            discovery: boardDiscovery,
             users: users.reduce((acc: any, u) => {
                 acc[u.email] = u.id;
                 return acc;
             }, {}),
-            rawStructure: departments // Kept for advanced users
+            _schema: {
+                discovery: "Array of boards. Each contains 'groups' (Name->ID) and 'columns' (Name->{ChoiceLabel->ChoiceID}).",
+                users: "Map of User Email -> User ID"
+            }
         });
 
     } catch (error) {

@@ -11,7 +11,7 @@ const createUpdateSchema = z.object({
 
 export async function GET(req: NextRequest) {
     const acceptHeader = req.headers.get('accept') || '';
-    const isBrowser = acceptHeader.includes('text/html');
+    const isBrowser = acceptHeader.includes('text/html') && !acceptHeader.includes('application/json');
 
     if (isBrowser) {
         return new NextResponse(`
