@@ -10,6 +10,14 @@ const nextConfig = {
     async rewrites() {
         return [
             {
+                source: '/api/n8n',
+                destination: '/api/integrations/n8n/docs',
+            },
+            {
+                source: '/api/n8n/docs',
+                destination: '/api/integrations/n8n/docs',
+            },
+            {
                 source: '/api/n8n/unified',
                 destination: '/api/integrations/n8n/unified',
             },
