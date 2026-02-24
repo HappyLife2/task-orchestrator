@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare } from 'lucide-react';
-import { Button, TextField, EditableHeading, IconButton } from '@vibe/core';
+import { Button, TextField, EditableHeading, IconButton, Tooltip } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
 import { PersonCell } from '@/components/board/cells/PersonCell';
@@ -380,7 +380,7 @@ function DraggableTaskRow({ taskId, isDragging, isSubitem, children }: {
             ref={setNodeRef}
             style={style}
             {...(isSubitem ? {} : { ...attributes, ...listeners })}
-            className={`group transition-all border-b border-[var(--glass-border)] ${isDragging ? 'opacity-40 scale-[0.98] !bg-white/10' : ''} ${isSubitem ? 'bg-black/20' : ''}`}
+            className={`group transition-all border-b border-[var(--glass-border)] bg-[var(--surface-section)] ${isDragging ? 'opacity-40 scale-[0.98] !bg-white/10' : ''} ${isSubitem ? 'bg-black/20' : ''}`}
         >
             {children}
         </motion.tr>
@@ -459,6 +459,16 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const doneTasks = tasks.filter(t => getTaskSection(t) === 'done');
     const wipTasks = tasks.filter(t => getTaskSection(t) === 'wip');
     const sectionTasks = (sectionId: string) => tasks.filter(t => getTaskSection(t) === sectionId);
+
+    const wipSubitemCount = wipTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0);
+    const doneSubitemCount = doneTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0);
+
+    const renderTooltipContent = (taskCount: number, subitemCount: number) => (
+        <div className="flex flex-col gap-1 p-1">
+            <span className="font-bold">{taskCount} Task{taskCount !== 1 ? 's' : ''}</span>
+            <span className="text-gray-300 text-xs">{subitemCount} Subitem{subitemCount !== 1 ? 's' : ''}</span>
+        </div>
+    );
 
     const fetchData = useCallback(async () => {
         try {
@@ -873,7 +883,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
             <Fragment key={task.id}>
                 <DraggableTaskRow taskId={task.id} isDragging={isDragging} isSubitem={isSubitem}>
                     {/* Checkbox column */}
-                    <td className="w-10 relative bg-[#1c1d4f] border-b border-[#2c2d65]">
+                    <td className="w-10 relative border-b border-[var(--glass-border)]">
                         {!isSubitem && sectionColor && (
                             <div className="absolute left-0 top-0 bottom-0 w-1" style={{ backgroundColor: sectionColor }} />
                         )}
@@ -932,7 +942,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                         {task.subTasks?.map(st => renderRow(st, sectionColor, true, task.id))}
 
                         {addingSubitemFor === task.id ? (
-                            <tr className="border-b border-[#2c2d65]">
+                            <tr className="border-b border-[var(--glass-border)] bg-[var(--surface-section)]">
                                 <td colSpan={columns.length + 1} className="py-2 px-3 pl-14">
                                     <div className="flex items-center gap-2">
                                         <TextField
@@ -958,7 +968,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                 </td>
                             </tr>
                         ) : (
-                            <tr className="border-b border-[#2c2d65]">
+                            <tr className="border-b border-[var(--glass-border)] bg-[var(--surface-section)]">
                                 <td colSpan={columns.length + 1} className="py-1 pl-14">
                                     <Button
                                         onClick={() => setAddingSubitemFor(task.id)}
@@ -978,7 +988,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const renderHeaderRow = (sectionTasks: Task[]) => (
-        <tr className="bg-[var(--surface-1)] backdrop-blur-md group/thead sticky top-0 z-10 border-b border-[var(--glass-border)]">
+        <tr className="bg-[var(--surface-section)] group/thead sticky top-0 z-10 border-b border-[var(--glass-border)]">
             <th className="w-10 relative py-2 pl-[15px] pr-2 text-left select-none border-r border-[var(--glass-border)]">
                 <motion.div
                     whileHover={{ scale: 1.1 }}
@@ -1142,9 +1152,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                         <div className="flex flex-col gap-14 pb-24">
                             {/* WIP Section Card */}
-                            <div className="bg-[var(--surface-1)]/40 backdrop-blur-[24px] saturate-[180%] contrast-[95%] rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] w-fit min-w-full transition-all duration-500 hover:scale-[1.002] hover:shadow-[0_30px_70px_rgba(0,0,0,0.4)] relative overflow-visible">
-                                {/* Edge highlight */}
-                                <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />
+                            <div className="bg-transparent w-fit min-w-full relative overflow-visible">
                                 <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
                                     <tbody>
                                         {/* WIP Section Header */}
@@ -1159,18 +1167,16 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                         <ChevronRight size={18} className={`text-accent-indigo transition-transform duration-300 ${isWipSectionCollapsed ? '' : 'rotate-90'}`} />
                                                     </motion.button>
 
-                                                    <div className="flex-1 min-w-0 vibe-header-inherit">
-                                                        <EditableHeading
-                                                            type="h3"
-                                                            value={wipSectionName}
-                                                            onChange={val => setWipSectionName(val || 'Active Tasks')}
-                                                            className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                        />
-                                                    </div>
-
-                                                    <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
-                                                        {wipTasks.length}
-                                                    </span>
+                                                    <Tooltip content={renderTooltipContent(wipTasks.length, wipSubitemCount)} position={Tooltip.positions.TOP} showDelay={300}>
+                                                        <div className="flex-1 min-w-0 vibe-header-inherit">
+                                                            <EditableHeading
+                                                                type="h3"
+                                                                value={wipSectionName}
+                                                                onChange={val => setWipSectionName(val || 'Active Tasks')}
+                                                                className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                            />
+                                                        </div>
+                                                    </Tooltip>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1184,7 +1190,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                             initial={{ opacity: 0, height: 0 }}
                                                             animate={{ opacity: 1, height: 'auto' }}
                                                             exit={{ opacity: 0, height: 0 }}
-                                                            className="border-b border-[var(--glass-border)] bg-white/5"
+                                                            className="border-b border-[var(--glass-border)] bg-[var(--surface-section)]"
                                                         >
                                                             <td colSpan={columns.length + 1} className="py-4 px-6">
                                                                 <div className="flex items-center gap-3">
@@ -1236,9 +1242,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             {customSections.map(section => {
                                 const secTasks = sectionTasks(section.id);
                                 return (
-                                    <div key={section.id} className="bg-[var(--surface-1)]/40 backdrop-blur-[24px] saturate-[180%] contrast-[95%] rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] w-fit min-w-full transition-all duration-500 hover:scale-[1.002] hover:shadow-[0_30px_70px_rgba(0,0,0,0.4)] relative overflow-visible">
-                                        {/* Edge highlight */}
-                                        <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />
+                                    <div key={section.id} className="bg-transparent w-fit min-w-full relative overflow-visible">
                                         <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
                                             <tbody>
                                                 <tr className="border-b border-[var(--glass-border)]">
@@ -1252,18 +1256,16 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                 <ChevronRight size={18} style={{ color: section.color }} className={`transition-transform duration-300 ${section.collapsed ? '' : 'rotate-90'}`} />
                                                             </motion.button>
 
-                                                            <div className="flex-1 min-w-0 vibe-header-inherit" style={{ color: section.color }}>
-                                                                <EditableHeading
-                                                                    type="h3"
-                                                                    value={section.name}
-                                                                    onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
-                                                                    className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                                />
-                                                            </div>
-
-                                                            <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
-                                                                {secTasks.length}
-                                                            </span>
+                                                            <Tooltip content={renderTooltipContent(secTasks.length, secTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0))} position={Tooltip.positions.TOP} showDelay={300}>
+                                                                <div className="flex-1 min-w-0 vibe-header-inherit" style={{ color: section.color }}>
+                                                                    <EditableHeading
+                                                                        type="h3"
+                                                                        value={section.name}
+                                                                        onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
+                                                                        className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                                    />
+                                                                </div>
+                                                            </Tooltip>
 
                                                             <button
                                                                 onClick={() => setCustomSections(prev => prev.filter(s => s.id !== section.id))}
@@ -1291,9 +1293,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                             {/* Done Section Card */}
                             {doneTasks.length > 0 && (
-                                <div className="bg-[var(--surface-1)]/40 backdrop-blur-[24px] saturate-[180%] contrast-[95%] rounded-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_0_0_1px_rgba(255,255,255,0.05)] w-fit min-w-full transition-all duration-500 hover:scale-[1.002] hover:shadow-[0_30px_70px_rgba(0,0,0,0.4)] relative overflow-visible">
-                                    {/* Edge highlight */}
-                                    <div className="absolute inset-0 rounded-3xl border border-white/10 pointer-events-none" />
+                                <div className="bg-transparent w-fit min-w-full relative overflow-visible">
                                     <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
                                         <tbody>
                                             <tr className="border-b border-[var(--glass-border)]">
@@ -1307,18 +1307,16 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                             <ChevronRight size={18} className={`text-accent-cyan transition-transform duration-300 ${isDoneSectionCollapsed ? '' : 'rotate-90'}`} />
                                                         </motion.button>
 
-                                                        <div className="flex-1 min-w-0 vibe-header-inherit">
-                                                            <EditableHeading
-                                                                type="h3"
-                                                                value={doneSectionName}
-                                                                onChange={val => setDoneSectionName(val || 'Done')}
-                                                                className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                            />
-                                                        </div>
-
-                                                        <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
-                                                            {doneTasks.length}
-                                                        </span>
+                                                        <Tooltip content={renderTooltipContent(doneTasks.length, doneSubitemCount)} position={Tooltip.positions.TOP} showDelay={300}>
+                                                            <div className="flex-1 min-w-0 vibe-header-inherit">
+                                                                <EditableHeading
+                                                                    type="h3"
+                                                                    value={doneSectionName}
+                                                                    onChange={val => setDoneSectionName(val || 'Done')}
+                                                                    className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                                />
+                                                            </div>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>
