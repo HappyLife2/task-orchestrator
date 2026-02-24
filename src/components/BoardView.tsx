@@ -439,6 +439,10 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const [taskSections, setTaskSections] = useState<Record<string, string>>({});
     const [activeDragId, setActiveDragId] = useState<string | null>(null);
     const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
+    const [wipSectionName, setWipSectionName] = useState('Active Tasks');
+    const [doneSectionName, setDoneSectionName] = useState('Done');
+    const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+    const [sectionNameInput, setSectionNameInput] = useState('');
     const newItemBtnRef = useRef<HTMLDivElement>(null);
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -1136,185 +1140,250 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             </div>
                         )}
 
-                        <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content', minWidth: '100%' }}>
-                            <tbody>
-                                {/* WIP Section Header */}
-                                <tr className="border-t-2 border-[var(--glass-border)]">
-                                    <td colSpan={columns.length + 1} className="bg-transparent py-0">
-                                        <motion.button
-                                            whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
-                                            onClick={() => setIsWipSectionCollapsed(c => !c)}
-                                            className="flex items-center gap-3 px-4 py-4 text-left transition-colors w-full group"
-                                        >
-                                            <motion.div
-                                                animate={{ rotate: isWipSectionCollapsed ? 0 : 90 }}
-                                                className="flex-shrink-0"
-                                            >
-                                                <ChevronRight size={18} className="text-accent-indigo" />
-                                            </motion.div>
-                                            <span className="text-white text-[15px] font-black tracking-wider uppercase group-hover:text-accent-indigo transition-colors">
-                                                Active Nodes
-                                            </span>
-                                            <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
-                                                {wipTasks.length}
-                                            </span>
-                                        </motion.button>
-                                    </td>
-                                </tr>
-                                {/* New Task Input Row */}
-                                <AnimatePresence>
-                                    {isAddingTask && (
-                                        <motion.tr
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="border-b border-[var(--glass-border)] bg-white/5"
-                                        >
-                                            <td colSpan={columns.length + 1} className="py-4 px-6">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-1.5 focus-within:border-accent-indigo transition-all">
-                                                        <input
-                                                            value={newTaskName}
-                                                            onChange={e => setNewTaskName(e.target.value)}
-                                                            onKeyDown={(e: any) => {
-                                                                if (e.key === 'Enter') handleCreateTask();
-                                                                if (e.key === 'Escape') { setIsAddingTask(false); setNewTaskName(''); }
-                                                            }}
-                                                            placeholder="New Node Identifier..."
-                                                            autoFocus
-                                                            className="w-full bg-transparent border-none text-white outline-none text-sm placeholder:text-gray-600 font-medium"
-                                                        />
-                                                    </div>
-                                                    <motion.button
-                                                        whileHover={{ scale: 1.05 }}
-                                                        whileTap={{ scale: 0.95 }}
-                                                        onClick={handleCreateTask}
-                                                        className="px-5 py-2.5 bg-accent-indigo text-white text-xs font-black rounded-xl hover:bg-accent-indigo/80 transition-all shadow-lg shadow-accent-indigo/20 uppercase tracking-widest"
-                                                    >
-                                                        Initialize
-                                                    </motion.button>
-                                                    <IconButton
-                                                        icon={X as any}
-                                                        onClick={() => { setIsAddingTask(false); setNewTaskName(''); }}
-                                                        size="medium"
-                                                        kind="tertiary"
-                                                        ariaLabel="Cancel"
-                                                    />
-                                                </div>
-                                            </td>
-                                        </motion.tr>
-                                    )}
-                                </AnimatePresence>
-
-                                {/* WIP droppable zone */}
-                                {!isWipSectionCollapsed && (
-                                    <>
-                                        {renderHeaderRow(wipTasks)}
-                                        <DroppableSection sectionId="wip" colSpan={columns.length + 1}>
-                                            {wipTasks.map(task => renderRow(task, '#e0592a'))}
-                                        </DroppableSection>
-                                    </>
-                                )}
-
-                                {/* Custom Sections */}
-                                {customSections.map(section => {
-                                    const secTasks = sectionTasks(section.id);
-                                    return (
-                                        <Fragment key={section.id}>
-                                            <tr className="border-t-2 border-[var(--glass-border)]">
-                                                <td colSpan={columns.length + 1} className="bg-transparent py-0">
-                                                    <div className="flex items-center group relative">
-                                                        <motion.button
-                                                            whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
-                                                            onClick={() => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, collapsed: !s.collapsed } : s))}
-                                                            className="flex items-center gap-3 px-4 py-4 w-full text-left transition-colors group"
-                                                        >
-                                                            <motion.div
-                                                                animate={{ rotate: section.collapsed ? 0 : 90 }}
-                                                                className="flex-shrink-0"
-                                                            >
-                                                                <ChevronRight size={18} style={{ color: section.color }} />
-                                                            </motion.div>
-                                                            <span className="text-white text-[15px] font-black tracking-wider uppercase group-hover:opacity-80 transition-opacity" style={{ color: section.color }}>
-                                                                {section.name}
-                                                            </span>
-                                                            <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
-                                                                {secTasks.length}
-                                                            </span>
-                                                        </motion.button>
-                                                        <button
-                                                            onClick={() => setCustomSections(prev => prev.filter(s => s.id !== section.id))}
-                                                            className="absolute right-6 p-2 rounded-xl hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 backdrop-blur-md"
-                                                            title="Remove section"
-                                                        >
-                                                            <X size={14} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            {!section.collapsed && (
-                                                <>
-                                                    {renderHeaderRow(secTasks)}
-                                                    <DroppableSection sectionId={section.id} colSpan={columns.length + 1}>
-                                                        {secTasks.map(task => renderRow(task, section.color))}
-                                                    </DroppableSection>
-                                                </>
-                                            )}
-                                        </Fragment>
-                                    );
-                                })}
-
-                                {/* Empty state */}
-                                {tasks.length === 0 && !isAddingTask && (
-                                    <tr>
-                                        <td colSpan={columns.length + 1} className="p-16 text-center text-gray-500">
-                                            <div className="flex flex-col items-center gap-4">
-                                                <div className="w-16 h-16 bg-[#1a1b4b] rounded-full flex items-center justify-center">
-                                                    <Plus size={32} className="text-gray-600" />
-                                                </div>
-                                                <p>No items yet. Click &quot;New Item&quot; to get started!</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )}
-
-                                {/* Done Section */}
-                                {doneTasks.length > 0 && (
-                                    <>
-                                        <tr className="border-t-2 border-[var(--glass-border)]">
+                        <div className="flex flex-col gap-10 pb-20">
+                            {/* WIP Section Card */}
+                            <div className="bg-[var(--surface-1)]/50 backdrop-blur-xl rounded-2xl border border-[var(--glass-border)] shadow-2xl w-fit min-w-full">
+                                <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
+                                    <tbody>
+                                        {/* WIP Section Header */}
+                                        <tr className="border-b border-[var(--glass-border)]">
                                             <td colSpan={columns.length + 1} className="bg-transparent py-0">
-                                                <motion.button
-                                                    whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
-                                                    onClick={() => setIsDoneSectionCollapsed(c => !c)}
-                                                    className="flex items-center gap-3 px-4 py-4 w-full text-left transition-colors group"
-                                                >
-                                                    <motion.div
-                                                        animate={{ rotate: isDoneSectionCollapsed ? 0 : 90 }}
+                                                <div className="flex items-center gap-3 px-4 py-5 w-full group">
+                                                    <motion.button
+                                                        whileHover={{ scale: 1.1 }}
+                                                        onClick={() => setIsWipSectionCollapsed(c => !c)}
                                                         className="flex-shrink-0"
                                                     >
-                                                        <ChevronRight size={18} className="text-accent-cyan" />
-                                                    </motion.div>
-                                                    <span className="text-white text-[15px] font-black tracking-wider uppercase group-hover:text-accent-cyan transition-colors">
-                                                        Nodes Restored
-                                                    </span>
+                                                        <ChevronRight size={18} className={`text-accent-indigo transition-transform duration-300 ${isWipSectionCollapsed ? '' : 'rotate-90'}`} />
+                                                    </motion.button>
+
+                                                    {editingSectionId === 'wip' ? (
+                                                        <input
+                                                            autoFocus
+                                                            value={sectionNameInput}
+                                                            onChange={e => setSectionNameInput(e.target.value)}
+                                                            onBlur={() => { setWipSectionName(sectionNameInput || 'Active Tasks'); setEditingSectionId(null); }}
+                                                            onKeyDown={e => {
+                                                                if (e.key === 'Enter') { setWipSectionName(sectionNameInput || 'Active Tasks'); setEditingSectionId(null); }
+                                                                if (e.key === 'Escape') setEditingSectionId(null);
+                                                            }}
+                                                            className="bg-white/10 border border-accent-indigo rounded-lg px-2 py-1 text-[15px] font-black text-white outline-none w-64 uppercase tracking-wider"
+                                                        />
+                                                    ) : (
+                                                        <span
+                                                            onClick={() => { setEditingSectionId('wip'); setSectionNameInput(wipSectionName); }}
+                                                            className="text-[#e0592a] text-[15px] font-black tracking-wider uppercase cursor-text hover:opacity-80 transition-opacity"
+                                                        >
+                                                            {wipSectionName}
+                                                        </span>
+                                                    )}
+
                                                     <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
-                                                        {doneTasks.length}
+                                                        {wipTasks.length}
                                                     </span>
-                                                </motion.button>
+                                                </div>
                                             </td>
                                         </tr>
-                                        {!isDoneSectionCollapsed && (
+
+                                        {!isWipSectionCollapsed && (
                                             <>
-                                                {renderHeaderRow(doneTasks)}
-                                                <DroppableSection sectionId="done" colSpan={columns.length + 1}>
-                                                    {doneTasks.map(task => renderRow(task, '#00c875'))}
+                                                {/* New Task Input Row */}
+                                                <AnimatePresence>
+                                                    {isAddingTask && (
+                                                        <motion.tr
+                                                            initial={{ opacity: 0, height: 0 }}
+                                                            animate={{ opacity: 1, height: 'auto' }}
+                                                            exit={{ opacity: 0, height: 0 }}
+                                                            className="border-b border-[var(--glass-border)] bg-white/5"
+                                                        >
+                                                            <td colSpan={columns.length + 1} className="py-4 px-6">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-1.5 focus-within:border-accent-indigo transition-all">
+                                                                        <input
+                                                                            value={newTaskName}
+                                                                            onChange={e => setNewTaskName(e.target.value)}
+                                                                            onKeyDown={(e: any) => {
+                                                                                if (e.key === 'Enter') handleCreateTask();
+                                                                                if (e.key === 'Escape') { setIsAddingTask(false); setNewTaskName(''); }
+                                                                            }}
+                                                                            placeholder="New Task Name..."
+                                                                            autoFocus
+                                                                            className="w-full bg-transparent border-none text-white outline-none text-sm placeholder:text-gray-600 font-medium"
+                                                                        />
+                                                                    </div>
+                                                                    <motion.button
+                                                                        whileHover={{ scale: 1.05 }}
+                                                                        whileTap={{ scale: 0.95 }}
+                                                                        onClick={handleCreateTask}
+                                                                        className="px-5 py-2.5 bg-accent-indigo text-white text-xs font-black rounded-xl hover:bg-accent-indigo/80 transition-all shadow-lg shadow-accent-indigo/20 uppercase tracking-widest"
+                                                                    >
+                                                                        Initialize
+                                                                    </motion.button>
+                                                                    <IconButton
+                                                                        icon={X as any}
+                                                                        onClick={() => { setIsAddingTask(false); setNewTaskName(''); }}
+                                                                        size="medium"
+                                                                        kind="tertiary"
+                                                                        ariaLabel="Cancel"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                        </motion.tr>
+                                                    )}
+                                                </AnimatePresence>
+
+                                                {renderHeaderRow(wipTasks)}
+                                                <DroppableSection sectionId="wip" colSpan={columns.length + 1}>
+                                                    {wipTasks.map(task => renderRow(task, '#e0592a'))}
                                                 </DroppableSection>
                                             </>
                                         )}
-                                    </>
-                                )}
-                            </tbody>
-                        </table>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Custom Sections Cards */}
+                            {customSections.map(section => {
+                                const secTasks = sectionTasks(section.id);
+                                return (
+                                    <div key={section.id} className="bg-[var(--surface-1)]/50 backdrop-blur-xl rounded-2xl border border-[var(--glass-border)] shadow-2xl w-fit min-w-full">
+                                        <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
+                                            <tbody>
+                                                <tr className="border-b border-[var(--glass-border)]">
+                                                    <td colSpan={columns.length + 1} className="bg-transparent py-0">
+                                                        <div className="flex items-center group relative gap-3 px-4 py-5 w-full">
+                                                            <motion.button
+                                                                whileHover={{ scale: 1.1 }}
+                                                                onClick={() => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, collapsed: !s.collapsed } : s))}
+                                                                className="flex-shrink-0"
+                                                            >
+                                                                <ChevronRight size={18} style={{ color: section.color }} className={`transition-transform duration-300 ${section.collapsed ? '' : 'rotate-90'}`} />
+                                                            </motion.button>
+
+                                                            {editingSectionId === section.id ? (
+                                                                <input
+                                                                    autoFocus
+                                                                    value={sectionNameInput}
+                                                                    onChange={e => setSectionNameInput(e.target.value)}
+                                                                    onBlur={() => {
+                                                                        setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: sectionNameInput || s.name } : s));
+                                                                        setEditingSectionId(null);
+                                                                    }}
+                                                                    onKeyDown={e => {
+                                                                        if (e.key === 'Enter') {
+                                                                            setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: sectionNameInput || s.name } : s));
+                                                                            setEditingSectionId(null);
+                                                                        }
+                                                                        if (e.key === 'Escape') setEditingSectionId(null);
+                                                                    }}
+                                                                    className="bg-white/10 border border-accent-indigo rounded-lg px-2 py-1 text-[15px] font-black text-white outline-none w-64 uppercase tracking-wider"
+                                                                />
+                                                            ) : (
+                                                                <span
+                                                                    onClick={() => { setEditingSectionId(section.id); setSectionNameInput(section.name); }}
+                                                                    className="text-[15px] font-black tracking-wider uppercase cursor-text hover:opacity-80 transition-opacity"
+                                                                    style={{ color: section.color }}
+                                                                >
+                                                                    {section.name}
+                                                                </span>
+                                                            )}
+
+                                                            <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
+                                                                {secTasks.length}
+                                                            </span>
+
+                                                            <button
+                                                                onClick={() => setCustomSections(prev => prev.filter(s => s.id !== section.id))}
+                                                                className="absolute right-6 p-2 rounded-xl hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-all opacity-0 group-hover:opacity-100 backdrop-blur-md"
+                                                                title="Remove section"
+                                                            >
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                {!section.collapsed && (
+                                                    <>
+                                                        {renderHeaderRow(secTasks)}
+                                                        <DroppableSection sectionId={section.id} colSpan={columns.length + 1}>
+                                                            {secTasks.map(task => renderRow(task, section.color))}
+                                                        </DroppableSection>
+                                                    </>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                );
+                            })}
+
+                            {/* Done Section Card */}
+                            {doneTasks.length > 0 && (
+                                <div className="bg-[var(--surface-1)]/50 backdrop-blur-xl rounded-2xl border border-[var(--glass-border)] shadow-2xl w-fit min-w-full">
+                                    <table className="border-collapse" style={{ tableLayout: 'fixed', width: 'max-content' }}>
+                                        <tbody>
+                                            <tr className="border-b border-[var(--glass-border)]">
+                                                <td colSpan={columns.length + 1} className="bg-transparent py-0">
+                                                    <div className="flex items-center gap-3 px-4 py-5 w-full group">
+                                                        <motion.button
+                                                            whileHover={{ scale: 1.1 }}
+                                                            onClick={() => setIsDoneSectionCollapsed(c => !c)}
+                                                            className="flex-shrink-0"
+                                                        >
+                                                            <ChevronRight size={18} className={`text-accent-cyan transition-transform duration-300 ${isDoneSectionCollapsed ? '' : 'rotate-90'}`} />
+                                                        </motion.button>
+
+                                                        {editingSectionId === 'done' ? (
+                                                            <input
+                                                                autoFocus
+                                                                value={sectionNameInput}
+                                                                onChange={e => setSectionNameInput(e.target.value)}
+                                                                onBlur={() => { setDoneSectionName(sectionNameInput || 'Done'); setEditingSectionId(null); }}
+                                                                onKeyDown={e => {
+                                                                    if (e.key === 'Enter') { setDoneSectionName(sectionNameInput || 'Done'); setEditingSectionId(null); }
+                                                                    if (e.key === 'Escape') setEditingSectionId(null);
+                                                                }}
+                                                                className="bg-white/10 border border-accent-indigo rounded-lg px-2 py-1 text-[15px] font-black text-white outline-none w-64 uppercase tracking-wider"
+                                                            />
+                                                        ) : (
+                                                            <span
+                                                                onClick={() => { setEditingSectionId('done'); setSectionNameInput(doneSectionName); }}
+                                                                className="text-[#00c875] text-[15px] font-black tracking-wider uppercase cursor-text hover:opacity-80 transition-opacity"
+                                                            >
+                                                                {doneSectionName}
+                                                            </span>
+                                                        )}
+
+                                                        <span className="text-gray-500 text-[10px] font-black bg-white/5 px-2 py-0.5 rounded-full ml-2 border border-white/5">
+                                                            {doneTasks.length}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {!isDoneSectionCollapsed && (
+                                                <>
+                                                    {renderHeaderRow(doneTasks)}
+                                                    <DroppableSection sectionId="done" colSpan={columns.length + 1}>
+                                                        {doneTasks.map(task => renderRow(task, '#00c875'))}
+                                                    </DroppableSection>
+                                                </>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {/* Empty state wrapper */}
+                            {tasks.length === 0 && !isAddingTask && (
+                                <div className="p-16 text-center text-gray-500 bg-[var(--surface-1)]/50 backdrop-blur-xl rounded-2xl border border-[var(--glass-border)]">
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className="w-16 h-16 bg-[#1a1b4b] rounded-full flex items-center justify-center">
+                                            <Plus size={32} className="text-gray-600" />
+                                        </div>
+                                        <p>No items yet. Click &quot;New Item&quot; to get started!</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* DragOverlay ghost */}
