@@ -67,26 +67,28 @@ export async function GET(req: NextRequest) {
                 }
 
                 const cMap: Record<string, any> = {};
-                columns.filter((c: any) => ['status', 'dropdown'].includes(c.type)).forEach((col: any) => {
-                    const choices: Record<string, string> = {};
+                columns.forEach((col: any) => {
+                    const columnKey = col.title || col.id;
+                    if (['status', 'dropdown'].includes(col.type)) {
+                        const choices: Record<string, string> = {};
+                        let options = col.settings?.labels || col.settings?.options || col.settings?.status?.labels || col.settings || {};
 
-                    // Handle different nesting patterns for choices/labels
-                    let options = col.settings?.labels || col.settings?.options || col.settings?.status?.labels || col.settings || {};
-
-                    if (Array.isArray(options)) {
-                        // Dropdown style: [{label: "X", value: "y"}]
-                        options.forEach((opt: any) => {
-                            choices[opt.label] = opt.value || opt.label;
-                        });
+                        if (Array.isArray(options)) {
+                            options.forEach((opt: any) => {
+                                choices[opt.label] = opt.value || opt.label;
+                            });
+                        } else {
+                            Object.entries(options).forEach(([label]) => {
+                                if (typeof label === 'string' && label !== 'status' && label !== 'labels') {
+                                    choices[label] = label;
+                                }
+                            });
+                        }
+                        cMap[columnKey] = choices;
                     } else {
-                        // Status style: { "Label": "Color" }
-                        Object.entries(options).forEach(([label]) => {
-                            if (typeof label === 'string' && label !== 'status' && label !== 'labels') {
-                                choices[label] = label;
-                            }
-                        });
+                        // For non-dropdown columns (like text), show the type so the user knows it exists
+                        cMap[columnKey] = { _type: col.type };
                     }
-                    cMap[col.title || col.id] = choices;
                 });
 
                 return {

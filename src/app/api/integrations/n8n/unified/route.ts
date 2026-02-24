@@ -85,10 +85,30 @@ export async function POST(req: NextRequest) {
     // 2. Parse Body
     let data;
     try {
-        const body = await req.json();
+        const rawBody = await req.json();
         console.log('--- Unified API Request Body ---');
-        console.log(JSON.stringify(body, null, 2));
-        data = unifiedRequestSchema.parse(body);
+        console.log(JSON.stringify(rawBody, null, 2));
+
+        // Auto-merge unknown fields into customColumns for better DX
+        const knownKeys = [
+            'externalId', 'name', 'department', 'board', 'group',
+            'personEmail', 'status', 'importance', 'urgency', 'taskLoad',
+            'dueDate', 'config', 'customColumns', 'updateContent', 'authorEmail'
+        ];
+
+        const extractedCustom = { ...(typeof rawBody.customColumns === 'object' ? rawBody.customColumns : {}) };
+        if (typeof rawBody.customColumns === 'string') {
+            try { Object.assign(extractedCustom, JSON.parse(rawBody.customColumns)); } catch (e) { }
+        }
+
+        Object.keys(rawBody).forEach(key => {
+            if (!knownKeys.includes(key)) {
+                extractedCustom[key] = rawBody[key];
+            }
+        });
+
+        rawBody.customColumns = extractedCustom;
+        data = unifiedRequestSchema.parse(rawBody);
     } catch (error) {
         console.error('Unified API Parsing Error:', error);
         if (error instanceof z.ZodError) {
@@ -215,6 +235,8 @@ export async function POST(req: NextRequest) {
             };
 
             const columnValues: Record<string, any> = {};
+            const newColumns: any[] = [];
+
             Object.entries(inputs).forEach(([key, val]) => {
                 if (val === undefined || val === null) return;
                 const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -241,10 +263,29 @@ export async function POST(req: NextRequest) {
                         columnValues[targetId] = val;
                     }
                 } else {
-                    // Fallback to original key if no match found
-                    columnValues[key] = val;
+                    // AUTO-PROVISION: Add new column to board definition
+                    const newId = key.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                    const newTitle = key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' ');
+
+                    newColumns.push({
+                        id: newId,
+                        type: 'text',
+                        title: newTitle,
+                        width: 140
+                    });
+
+                    columnValues[newId] = val;
                 }
             });
+
+            // If we found new columns, update the board definition
+            if (newColumns.length > 0) {
+                const updatedBoardColumns = [...boardColumns, ...newColumns];
+                board = await tx.board.update({
+                    where: { id: board.id },
+                    data: { columns: JSON.stringify(updatedBoardColumns) }
+                });
+            }
 
             // F. Upsert Task
             const existingTask = await tx.task.findFirst({
