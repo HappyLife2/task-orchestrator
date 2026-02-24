@@ -29,6 +29,10 @@ const unifiedRequestSchema = z.object({
 
     // Catch-all for other custom columns
     customColumns: z.record(z.string(), z.any()).optional(),
+
+    // Optional initial update/comment
+    updateContent: z.string().optional(),
+    authorEmail: z.string().email().optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -180,15 +184,57 @@ export async function POST(req: NextRequest) {
                 }
             }
 
-            // E. Prepare Column Values
-            const columnValues: Record<string, any> = {
+            // E. Intelligent Column Mapping
+            const boardColumns = JSON.parse(board.columns || '[]');
+            const columnLookup: Record<string, string> = {};
+
+            boardColumns.forEach((col: any) => {
+                const normalizedId = col.id.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const normalizedTitle = col.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                columnLookup[normalizedId] = col.id;
+                columnLookup[normalizedTitle] = col.id;
+            });
+
+            const inputs: Record<string, any> = {
                 status: data.status,
                 importance: data.importance,
                 urgency: data.urgency,
-                taskLoad: data.taskLoad,
+                taskload: data.taskLoad,
                 date: data.dueDate,
                 ...data.customColumns
             };
+
+            const columnValues: Record<string, any> = {};
+            Object.entries(inputs).forEach(([key, val]) => {
+                if (val === undefined || val === null) return;
+                const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const targetId = columnLookup[normalizedKey] || columnLookup[key.toLowerCase()];
+
+                if (targetId) {
+                    const colDef = boardColumns.find((c: any) => c.id === targetId);
+                    if (colDef && (colDef.type === 'status' || colDef.type === 'dropdown')) {
+                        let options = colDef.settings?.labels || colDef.settings?.options || colDef.settings?.status?.labels || colDef.settings || {};
+
+                        if (Array.isArray(options)) {
+                            // Dropdown style
+                            const match = options.find((opt: any) =>
+                                opt.label?.toLowerCase() === String(val).toLowerCase() ||
+                                opt.value?.toLowerCase() === String(val).toLowerCase()
+                            );
+                            columnValues[targetId] = match ? match.value : val;
+                        } else {
+                            // Status style
+                            const match = Object.keys(options).find(k => k.toLowerCase() === String(val).toLowerCase());
+                            columnValues[targetId] = match || val;
+                        }
+                    } else {
+                        columnValues[targetId] = val;
+                    }
+                } else {
+                    // Fallback to original key if no match found
+                    columnValues[key] = val;
+                }
+            });
 
             // F. Upsert Task
             const existingTask = await tx.task.findFirst({
@@ -197,6 +243,9 @@ export async function POST(req: NextRequest) {
                     board: { department: { organizationId: orgId } }
                 }
             });
+
+            let finalTaskId: string;
+            let action: 'created' | 'updated';
 
             if (existingTask) {
                 const updatedTask = await tx.task.update({
@@ -209,7 +258,8 @@ export async function POST(req: NextRequest) {
                         columnValues: JSON.stringify({ ...JSON.parse(existingTask.columnValues), ...columnValues })
                     }
                 });
-                return { action: 'updated', taskId: updatedTask.id };
+                finalTaskId = updatedTask.id;
+                action = 'updated';
             } else {
                 const newTask = await tx.task.create({
                     data: {
@@ -222,8 +272,40 @@ export async function POST(req: NextRequest) {
                         state: 'ACTIVE'
                     }
                 });
-                return { action: 'created', taskId: newTask.id };
+                finalTaskId = newTask.id;
+                action = 'created';
             }
+
+            // G. Handle Optional Update/Comment
+            if (data.updateContent && finalTaskId) {
+                const authorEmail = data.authorEmail || data.personEmail || 'api-bot@psi.tech';
+                let author = await tx.user.findUnique({ where: { email: authorEmail } });
+
+                if (!author) {
+                    author = await tx.user.create({
+                        data: {
+                            email: authorEmail,
+                            name: authorEmail.split('@')[0],
+                            password: await hashPassword(Math.random().toString(36)),
+                            organizationId: orgId,
+                            role: 'MEMBER'
+                        }
+                    });
+                }
+
+                await tx.update.create({
+                    data: {
+                        content: data.updateContent,
+                        taskId: finalTaskId,
+                        userId: author.id
+                    }
+                });
+            }
+
+            return {
+                action: existingTask ? 'updated' : 'created',
+                taskId: finalTaskId
+            };
         });
 
         return NextResponse.json({
