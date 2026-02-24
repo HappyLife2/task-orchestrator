@@ -116,7 +116,7 @@ export default function DashboardPage() {
                 <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-4">
                     <div>
                         <h1 className="text-[42px] font-black tracking-tighter leading-none spectral-text mb-2">
-                            System Integrity
+                            Live Data
                         </h1>
                         <p className="text-gray-400 font-medium text-sm">Real-time task synchronization across the enterprise architecture.</p>
                     </div>
@@ -126,7 +126,7 @@ export default function DashboardPage() {
                                 <TrendingUp className="text-accent-indigo" size={24} />
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-0.5">Active Pulse</p>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-0.5">Active Tasks</p>
                                 <p className="text-3xl font-black leading-none tabular-nums text-glow">{data.ongoing.total}</p>
                             </div>
                         </div>
@@ -135,7 +135,7 @@ export default function DashboardPage() {
                                 <CheckCircle className="text-accent-cyan" size={24} />
                             </div>
                             <div>
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-0.5">Nodes Restored</p>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.15em] mb-0.5">Done Tasks</p>
                                 <p className="text-3xl font-black leading-none tabular-nums text-glow">{data.done.total}</p>
                             </div>
                         </div>
@@ -153,7 +153,7 @@ export default function DashboardPage() {
                         {/* Board Distribution */}
                         <motion.div variants={itemVariants} className="glass-card glass-card-hover p-8">
                             <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Active Nodes per Board</h3>
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Active Tasks per Board</h3>
                                 <div className="h-1.5 w-1.5 rounded-full bg-accent-indigo animate-pulse" />
                             </div>
                             <div className="h-[300px] w-full">
@@ -284,13 +284,13 @@ export default function DashboardPage() {
                 <div className="pt-6 space-y-6">
                     <motion.div variants={itemVariants} className="flex items-center gap-3 px-1">
                         <div className="w-1.5 h-6 bg-accent-cyan rounded-full" />
-                        <h2 className="text-2xl font-black tracking-tight uppercase">Restoration Archives</h2>
+                        <h2 className="text-2xl font-black tracking-tight uppercase">Restoration Feed</h2>
                     </motion.div>
 
                     <motion.div variants={itemVariants} className="grid grid-cols-1 gap-6">
                         <div className="glass-card glass-card-hover p-8">
                             <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Efficiency per Node</h3>
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Efficiency per Boards</h3>
                                 <div className="h-1.5 w-1.5 rounded-full bg-accent-cyan animate-pulse" />
                             </div>
                             <div className="h-[350px] w-full">

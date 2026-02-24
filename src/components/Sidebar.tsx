@@ -213,7 +213,7 @@ export default function Sidebar() {
                     <Link href="/dashboard" className="block outline-none relative group">
                         <ListItem
                             className={`rounded-xl transition-all duration-300 text-white ${pathname === '/dashboard' ? 'bg-white/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:bg-white/5'}`}
-                            label="Integrity Pulse"
+                            label="Live Data"
                             startElement={<ListItemIcon icon={LayoutDashboard as any} className={`${pathname === '/dashboard' ? 'text-accent-indigo' : 'text-gray-400'} h-4 w-4 transition-colors`} />}
                         />
                         {pathname === '/dashboard' && (
@@ -332,7 +332,7 @@ export default function Sidebar() {
                         </div>
                     </div>
                     <div>
-                        <Text type="text2" weight="bold" className="text-white text-sm">Operator</Text>
+                        <Text type="text2" weight="bold" className="text-white text-sm">Admin</Text>
                         <div className="flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Active Link</p>
