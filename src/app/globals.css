@@ -23,6 +23,8 @@
   /* Aurora Gradients */
   --grad-aurora: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
   --grad-surface: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+  --grad-done: linear-gradient(135deg, #00c875 0%, #009e5c 100%);
+  --grad-working: linear-gradient(135deg, #fdab3d 0%, #d88924 100%);
 
   /* Font Family */
   --font-figtree: 'Figtree', sans-serif;

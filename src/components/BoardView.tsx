@@ -153,8 +153,8 @@ function StatusCell({ value, onChange, settings }: {
     const isWorking = value?.toLowerCase() === 'working on it' || value?.toLowerCase() === 'wip';
 
     let gradient = `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`;
-    if (isDone) gradient = 'var(--grad-aurora)';
-    if (isWorking) gradient = 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)';
+    if (isDone) gradient = 'var(--grad-done)';
+    if (isWorking) gradient = 'var(--grad-working)';
 
     return (
         <div className="w-full h-full flex items-center px-1">

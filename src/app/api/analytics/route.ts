@@ -47,6 +47,10 @@ export async function GET(req: NextRequest) {
         };
 
         boards.forEach(board => {
+            // Explicitly initialize this board with 0 so it always appears on the chart
+            analytics.ongoing.byBoard[board.name] = 0;
+            analytics.done.byBoard[board.name] = 0;
+
             const groupMap: Record<string, string> = {};
             board.groups.forEach(g => {
                 groupMap[g.id] = g.title;

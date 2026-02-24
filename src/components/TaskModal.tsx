@@ -78,12 +78,12 @@ export default function TaskModal({ task, employees, onClose, onUpdate }: TaskMo
         }
     };
 
-    const getStatusColor = (status: string) => {
+    const getStatusStyle = (status: string) => {
         const s = status?.toLowerCase() || '';
-        if (s === 'done') return '#00c875';
-        if (s === 'working on it') return '#fdab3d';
-        if (s === 'stuck') return '#e2445c';
-        return '#c4c4c4'; // Default/Active
+        if (s === 'done') return { background: 'var(--grad-done)' };
+        if (s === 'working on it') return { background: 'var(--grad-working)' };
+        if (s === 'stuck') return { backgroundColor: '#e2445c' };
+        return { backgroundColor: '#c4c4c4' }; // Default/Active
     };
 
     const currentStatus = task.parsedValues['status'] || 'Active';
@@ -128,7 +128,7 @@ export default function TaskModal({ task, employees, onClose, onUpdate }: TaskMo
                                 <button
                                     onClick={() => setStatusOpen(!statusOpen)}
                                     className="w-full flex items-center justify-between px-4 py-2.5 rounded-lg font-medium transition-all hover:opacity-90 active:scale-95 text-white"
-                                    style={{ backgroundColor: getStatusColor(currentStatus) }}
+                                    style={getStatusStyle(currentStatus)}
                                 >
                                     <span>{displayStatus}</span>
                                     <ChevronDown size={16} className="text-white/70" />
@@ -145,7 +145,7 @@ export default function TaskModal({ task, employees, onClose, onUpdate }: TaskMo
                                                 }}
                                                 className="w-full text-left px-4 py-2 hover:bg-[#3d3e80] text-sm flex items-center gap-2 transition-colors"
                                             >
-                                                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getStatusColor(s) }}></div>
+                                                <div className="w-3 h-3 rounded-full" style={getStatusStyle(s)}></div>
                                                 {s}
                                             </button>
                                         ))}
