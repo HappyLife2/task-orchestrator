@@ -12,11 +12,11 @@ const unifiedRequestSchema = z.object({
     group: z.string().optional().default('Active Nodes'),
 
     // Standard Column Values
-    personEmail: z.string().email().optional(),
-    status: z.string().optional(),
-    importance: z.string().optional(),
-    urgency: z.string().optional(),
-    taskLoad: z.string().optional(),
+    personEmail: z.string().email().optional().or(z.literal('')),
+    status: z.string().optional().default('To Be Actioned'),
+    importance: z.string().optional().default('High'),
+    urgency: z.string().optional().default('Upcoming'),
+    taskLoad: z.string().optional().default('Light'),
     dueDate: z.string().optional(), // ISO string
 
     // Configuration for Column Options (Auto-setup for Board)
@@ -28,7 +28,12 @@ const unifiedRequestSchema = z.object({
     }).optional(),
 
     // Catch-all for other custom columns
-    customColumns: z.record(z.string(), z.any()).optional(),
+    customColumns: z.preprocess((val) => {
+        if (typeof val === 'string') {
+            try { return JSON.parse(val); } catch (e) { return {}; }
+        }
+        return val || {};
+    }, z.record(z.string(), z.any())).optional().default({}),
 
     // Optional initial update/comment
     updateContent: z.string().optional(),
@@ -81,11 +86,16 @@ export async function POST(req: NextRequest) {
     let data;
     try {
         const body = await req.json();
+        console.log('--- Unified API Request Body ---');
+        console.log(JSON.stringify(body, null, 2));
         data = unifiedRequestSchema.parse(body);
     } catch (error) {
         console.error('Unified API Parsing Error:', error);
         if (error instanceof z.ZodError) {
-            return NextResponse.json({ error: error.issues }, { status: 400 });
+            return NextResponse.json({
+                error: 'Invalid Fields',
+                details: error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ')
+            }, { status: 400 });
         }
         return NextResponse.json({ error: 'Invalid Request Body', details: (error as Error).message }, { status: 400 });
     }
