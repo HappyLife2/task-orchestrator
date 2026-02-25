@@ -28,7 +28,7 @@ export default function UpdatesDrawer({ task, board, onClose }: UpdatesDrawerPro
         fetch('/api/auth/me').then(async res => {
             if (res.ok) {
                 const data = await res.json();
-                setCurrentUser(data);
+                setCurrentUser(data.user || data); // Extract .user if present
             } else {
                 // Fallback for demo if auth api is different or restricted
                 // We'll try another one or just set a dummy if it fails in dev
@@ -93,40 +93,53 @@ export default function UpdatesDrawer({ task, board, onClose }: UpdatesDrawerPro
     const handleReaction = async (updateId: string, emoji: string) => {
         // Optimistic update
         setUpdates(prev => prev.map(u => {
-            if (u.id !== updateId) return u;
+            // Check if this update (post) is the one
+            if (u.id === updateId) {
+                return toggleReaction(u, emoji);
+            }
 
-            // const existingReaction = u.reactions?.find(r => r.emoji === emoji);
-            // const userReactedWithThis = u.myReaction === emoji;
-            const userReactedWithOther = u.myReaction && u.myReaction !== emoji;
+            // Check if it's one of the replies
+            if (u.replies && u.replies.some((r: any) => r.id === updateId)) {
+                return {
+                    ...u,
+                    replies: u.replies.map((r: any) => r.id === updateId ? toggleReaction(r, emoji) : r)
+                };
+            }
 
-            let newReactions = [...(u.reactions || [])];
+            return u;
+        }));
 
-            if (u.myReaction === emoji) {
+        // Helper function for toggling reactions on an object
+        function toggleReaction(item: any, emoji: string) {
+            const userReactedWithOther = item.myReaction && item.myReaction !== emoji;
+            let newReactions = [...(item.reactions || [])];
+
+            if (item.myReaction === emoji) {
                 // Remove reaction
-                newReactions = newReactions.map(r =>
+                newReactions = newReactions.map((r: any) =>
                     r.emoji === emoji ? { ...r, count: r.count - 1, reactedByMe: false } : r
-                ).filter(r => r.count > 0);
-                return { ...u, reactions: newReactions, myReaction: null };
+                ).filter((r: any) => r.count > 0);
+                return { ...item, reactions: newReactions, myReaction: null };
             } else {
                 // Add new reaction
-                if (userReactedWithOther && u.myReaction) {
-                    newReactions = newReactions.map(r =>
-                        r.emoji === u.myReaction ? { ...r, count: r.count - 1, reactedByMe: false } : r
-                    ).filter(r => r.count > 0);
+                if (userReactedWithOther && item.myReaction) {
+                    newReactions = newReactions.map((r: any) =>
+                        r.emoji === item.myReaction ? { ...r, count: r.count - 1, reactedByMe: false } : r
+                    ).filter((r: any) => r.count > 0);
                 }
 
-                const existing = newReactions.find(r => r.emoji === emoji);
+                const existing = newReactions.find((r: any) => r.emoji === emoji);
                 if (existing) {
-                    newReactions = newReactions.map(r =>
+                    newReactions = newReactions.map((r: any) =>
                         r.emoji === emoji ? { ...r, count: r.count + 1, reactedByMe: true } : r
                     );
                 } else {
                     newReactions.push({ emoji, count: 1, reactedByMe: true });
                 }
 
-                return { ...u, reactions: newReactions, myReaction: emoji };
+                return { ...item, reactions: newReactions, myReaction: emoji };
             }
-        }));
+        }
 
         try {
             const res = await fetch(`/api/updates/${updateId}/reactions`, {

@@ -11,7 +11,7 @@ interface UpdateComposerProps {
     onCancel?: () => void;
 }
 
-export default function UpdateComposer({ onSubmit, placeholder = "Write an update and mention others with @", autoFocus = false, onCancel }: UpdateComposerProps) {
+export default function UpdateComposer({ currentUser, onSubmit, placeholder = "Write an update and mention others with @", autoFocus = false, onCancel }: UpdateComposerProps) {
     const [content, setContent] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,8 +55,8 @@ export default function UpdateComposer({ onSubmit, placeholder = "Write an updat
 
     return (
         <div className={`
-             relative rounded-xl border bg-[#1a1b4b] p-4 transition-all duration-200
-             ${isFocused ? 'border-blue-500/50' : 'border-[#2c2d65]'}
+             relative rounded-2xl border bg-white/5 backdrop-blur-md p-4 transition-all duration-300 shadow-inner w-full
+             ${isFocused ? 'border-indigo-500/50 ring-1 ring-indigo-500/20' : 'border-white/10'}
         `}>
             <textarea
                 ref={textareaRef}
@@ -71,24 +71,14 @@ export default function UpdateComposer({ onSubmit, placeholder = "Write an updat
                 className="w-full bg-transparent text-white placeholder-gray-400 resize-none outline-none text-[15px] leading-relaxed min-h-[24px] max-h-[300px]"
             />
 
-            {/* Toolbar - Exact match to reference: @, Paperclip, GIF, Happy Face, Sparkles */}
             <div className="flex items-center gap-1 mt-3">
                 <IconButton icon={AtSign as any} size="small" kind="tertiary" className="text-gray-400 hover:text-white" ariaLabel="Mention" />
                 <IconButton icon={Paperclip as any} size="small" kind="tertiary" className="text-gray-400 hover:text-white" ariaLabel="Attach" />
-
-                {/* GIF Text Icon */}
                 <button className="flex items-center justify-center w-8 h-8 rounded hover:bg-white/10 transition-colors text-[10px] font-bold text-gray-400 hover:text-white">
                     GIF
                 </button>
-
                 <IconButton icon={Smile as any} size="small" kind="tertiary" className="text-gray-400 hover:text-white" ariaLabel="Emoji" />
-
-                {/* Sparkles / Magic Edit */}
                 <IconButton icon={Sparkles as any} size="small" kind="tertiary" className="text-blue-500 hover:text-blue-400" ariaLabel="Format" />
-
-                {/* Blue Dot Indicator? Reference has a blue dot near the sparkles... maybe an active state or notification? 
-                     I'll add a small blue dot absolute positioned if needed, but for now the icon color is blue.
-                 */}
 
                 <div className="flex-1" />
 
@@ -113,8 +103,8 @@ export default function UpdateComposer({ onSubmit, placeholder = "Write an updat
                         onClick={handleSubmit}
                         disabled={!content.trim() || isSubmitting}
                         className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${content.trim() && !isSubmitting
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
-                            : 'bg-[#2c2d65] text-gray-400 cursor-not-allowed'
+                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg'
+                            : 'bg-white/10 text-gray-500 cursor-not-allowed'
                             }`}
                     >
                         {isSubmitting ? 'Posting...' : 'Update'}

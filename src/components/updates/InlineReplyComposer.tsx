@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect } from 'react';
-import { Avatar } from '@vibe/core';
+import { Avatar, IconButton } from '@vibe/core';
+import { Smile } from 'lucide-react';
+import EmojiPicker from './EmojiPicker';
 
 interface InlineReplyComposerProps {
     currentUser: { name: string; id: string };
@@ -12,7 +14,9 @@ export default function InlineReplyComposer({ currentUser, onSubmit, autoFocus =
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const emojiBtnRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         if (autoFocus && textareaRef.current) {
@@ -78,7 +82,26 @@ export default function InlineReplyComposer({ currentUser, onSubmit, autoFocus =
                     />
 
                     {(isFocused || content.trim()) && (
-                        <div className="flex justify-end items-center gap-2 mt-3 pt-3 border-t border-[#2c2d65]/50 animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="flex justify-end items-center gap-2 mt-3 pt-3 border-t border-white/10 animate-in fade-in slide-in-from-top-1 duration-200">
+                            <div className="relative">
+                                <button
+                                    ref={emojiBtnRef}
+                                    type="button"
+                                    onClick={() => setShowEmojiPicker(true)}
+                                    className="p-1.5 text-gray-400 hover:text-indigo-400 rounded-full hover:bg-indigo-500/10 transition-colors flex items-center justify-center"
+                                    aria-label="Add emoji"
+                                >
+                                    <Smile size={18} />
+                                </button>
+                                {showEmojiPicker && (
+                                    <EmojiPicker
+                                        triggerRef={emojiBtnRef}
+                                        onSelect={(emoji) => setContent(prev => prev + emoji)}
+                                        onClose={() => setShowEmojiPicker(false)}
+                                    />
+                                )}
+                            </div>
+                            <div className="flex-1" />
                             <button
                                 type="button"
                                 onClick={() => {
@@ -98,8 +121,8 @@ export default function InlineReplyComposer({ currentUser, onSubmit, autoFocus =
                                 onClick={handleSubmit}
                                 disabled={!content.trim() || isSubmitting}
                                 className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${content.trim() && !isSubmitting
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
-                                    : 'bg-[#2c2d65] text-gray-400 cursor-not-allowed'
+                                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg'
+                                    : 'bg-white/10 text-gray-500 cursor-not-allowed'
                                     }`}
                             >
                                 {isSubmitting ? 'Posting...' : 'Reply'}
