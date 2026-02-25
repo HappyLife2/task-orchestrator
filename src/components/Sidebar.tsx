@@ -360,20 +360,20 @@ export default function Sidebar() {
     const strengthColors = ['bg-gray-700', 'bg-red-500', 'bg-orange-500', 'bg-yellow-400', 'bg-emerald-500'];
     const strengthLabels = ['Too Weak', 'Weak', 'Fair', 'Good', 'Strong'];
 
-    if (loading) return <div className="w-64 bg-background border-r border-[var(--glass-border)] p-4 text-white">Loading...</div>;
-    if (!org) return <div className="w-64 bg-background border-r border-[var(--glass-border)] p-4 text-white">Error loading organization</div>;
+    if (loading) return <div style={{ width: `${sidebarWidth}px` }} className="bg-background border-r border-[var(--glass-border)] p-4 text-white flex items-center justify-center"><div className="w-6 h-6 border-2 border-accent-indigo border-t-transparent rounded-full animate-spin" /></div>;
+    if (!org) return <div style={{ width: `${sidebarWidth}px` }} className="bg-background border-r border-[var(--glass-border)] p-4 text-white">Error loading organization</div>;
 
     return (
         <div
-            style={{ width: `${sidebarWidth}px` }}
-            className={`bg-background/50 backdrop-blur-3xl h-screen flex flex-col border-r border-[var(--glass-border)] relative transition-[width] duration-75 ease-out ${isResizing ? 'select-none' : ''}`}
+            style={{ width: `${sidebarWidth}px`, transition: isResizing ? 'none' : 'width 0.2s ease-out' }}
+            className={`bg-background/50 backdrop-blur-3xl h-screen flex flex-col border-r border-[var(--glass-border)] relative ${isResizing ? 'select-none' : ''}`}
         >
             {/* Resize Handle */}
             <div
                 onMouseDown={startResizing}
                 className={`
-                    absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-accent-indigo/50 transition-colors z-50
-                    ${isResizing ? 'bg-accent-indigo w-0.5' : ''}
+                    absolute top-0 -right-1 w-2 h-full cursor-col-resize hover:bg-accent-indigo/30 transition-colors z-50
+                    ${isResizing ? 'bg-accent-indigo/50' : ''}
                 `}
             />
             {/* Header */}
