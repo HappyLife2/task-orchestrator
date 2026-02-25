@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
@@ -11,84 +8,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Models
-
 model Organization {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  users        User[]
-  departments  Department[]
+  id           String        @id @default(uuid())
+  name         String
+  slug         String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  activityLogs ActivityLog[]
   apiKeys      ApiKey[]
   dashboards   Dashboard[]
-  workforms    Workform[]
+  departments  Department[]
   documents    Document[]
-  activityLogs ActivityLog[]
+  users        User[]
+  workforms    Workform[]
 }
 
 model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  password       String // Hashed
-  name           String?
-  avatarUrl      String?
-  role           String   @default("MEMBER") // OWNER, ADMIN, MEMBER, VIEWER
-  organizationId String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization      Organization       @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  tasks             Task[]
-  createdTasks      Task[]             @relation("TaskCreator")
-  updates           Update[]
-  timeEntries       TimeEntry[]
-  permissions       Permission[]
-  notifications     Notification[]
-  favorites         Favorite[]
-  recentItems       RecentItem[]
-  documentVersions  DocumentVersion[]
-  watchedItems      WatchedItem[]
-  updateReactions   UpdateReaction[]
+  id               String            @id @default(uuid())
+  email            String            @unique
+  password         String
+  name             String?
+  role             String            @default("MEMBER")
+  organizationId   String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  avatarUrl        String?
+  documentVersions DocumentVersion[]
+  favorites        Favorite[]
+  notifications    Notification[]
+  permissions      Permission[]
+  recentItems      RecentItem[]
+  tasks            Task[]
+  createdTasks     Task[]            @relation("TaskCreator")
+  timeEntries      TimeEntry[]
+  updates          Update[]
+  updateReactions  UpdateReaction[]
+  organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  watchedItems     WatchedItem[]
 }
 
 model Department {
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   name           String
   organizationId String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  boards       Board[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  boards         Board[]
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model Board {
-  id           String   @id @default(uuid())
+  id           String       @id @default(uuid())
   name         String
+  departmentId String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  columns      String       @default("[]")
+  color        String?
   description  String?
   icon         String?
-  color        String?
-  departmentId String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  automations  Automation[]
+  department   Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  views        BoardView[]
+  discussions  Discussion[]
+  favorites    Favorite[]
+  groups       Group[]
+  permissions  Permission[]
+  tasks        Task[]
+  templates    Template[]
 
-  department  Department     @relation(fields: [departmentId], references: [id], onDelete: Cascade)
-  groups      Group[]
-  tasks       Task[]
-  views       BoardView[]
-  automations Automation[]
-  templates   Template[]
-  permissions Permission[]
-  favorites   Favorite[]
-  discussions Discussion[]
-
-  // Column definitions stored as JSON. 
-  // E.g. [{id: "status", type: "status", settings: {...}}, {id: "person", type: "person"}]
-  columns String @default("[]") 
-  
   @@index([departmentId])
 }
 
@@ -101,45 +89,38 @@ model Group {
   collapsed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  tasks Task[]
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tasks     Task[]
 
   @@index([boardId])
   @@index([position])
 }
 
 model Task {
-  id               String    @id @default(uuid())
-  name             String
-  state            String    @default("ACTIVE") // ACTIVE, ARCHIVED
-  boardId          String
-  groupId          String?
-  assignedUserId   String?
-  referenceId      String?
-  externalId       String? // Make unique per board or org if needed, but safer to index
-  
-  description      String?
-  creatorId        String?
-  creator          User?   @relation("TaskCreator", fields: [creatorId], references: [id])
-  
-  // Standard columns
-  columnValues String @default("{}") // JSON string of values: { "status": "Done", "person": "user_id" }
-  position     Int    @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  board        Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  group        Group? @relation(fields: [groupId], references: [id])
-  assignedUser User?  @relation(fields: [assignedUserId], references: [id])
-  
-  parentTaskId String?
-  parentTask   Task?   @relation("SubTasks", fields: [parentTaskId], references: [id], onDelete: Cascade)
-  subTasks     Task[]  @relation("SubTasks")
-  updates      Update[]
-  timeEntries  TimeEntry[]
-  watchedItems WatchedItem[]
+  id             String        @id @default(uuid())
+  name           String
+  state          String        @default("ACTIVE")
+  boardId        String
+  groupId        String?
+  assignedUserId String?
+  referenceId    String?
+  externalId     String?
+  description    String?
+  creatorId      String?
+  columnValues   String        @default("{}")
+  position       Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  parentTaskId   String?
+  parentTask     Task?         @relation("SubTasks", fields: [parentTaskId], references: [id], onDelete: Cascade)
+  subTasks       Task[]        @relation("SubTasks")
+  assignedUser   User?         @relation(fields: [assignedUserId], references: [id])
+  group          Group?        @relation(fields: [groupId], references: [id])
+  board          Board         @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  creator        User?         @relation("TaskCreator", fields: [creatorId], references: [id])
+  timeEntries    TimeEntry[]
+  updates        Update[]
+  watchedItems   WatchedItem[]
 
   @@index([boardId])
   @@index([groupId])
@@ -151,23 +132,17 @@ model Task {
 }
 
 model Update {
-  id        String   @id @default(uuid())
-  content   String   // HTML or Markdown
+  id        String           @id @default(uuid())
+  content   String
   taskId    String
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
-  
-  // Basic reply structure (optional, but requested "people can reply to it")
-  // For simplicity, we can just treat all as a flat list or use a parentId.
-  // Monday.com updates are usually a feed. Replies are threaded.
-  // Let's add simple threading.
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   parentId  String?
-  parent    Update?  @relation("UpdateReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   Update[] @relation("UpdateReplies")
+  parent    Update?          @relation("UpdateReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Update[]         @relation("UpdateReplies")
+  user      User             @relation(fields: [userId], references: [id])
+  task      Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
   reactions UpdateReaction[]
 
   @@index([taskId])
@@ -180,9 +155,8 @@ model UpdateReaction {
   userId    String
   emoji     String   @default("❤️")
   createdAt DateTime @default(now())
-
-  update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  update    Update   @relation(fields: [updateId], references: [id], onDelete: Cascade)
 
   @@unique([updateId, userId])
   @@index([updateId])
@@ -193,76 +167,71 @@ model BoardView {
   id        String   @id @default(uuid())
   boardId   String
   name      String
-  type      String   // table, kanban, calendar, timeline, chart, map, form, files
-  settings  String   @default("{}") // JSON: filters, sorting, grouping, etc.
+  type      String
+  settings  String   @default("{}")
   position  Int      @default(0)
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@index([boardId])
 }
 
 model Dashboard {
-  id             String   @id @default(uuid())
+  id             String            @id @default(uuid())
   organizationId String
   name           String
   description    String?
-  layout         String   @default("[]") // JSON: widget positions
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  widgets      DashboardWidget[]
-  permissions  Permission[]
+  layout         String            @default("[]")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  widgets        DashboardWidget[]
+  permissions    Permission[]
 
   @@index([organizationId])
 }
 
 model DashboardWidget {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   dashboardId String
-  type        String   // chart, number, battery, timeline, boardView, text
+  type        String
   title       String
-  config      String   @default("{}") // JSON: data source, chart type, etc.
-  position    String   // JSON: x, y, width, height
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  config      String    @default("{}")
+  position    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  dashboard   Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
 
-  dashboard Dashboard @relation(fields: [dashboardId], references: [id], onDelete: Cascade)
-
-  @@index([dashboardId ])
+  @@index([dashboardId])
 }
 
 model Automation {
-  id        String   @id @default(uuid())
-  boardId   String
-  name      String
-  trigger   String   // JSON: trigger config
-  conditions String  @default("[]") // JSON: array of conditions
-  actions   String   @default("[]") // JSON: array of actions
-  enabled   Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  board Board             @relation(fields: [boardId], references: [id], onDelete: Cascade)
-  logs  AutomationLog[]
+  id         String          @id @default(uuid())
+  boardId    String
+  name       String
+  trigger    String
+  conditions String          @default("[]")
+  actions    String          @default("[]")
+  enabled    Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  board      Board           @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  logs       AutomationLog[]
 
   @@index([boardId])
   @@index([enabled])
 }
 
 model AutomationLog {
-  id           String   @id @default(uuid())
+  id           String     @id @default(uuid())
   automationId String
   taskId       String?
-  status       String   // success, failed
-  details      String?  // JSON: execution details
-  executedAt   DateTime @default(now())
-
-  automation Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  status       String
+  details      String?
+  executedAt   DateTime   @default(now())
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
 
   @@index([automationId])
   @@index([executedAt])
@@ -273,34 +242,32 @@ model Template {
   boardId     String?
   name        String
   description String?
-  category    String?  // Project Management, CRM, Marketing, etc.
+  category    String?
   isPublic    Boolean  @default(false)
-  config      String   // JSON: full board structure
+  config      String
   thumbnail   String?
   usageCount  Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  board Board? @relation(fields: [boardId], references: [id])
+  board       Board?   @relation(fields: [boardId], references: [id])
 
   @@index([category])
   @@index([isPublic])
 }
 
 model Workform {
-  id             String   @id @default(uuid())
+  id             String               @id @default(uuid())
   organizationId String
   name           String
   description    String?
-  boardId        String?  // Board to submit to
-  fields         String   @default("[]") // JSON: form fields
-  settings       String   @default("{}") // JSON: thank you message, etc.
-  isPublic       Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  submissions  WorkformSubmission[]
+  boardId        String?
+  fields         String               @default("[]")
+  settings       String               @default("{}")
+  isPublic       Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  submissions    WorkformSubmission[]
 
   @@index([organizationId])
 }
@@ -308,28 +275,26 @@ model Workform {
 model WorkformSubmission {
   id         String   @id @default(uuid())
   workformId String
-  data       String   // JSON: submitted data
-  taskId     String?  // Created task if applicable
+  data       String
+  taskId     String?
   createdAt  DateTime @default(now())
-
-  workform Workform @relation(fields: [workformId], references: [id], onDelete: Cascade)
+  workform   Workform @relation(fields: [workformId], references: [id], onDelete: Cascade)
 
   @@index([workformId])
   @@index([createdAt])
 }
 
 model Permission {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
-  resourceType String   // workspace, board, dashboard
+  resourceType String
   resourceId   String
-  role         String   // owner, admin, member, viewer
-  settings     String   @default("{}") // JSON: custom permissions
-  createdAt    DateTime @default(now())
-
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  board      Board?      @relation(fields: [resourceId], references: [id])
-  dashboard  Dashboard?  @relation(fields: [resourceId], references: [id])
+  role         String
+  settings     String    @default("{}")
+  createdAt    DateTime  @default(now())
+  board        Dashboard @relation(fields: [resourceId], references: [id])
+  board        Board     @relation(fields: [resourceId], references: [id])
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, resourceType, resourceId])
   @@index([userId])
@@ -346,24 +311,22 @@ model TimeEntry {
   startedAt   DateTime?
   endedAt     DateTime?
   createdAt   DateTime  @default(now())
-
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  task        Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@index([taskId])
   @@index([userId])
 }
 
 model Document {
-  id             String   @id @default(uuid())
+  id             String            @id @default(uuid())
   organizationId String
   title          String
-  content        String   @default("") // Rich text/HTML
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  versions     DocumentVersion[]
+  content        String            @default("")
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  versions       DocumentVersion[]
 
   @@index([organizationId])
 }
@@ -374,9 +337,8 @@ model DocumentVersion {
   content    String
   userId     String
   createdAt  DateTime @default(now())
-
-  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  user     User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([documentId])
 }
@@ -384,14 +346,13 @@ model DocumentVersion {
 model Notification {
   id        String   @id @default(uuid())
   userId    String
-  type      String   // mention, assignment, update, automation
+  type      String
   title     String
   content   String?
-  link      String?  // Link to relevant item
+  link      String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([isRead])
@@ -403,9 +364,8 @@ model WatchedItem {
   userId    String
   taskId    String
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, taskId])
   @@index([userId])
@@ -419,8 +379,7 @@ model Discussion {
   userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  board Board @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@index([boardId])
 }
@@ -428,12 +387,11 @@ model Discussion {
 model Favorite {
   id           String   @id @default(uuid())
   userId       String
-  resourceType String   // board, dashboard, task
+  resourceType String
   resourceId   String
   createdAt    DateTime @default(now())
-
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  board Board? @relation(fields: [resourceId], references: [id])
+  board        Board    @relation(fields: [resourceId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, resourceType, resourceId])
   @@index([userId])
@@ -442,11 +400,10 @@ model Favorite {
 model RecentItem {
   id           String   @id @default(uuid())
   userId       String
-  resourceType String   // board, dashboard, task, document
+  resourceType String
   resourceId   String
   accessedAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, resourceType, resourceId])
   @@index([userId])
@@ -454,27 +411,25 @@ model RecentItem {
 }
 
 model ApiKey {
-  id             String    @id @default(uuid())
-  key            String    @unique // Hashed or securely stored
+  id             String       @id @default(uuid())
+  key            String       @unique
   name           String
   organizationId String
   lastUsedAt     DateTime?
-  createdAt      DateTime @default(now())
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 }
 
 model ActivityLog {
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   organizationId String
   userId         String?
-  action         String   // created_board, updated_task, etc.
+  action         String
   resourceType   String?
   resourceId     String?
-  details        String?  // JSON
-  createdAt      DateTime @default(now())
-
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  details        String?
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([createdAt])
