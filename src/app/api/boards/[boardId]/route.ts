@@ -54,8 +54,10 @@ export async function PATCH(
         });
 
         if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        if (!['ADMIN', 'OWNER'].includes(payload.role) && boardCheck.members.length === 0) {
-            return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+
+        // Only allow admins or owners to rename boards
+        if (!['ADMIN', 'OWNER'].includes(payload.role)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const body = await req.json();
@@ -95,8 +97,10 @@ export async function DELETE(
         });
 
         if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        if (!['ADMIN', 'OWNER'].includes(payload.role) && boardCheck.members.length === 0) {
-            return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+
+        // Only allow admins or owners to delete boards
+        if (!['ADMIN', 'OWNER'].includes(payload.role)) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         await db.board.delete({

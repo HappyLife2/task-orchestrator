@@ -42,6 +42,7 @@ interface Department {
 interface Organization {
     name: string;
     departments: Department[];
+    currentUserRole: 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER';
 }
 
 const itemVariants: any = {
@@ -367,32 +368,42 @@ export default function Sidebar() {
                                     <div className="flex-1 flex items-center min-w-0">
                                         <Briefcase size={16} className={`${expandedDepts[dept.id] ? 'text-accent-violet' : 'text-gray-500'} mr-2.5 flex-shrink-0 transition-colors`} />
                                         <div className="flex-1 min-w-0" onClick={(e) => e.stopPropagation()}>
-                                            <EditableText
-                                                value={dept.name}
-                                                onChange={(val: string) => handleRenameDepartment(dept.id, val)}
-                                                type="text2"
-                                                weight="bold"
-                                                className="w-full [&_div]:!text-gray-200 [&_input]:!text-white [&_span]:!text-white tracking-tight"
-                                            />
+                                            {['ADMIN', 'OWNER'].includes(org.currentUserRole) ? (
+                                                <EditableText
+                                                    value={dept.name}
+                                                    onChange={(val: string) => handleRenameDepartment(dept.id, val)}
+                                                    type="text2"
+                                                    weight="bold"
+                                                    className="w-full [&_div]:!text-gray-200 [&_input]:!text-white [&_span]:!text-white tracking-tight"
+                                                />
+                                            ) : (
+                                                <Text type="text2" weight="bold" className="text-gray-200 truncate pr-2">
+                                                    {dept.name}
+                                                </Text>
+                                            )}
                                         </div>
                                     </div>
 
-                                    <IconButton
-                                        icon={Plus as any}
-                                        size="small"
-                                        kind="tertiary"
-                                        className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-white transition-all scale-75"
-                                        onClick={(e) => { e.stopPropagation(); handleAddBoard(dept.id); }}
-                                        ariaLabel="Add Board"
-                                    />
-                                    <IconButton
-                                        icon={Trash2 as any}
-                                        size="small"
-                                        kind="tertiary"
-                                        className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition-all scale-75"
-                                        onClick={(e) => handleDeleteDepartment(e, dept.id)}
-                                        ariaLabel="Delete Department"
-                                    />
+                                    {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
+                                        <>
+                                            <IconButton
+                                                icon={Plus as any}
+                                                size="small"
+                                                kind="tertiary"
+                                                className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-white transition-all scale-75"
+                                                onClick={(e) => { e.stopPropagation(); handleAddBoard(dept.id); }}
+                                                ariaLabel="Add Board"
+                                            />
+                                            <IconButton
+                                                icon={Trash2 as any}
+                                                size="small"
+                                                kind="tertiary"
+                                                className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition-all scale-75"
+                                                onClick={(e) => handleDeleteDepartment(e, dept.id)}
+                                                ariaLabel="Delete Department"
+                                            />
+                                        </>
+                                    )}
                                 </div>
 
                                 <AnimatePresence initial={false}>
@@ -424,21 +435,33 @@ export default function Sidebar() {
                                                 >
                                                     <Table size={14} className={`mr-3 flex-shrink-0 ${pathname === `/board/${board.id}` ? 'text-accent-cyan' : ''}`} />
                                                     <div className="flex-1 min-w-0">
-                                                        <EditableText
-                                                            value={board.name}
-                                                            onChange={(val: string) => handleRenameBoard(board.id, val)}
-                                                            type="text2"
-                                                            weight={pathname === `/board/${board.id}` ? 'bold' : 'normal'}
-                                                            className="w-full [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit"
-                                                        />
+                                                        {['ADMIN', 'OWNER'].includes(org.currentUserRole) ? (
+                                                            <EditableText
+                                                                value={board.name}
+                                                                onChange={(val: string) => handleRenameBoard(board.id, val)}
+                                                                type="text2"
+                                                                weight={pathname === `/board/${board.id}` ? 'bold' : 'normal'}
+                                                                className="w-full [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit"
+                                                            />
+                                                        ) : (
+                                                            <Text
+                                                                type="text2"
+                                                                weight={pathname === `/board/${board.id}` ? 'bold' : 'normal'}
+                                                                className={`truncate pr-2 ${pathname === `/board/${board.id}` ? 'text-white' : 'text-inherit'}`}
+                                                            >
+                                                                {board.name}
+                                                            </Text>
+                                                        )}
                                                     </div>
-                                                    <button
-                                                        onClick={(e) => handleDeleteBoard(e, board.id, dept.id)}
-                                                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-all ml-1 shrink-0"
-                                                        title="Delete Board"
-                                                    >
-                                                        <Trash2 size={12} />
-                                                    </button>
+                                                    {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
+                                                        <button
+                                                            onClick={(e) => handleDeleteBoard(e, board.id, dept.id)}
+                                                            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-all ml-1 shrink-0"
+                                                            title="Delete Board"
+                                                        >
+                                                            <Trash2 size={12} />
+                                                        </button>
+                                                    )}
                                                     {pathname === `/board/${board.id}` && (
                                                         <motion.div
                                                             layoutId="active-board"

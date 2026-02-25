@@ -12,6 +12,11 @@ export async function PATCH(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Only allow admins or owners to rename departments
+    if (!['ADMIN', 'OWNER'].includes(payload.role)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const body = await req.json();
         const { name } = body;

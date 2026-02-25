@@ -36,5 +36,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    return NextResponse.json(org);
+    return NextResponse.json({
+        ...org,
+        currentUserRole: payload.role
+    });
 }

@@ -1102,28 +1102,28 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     </div>
                     {/* Invite & New Item buttons */}
                     <div className="flex items-center gap-3">
-                        {currentUser && ['ADMIN', 'OWNER'].includes(currentUser.role) && (
-                            <div className="flex items-center mr-2">
-                                <div className="flex items-center -space-x-1.5">
-                                    {boardMembers.slice(0, 5).map((member, i) => (
-                                        <div
-                                            key={member.id}
-                                            className="w-8 h-8 rounded-full border-2 border-[#0f102a] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white ring-1 ring-white/10 overflow-hidden"
-                                            title={member.user.name}
-                                        >
-                                            {member.user.avatarUrl ? (
-                                                <img src={member.user.avatarUrl} alt={member.user.name} className="w-full h-full object-cover" />
-                                            ) : (
-                                                member.user.name?.charAt(0) || 'U'
-                                            )}
-                                        </div>
-                                    ))}
-                                    {boardMembers.length > 5 && (
-                                        <div className="w-8 h-8 rounded-full border-2 border-[#0f102a] bg-gray-800 flex items-center justify-center text-[10px] font-bold text-gray-400 relative z-10 transition-transform hover:scale-110">
-                                            +{boardMembers.length - 5}
-                                        </div>
-                                    )}
-                                </div>
+                        <div className="flex items-center mr-2">
+                            <div className="flex items-center -space-x-1.5">
+                                {boardMembers.slice(0, 5).map((member, i) => (
+                                    <div
+                                        key={member.id}
+                                        className="w-8 h-8 rounded-full border-2 border-[#0f102a] bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold text-white ring-1 ring-white/10 overflow-hidden"
+                                        title={member.user.name}
+                                    >
+                                        {member.user.avatarUrl ? (
+                                            <img src={member.user.avatarUrl} alt={member.user.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            member.user.name?.charAt(0) || 'U'
+                                        )}
+                                    </div>
+                                ))}
+                                {boardMembers.length > 5 && (
+                                    <div className="w-8 h-8 rounded-full border-2 border-[#0f102a] bg-gray-800 flex items-center justify-center text-[10px] font-bold text-gray-400 relative z-10 transition-transform hover:scale-110">
+                                        +{boardMembers.length - 5}
+                                    </div>
+                                )}
+                            </div>
+                            {currentUser && ['ADMIN', 'OWNER'].includes(currentUser.role) && (
                                 <button
                                     onClick={() => setIsInviteModalOpen(true)}
                                     className="flex items-center gap-2 px-3 py-1.5 h-8 rounded-xl border border-dashed border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/40 transition-all ml-4 group"
@@ -1133,8 +1133,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                     </div>
                                     <span className="text-xs font-bold">Invite</span>
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
 
                         {/* New Item button with dropdown */}
                         {currentUser && currentUser.role !== 'VIEWER' && currentUser.role !== 'USER' && (
