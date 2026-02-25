@@ -523,6 +523,21 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
+    // Handle click outside for New Item menu
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (newItemBtnRef.current && !newItemBtnRef.current.contains(event.target as Node)) {
+                setIsNewItemMenuOpen(false);
+            }
+        }
+        if (isNewItemMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isNewItemMenuOpen]);
+
     const handleUpdateBoardName = async (newName: string) => {
         if (!newName.trim()) return;
         try {
