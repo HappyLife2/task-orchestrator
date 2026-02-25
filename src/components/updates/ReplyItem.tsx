@@ -65,21 +65,27 @@ export default function ReplyItem({ reply, onDelete, onEdit }: ReplyItemProps) {
     return (
         <div className="flex gap-3 group/reply">
             <div className="shrink-0">
-                <Avatar
-                    size="medium" // Size per reference (looks similar to main user)
-                    type="text"
-                    text={reply.user?.name || 'U'}
-                    className="bg-gray-700 ring-2 ring-[#1a1b4b]"
-                />
+                <div className="relative group/avatar">
+                    <div className="absolute -inset-0.5 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 rounded-full opacity-60 group-hover/avatar:opacity-100 blur-[1px] transition duration-500"></div>
+                    <div className="relative w-10 h-10 rounded-full border-2 border-[#1a1b4b] bg-[#1a1b4b] flex items-center justify-center overflow-hidden">
+                        {reply.user?.avatarUrl ? (
+                            <img src={reply.user.avatarUrl} alt={reply.user.name} className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="text-sm font-black text-white bg-gradient-to-br from-indigo-400 to-purple-600 w-full h-full flex items-center justify-center">
+                                {reply.user?.name?.charAt(0) || 'U'}
+                            </span>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <div className="flex-1 min-w-0">
                 {/* Content Box */}
-                <div className="bg-[#24265a] rounded-xl p-3 border border-[#2c2d65]/50">
-                    <div className="flex items-baseline justify-between mb-1">
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-white font-black text-sm">{reply.user?.name || 'Unknown'}</span>
-                            <span className="text-gray-500 text-[10px] font-black uppercase tracking-wider">
+                <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-lg">
+                    <div className="flex items-start justify-between mb-2">
+                        <div className="flex flex-col">
+                            <span className="text-white font-bold text-sm tracking-tight">{reply.user?.name || 'Unknown'}</span>
+                            <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest opacity-70">
                                 {new Date(reply.createdAt).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit' })}
                             </span>
                         </div>

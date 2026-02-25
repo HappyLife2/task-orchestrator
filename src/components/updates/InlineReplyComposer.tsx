@@ -52,16 +52,18 @@ export default function InlineReplyComposer({ currentUser, onSubmit, autoFocus =
     return (
         <div className="flex gap-3 items-start w-full">
             <div className="shrink-0 mt-0.5">
-                <Avatar
-                    size="medium"
-                    type="text"
-                    text={currentUser.name || 'Me'}
-                    className="bg-gray-700 ring-2 ring-[#1a1b4b]"
-                />
+                <div className="relative group/avatar">
+                    <div className="absolute -inset-0.5 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 rounded-full opacity-60 group-hover/avatar:opacity-100 blur-[1px] transition duration-500"></div>
+                    <div className="relative w-10 h-10 rounded-full border-2 border-[#1a1b4b] bg-[#1a1b4b] flex items-center justify-center overflow-hidden">
+                        <span className="text-sm font-black text-white bg-gradient-to-br from-indigo-400 to-purple-600 w-full h-full flex items-center justify-center">
+                            {currentUser.name?.charAt(0) || 'M'}
+                        </span>
+                    </div>
+                </div>
             </div>
 
             <div className="flex-1">
-                <div className={`bg-[#1a1b4b] border rounded-xl px-4 py-3 transition-all duration-200 ${isFocused ? 'border-blue-500/50' : 'border-[#2c2d65]'}`}>
+                <div className={`bg-white/5 backdrop-blur-md border rounded-2xl px-4 py-3 transition-all duration-300 shadow-inner ${isFocused ? 'border-indigo-500/50 ring-1 ring-indigo-500/20' : 'border-white/10'}`}>
                     <textarea
                         ref={textareaRef}
                         value={content}

@@ -82,56 +82,68 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
                 - Single Border
                 - Contains: Post Header, Post Content, Post Footer (Like/Reply), Divider, Replies, Reply Input
             */}
-            <div className="rounded-xl border border-[#2c2d65] bg-[#1a1b4b] overflow-hidden">
+            <div className="rounded-2xl border border-white/10 bg-[#121331]/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-500 hover:shadow-[0_12px_48px_rgba(0,0,0,0.5)] hover:border-white/20">
 
                 {/* --- POST SECTION --- */}
                 <div className="p-6">
                     {/* Header Row */}
-                    <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <Avatar
-                                size="medium"
-                                type="text"
-                                text={update.user?.name || 'U'}
-                                className="bg-gradient-to-br from-gray-700 to-gray-600 ring-2 ring-[#1a1b4b]"
-                            />
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            {/* Premium Avatar */}
+                            <div className="relative group/avatar">
+                                <div className="absolute -inset-0.5 bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 rounded-full opacity-75 group-hover/avatar:opacity-100 blur-[2px] transition duration-500"></div>
+                                <div className="relative w-12 h-12 rounded-full border-2 border-[#121331] bg-[#1a1b4b] flex items-center justify-center overflow-hidden">
+                                    {update.user?.avatarUrl ? (
+                                        <img src={update.user.avatarUrl} alt={update.user.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-lg font-black text-white bg-gradient-to-br from-indigo-400 to-purple-600 w-full h-full flex items-center justify-center">
+                                            {update.user?.name?.charAt(0) || 'U'}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-[#121331] rounded-full shadow-lg"></div>
+                            </div>
+
                             <div>
-                                <div className="flex items-baseline gap-2">
-                                    <span className="text-white font-black text-base">{update.user?.name || 'Unknown'}</span>
-                                    <span className="text-gray-500 text-[11px] font-black uppercase tracking-wider">
-                                        {new Date(update.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                <div className="flex flex-col">
+                                    <span className="text-white font-bold text-lg tracking-tight hover:text-indigo-300 transition-colors cursor-pointer">{update.user?.name || 'Unknown'}</span>
+                                    <span className="text-gray-500 text-[11px] font-bold uppercase tracking-widest opacity-80 flex items-center gap-2">
+                                        <span className="w-1 h-1 bg-gray-600 rounded-full" />
+                                        {new Date(update.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Header Actions (Top Right) */}
-                        <div className="flex items-center gap-1 text-gray-400">
+                        <div className="flex items-center gap-2">
                             {isConfirmingDelete ? (
-                                <div className="flex items-center gap-2 bg-[#2c2d65] px-3 py-1 rounded-md">
-                                    <span className="text-xs text-gray-300">Delete?</span>
-                                    <button type="button" onClick={confirmDelete} className="text-xs text-red-400 hover:text-red-300 font-bold transition-colors">Yes</button>
-                                    <button type="button" onClick={cancelDelete} className="text-xs text-gray-400 hover:text-white transition-colors">No</button>
+                                <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl animate-in fade-in zoom-in duration-200">
+                                    <span className="text-[11px] text-red-200 font-bold uppercase tracking-wider">Confirm?</span>
+                                    <button type="button" onClick={confirmDelete} className="text-[11px] bg-red-500 text-white px-2 py-0.5 rounded-md hover:bg-red-600 font-bold transition-all">DELETE</button>
+                                    <button type="button" onClick={cancelDelete} className="text-[11px] text-gray-400 hover:text-white transition-colors">CANCEL</button>
                                 </div>
                             ) : (
-                                <>
+                                <div className="flex items-center gap-1 opacity-0 group-hover/activity:opacity-100 transition-all duration-300 translate-y-1 group-hover/activity:translate-y-0">
                                     <button
                                         type="button"
                                         onClick={handleEditClick}
-                                        className="p-1.5 text-gray-400 hover:text-white rounded hover:bg-white/10 transition-colors"
+                                        className="p-2 text-gray-400 hover:text-indigo-400 rounded-xl hover:bg-indigo-500/10 transition-all border border-transparent hover:border-indigo-500/20"
                                         aria-label="Edit"
+                                        title="Edit post"
                                     >
-                                        <Edit2 size={16} />
+                                        <Edit2 size={16} strokeWidth={2.5} />
                                     </button>
                                     <button
                                         type="button"
                                         onClick={handleDelete}
-                                        className="p-1.5 text-red-500/80 hover:text-red-500 rounded hover:bg-red-500/10 transition-colors"
+                                        className="p-2 text-gray-400 hover:text-red-400 rounded-xl hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20"
                                         aria-label="Delete"
+                                        title="Delete post"
                                     >
-                                        <Trash2 size={16} />
+                                        <Trash2 size={16} strokeWidth={2.5} />
                                     </button>
-                                </>
+                                </div>
                             )}
                         </div>
                     </div>
