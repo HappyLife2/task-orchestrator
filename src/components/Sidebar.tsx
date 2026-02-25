@@ -11,7 +11,8 @@ import {
     User,
     ChevronDown,
     LayoutDashboard,
-    Trash2
+    Trash2,
+    LogOut
 } from 'lucide-react';
 import {
     EditableText,
@@ -194,6 +195,17 @@ export default function Sidebar() {
         setBoardToDelete({ id: boardId, name: org?.departments.find(d => d.id === deptId)?.boards.find(b => b.id === boardId)?.name || 'Board', deptId });
     };
 
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (err) {
+            console.error('Logout error:', err);
+        } finally {
+            router.push('/login');
+            router.refresh();
+        }
+    };
+
     if (loading) return <div className="w-64 bg-background border-r border-[var(--glass-border)] p-4 text-white">Loading...</div>;
     if (!org) return <div className="w-64 bg-background border-r border-[var(--glass-border)] p-4 text-white">Error loading organization</div>;
 
@@ -324,7 +336,7 @@ export default function Sidebar() {
             </div>
 
             {/* User Footer */}
-            <div className="p-6 border-t border-[var(--glass-border)] bg-black/20">
+            <div className="p-6 border-t border-[var(--glass-border)] bg-black/20 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-2xl bg-[var(--grad-aurora)] p-[1px]">
                         <div className="w-full h-full bg-[#03030b] rounded-2xl flex items-center justify-center text-white">
@@ -339,6 +351,13 @@ export default function Sidebar() {
                         </div>
                     </div>
                 </div>
+                <button
+                    onClick={handleLogout}
+                    className="p-2 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all flexitems-center justify-center group"
+                    title="Sign Out"
+                >
+                    <LogOut size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+                </button>
             </div>
 
             {/* Delete Confirmation Modal */}
