@@ -10,7 +10,7 @@ export interface ActivityUpdate {
     id: string;
     content: string;
     userId: string;
-    user?: { name: string; avatarUrl?: string; email?: string };
+    user?: { id: string; name: string; avatarUrl?: string; email?: string };
     createdAt: string;
     replies?: any[];
     reactions?: any[];
@@ -113,9 +113,9 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
                             </div>
                         </div>
 
-                        {/* Header Actions (Top Right) - Only if owner */}
+                        {/* Header Actions (Top Right) - Only if owner or ADMIN */}
                         <div className="flex items-center gap-2">
-                            {currentUser.id === update.userId && (
+                            {(currentUser.id === update.userId || currentUser.id === update.user?.id || (currentUser as any).role === 'ADMIN') && (
                                 isConfirmingDelete ? (
                                     <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-xl animate-in fade-in zoom-in duration-200">
                                         <span className="text-[11px] text-red-200 font-bold uppercase tracking-wider">Confirm?</span>

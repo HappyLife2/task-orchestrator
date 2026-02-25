@@ -1212,8 +1212,22 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                         placeholder="Section name..."
                                         className="flex-1 bg-transparent border border-[#2c2d65] rounded px-2 py-1.5 text-sm text-white outline-none focus:border-[#e0592a]"
                                     />
-                                    <button onClick={handleCreateSection} className="px-3 py-1.5 bg-[#e0592a] text-white text-sm rounded hover:bg-[#c04a22] transition-colors">Add</button>
-                                    <button onClick={() => { setIsAddingSection(false); setNewSectionName(''); setNewSectionColor('#e0592a'); }} className="px-2 py-1 text-gray-400 hover:text-white text-sm">Cancel</button>
+                                    <motion.button
+                                        whileHover={{ scale: 1.05, backgroundColor: '#f06d3e' }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={handleCreateSection}
+                                        className="px-5 py-2 bg-[#e0592a] text-white text-xs font-black rounded-xl transition-all shadow-lg shadow-[#e0592a]/20 uppercase tracking-widest"
+                                    >
+                                        Submit
+                                    </motion.button>
+                                    <IconButton
+                                        icon={X as any}
+                                        onClick={() => { setIsAddingSection(false); setNewSectionName(''); setNewSectionColor('#e0592a'); }}
+                                        size="medium"
+                                        kind="tertiary"
+                                        ariaLabel="Cancel"
+                                        className="!text-gray-200 hover:!text-white hover:!bg-white/10 transition-all"
+                                    />
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-gray-400">Section color:</span>
@@ -1291,12 +1305,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                         />
                                                                     </div>
                                                                     <motion.button
-                                                                        whileHover={{ scale: 1.05 }}
+                                                                        whileHover={{ scale: 1.05, backgroundColor: 'var(--accent-indigo-bright, #6366f1)' }}
                                                                         whileTap={{ scale: 0.95 }}
                                                                         onClick={handleCreateTask}
-                                                                        className="px-5 py-2.5 bg-accent-indigo text-white text-xs font-black rounded-xl hover:bg-accent-indigo/80 transition-all shadow-lg shadow-accent-indigo/20 uppercase tracking-widest"
+                                                                        className="px-6 py-2.5 bg-accent-indigo text-white text-xs font-black rounded-xl transition-all shadow-[0_8px_20px_-4px_rgba(99,102,241,0.4)] uppercase tracking-widest border border-white/10"
                                                                     >
-                                                                        Initialize
+                                                                        Submit
                                                                     </motion.button>
                                                                     <IconButton
                                                                         icon={X as any}
@@ -1304,6 +1318,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                         size="medium"
                                                                         kind="tertiary"
                                                                         ariaLabel="Cancel"
+                                                                        className="!text-gray-200 hover:!text-white hover:!bg-white/10 transition-all"
                                                                     />
                                                                 </div>
                                                             </td>

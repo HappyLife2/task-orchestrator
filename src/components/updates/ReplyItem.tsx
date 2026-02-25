@@ -98,9 +98,9 @@ export default function ReplyItem({ reply, currentUser, onDelete, onEdit, onReac
                             </span>
                         </div>
 
-                        {/* Top-right icons: Only if owner */}
+                        {/* Top-right icons: Only if owner or ADMIN */}
                         <div className="opacity-0 group-hover/reply:opacity-100 flex items-center gap-2 transition-opacity place-self-start">
-                            {currentUser.id === reply.userId && (
+                            {(currentUser.id === reply.userId || currentUser.id === reply.user?.id || (currentUser as any).role === 'ADMIN') && (
                                 isConfirmingDelete ? (
                                     <div className="flex items-center gap-2 bg-[#1a1b4b] border border-[#2c2d65] px-2 py-0.5 rounded shadow-sm">
                                         <span className="text-[10px] text-gray-300 font-medium">Delete?</span>
