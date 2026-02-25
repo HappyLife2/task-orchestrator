@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare } from 'lucide-react';
-import { Button, TextField, EditableHeading, IconButton, Tooltip } from '@vibe/core';
+import { Button, TextField, EditableHeading, IconButton } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
 import { PersonCell } from '@/components/board/cells/PersonCell';
@@ -463,12 +463,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const wipSubitemCount = wipTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0);
     const doneSubitemCount = doneTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0);
 
-    const renderTooltipContent = (taskCount: number, subitemCount: number) => (
-        <div className="flex flex-col gap-1 p-1">
-            <span className="font-bold">{taskCount} Task{taskCount !== 1 ? 's' : ''}</span>
-            <span className="text-gray-300 text-xs">{subitemCount} Subitem{subitemCount !== 1 ? 's' : ''}</span>
-        </div>
+    const renderInlineCounter = (taskCount: number, subitemCount: number) => (
+        <span className="text-[#9093a3] text-[15px] ml-1 font-medium tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            {taskCount} Item{taskCount !== 1 ? 's' : ''} / {subitemCount} Subitem{subitemCount !== 1 ? 's' : ''}
+        </span>
     );
+
 
     const fetchData = useCallback(async () => {
         try {
@@ -774,6 +774,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             size="small"
                             kind="tertiary"
                             ariaLabel="Expand"
+                            className="!text-gray-300 hover:!text-white"
                         />
                     )}
                     {isEditing ? (
@@ -789,12 +790,19 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             size="small"
                         />
                     ) : (
-                        <button
-                            onClick={() => { setEditingTaskId(task.id); setTaskNameInput(task.name); }}
-                            className="text-left text-white text-[13px] hover:text-[#e0592a] transition-colors font-medium truncate"
-                        >
-                            {task.name}
-                        </button>
+                        <div className="flex items-center min-w-0">
+                            <button
+                                onClick={() => { setEditingTaskId(task.id); setTaskNameInput(task.name); }}
+                                className="text-left text-white text-[13px] hover:text-[#e0592a] transition-colors font-medium truncate"
+                            >
+                                {task.name}
+                            </button>
+                            {!isSubitem && (task.subTasks?.length || 0) > 0 && (
+                                <span className="ml-2 bg-white/10 text-gray-300 text-[11px] font-medium px-1.5 py-0.5 rounded-md flex items-center justify-center min-w-[20px] h-[20px] shadow-sm">
+                                    {task.subTasks?.length}
+                                </span>
+                            )}
+                        </div>
                     )}
 
                     <div className="flex-1" />
@@ -975,6 +983,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                         kind="tertiary"
                                         size="small"
                                         leftIcon={Plus as any}
+                                        className="!justify-start !text-gray-400 hover:!text-white font-medium hover:!bg-white/5"
                                     >
                                         Add Subitem
                                     </Button>
@@ -1167,16 +1176,15 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                         <ChevronRight size={18} className={`text-accent-indigo transition-transform duration-300 ${isWipSectionCollapsed ? '' : 'rotate-90'}`} />
                                                     </motion.button>
 
-                                                    <Tooltip content={renderTooltipContent(wipTasks.length, wipSubitemCount)} position={Tooltip.positions.TOP} showDelay={300}>
-                                                        <div className="flex-1 min-w-0 vibe-header-inherit">
-                                                            <EditableHeading
-                                                                type="h3"
-                                                                value={wipSectionName}
-                                                                onChange={val => setWipSectionName(val || 'Active Tasks')}
-                                                                className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                            />
-                                                        </div>
-                                                    </Tooltip>
+                                                    <div className="flex items-center min-w-0 vibe-header-inherit">
+                                                        <EditableHeading
+                                                            type="h3"
+                                                            value={wipSectionName}
+                                                            onChange={val => setWipSectionName(val || 'Active Tasks')}
+                                                            className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                        />
+                                                        {renderInlineCounter(wipTasks.length, wipSubitemCount)}
+                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1256,16 +1264,17 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                 <ChevronRight size={18} style={{ color: section.color }} className={`transition-transform duration-300 ${section.collapsed ? '' : 'rotate-90'}`} />
                                                             </motion.button>
 
-                                                            <Tooltip content={renderTooltipContent(secTasks.length, secTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0))} position={Tooltip.positions.TOP} showDelay={300}>
-                                                                <div className="flex-1 min-w-0 vibe-header-inherit" style={{ color: section.color }}>
-                                                                    <EditableHeading
-                                                                        type="h3"
-                                                                        value={section.name}
-                                                                        onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
-                                                                        className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                                    />
-                                                                </div>
-                                                            </Tooltip>
+                                                            <div className="flex items-center min-w-0 vibe-header-inherit" style={{ color: section.color }}>
+                                                                <EditableHeading
+                                                                    type="h3"
+                                                                    value={section.name}
+                                                                    onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
+                                                                    className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                                />
+                                                                {renderInlineCounter(secTasks.length, secTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0))}
+                                                            </div>
+
+                                                            <div className="flex-1"></div>
 
                                                             <button
                                                                 onClick={() => setCustomSections(prev => prev.filter(s => s.id !== section.id))}
@@ -1307,16 +1316,15 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                             <ChevronRight size={18} className={`text-accent-cyan transition-transform duration-300 ${isDoneSectionCollapsed ? '' : 'rotate-90'}`} />
                                                         </motion.button>
 
-                                                        <Tooltip content={renderTooltipContent(doneTasks.length, doneSubitemCount)} position={Tooltip.positions.TOP} showDelay={300}>
-                                                            <div className="flex-1 min-w-0 vibe-header-inherit">
-                                                                <EditableHeading
-                                                                    type="h3"
-                                                                    value={doneSectionName}
-                                                                    onChange={val => setDoneSectionName(val || 'Done')}
-                                                                    className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                                />
-                                                            </div>
-                                                        </Tooltip>
+                                                        <div className="flex items-center min-w-0 vibe-header-inherit">
+                                                            <EditableHeading
+                                                                type="h3"
+                                                                value={doneSectionName}
+                                                                onChange={val => setDoneSectionName(val || 'Done')}
+                                                                className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                            />
+                                                            {renderInlineCounter(doneTasks.length, doneSubitemCount)}
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>

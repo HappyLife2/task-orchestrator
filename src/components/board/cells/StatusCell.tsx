@@ -20,9 +20,13 @@ export const StatusCell: React.FC<StatusCellProps> = ({ value, onChange, setting
         <div className="relative w-full h-full">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full h-full text-white text-[13px] font-normal transition-opacity hover:opacity-90 flex items-center justify-center m-0 outline-none"
-                style={{ backgroundColor: statusColor }}
+                className="w-full h-full text-white text-[13px] font-normal transition-opacity flex items-center justify-center m-0 outline-none relative overflow-hidden group/btn"
+                style={{
+                    background: `linear-gradient(135deg, ${statusColor} 0%, ${statusColor}cc 50%, ${statusColor}99 100%)`,
+                    borderTop: `1px solid ${statusColor}80`
+                }}
             >
+                <div className="absolute inset-0 bg-white opacity-0 group-hover/btn:opacity-[0.15] transition-opacity" />
                 {statusLabel}
             </button>
 
@@ -37,16 +41,17 @@ export const StatusCell: React.FC<StatusCellProps> = ({ value, onChange, setting
                                     onChange(label);
                                     setIsOpen(false);
                                 }}
-                                className="w-full px-3 py-2 text-left hover:bg-[#2c2d65] transition-colors flex items-center justify-between group"
+                                className="w-full px-3 py-2 text-left transition-colors flex items-center justify-between group relative overflow-hidden"
                             >
-                                <div className="flex items-center gap-2">
-                                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }} />
-                                    <span className="text-sm text-gray-200 capitalize group-hover:text-white">
+                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(90deg, ${color}33 0%, transparent 100%)` }} />
+                                <div className="flex items-center gap-2 relative z-10">
+                                    <div className="w-3 h-3 rounded-sm border border-black/20" style={{ backgroundColor: color }} />
+                                    <span className="text-sm text-gray-200 capitalize group-hover:text-white transition-colors">
                                         {label}
                                     </span>
                                 </div>
                                 {value?.toLowerCase() === label.toLowerCase() && (
-                                    <Check size={14} className="text-[#e0592a]" />
+                                    <Check size={14} className="text-white relative z-10" />
                                 )}
                             </button>
                         ))}
