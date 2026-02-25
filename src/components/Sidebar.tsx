@@ -73,6 +73,46 @@ export default function Sidebar() {
     const [pwdSuccess, setPwdSuccess] = useState('');
     const [isChangingPwd, setIsChangingPwd] = useState(false);
 
+    // Sidebar Resize State
+    const [sidebarWidth, setSidebarWidth] = useState(256);
+    const [isResizing, setIsResizing] = useState(false);
+
+    // Persist and Restore width
+    useEffect(() => {
+        const savedWidth = localStorage.getItem('sidebar-width');
+        if (savedWidth) {
+            setSidebarWidth(parseInt(savedWidth, 10));
+        }
+    }, []);
+
+    const startResizing = useCallback((e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsResizing(true);
+    }, []);
+
+    const stopResizing = useCallback(() => {
+        setIsResizing(false);
+    }, []);
+
+    const resize = useCallback((e: MouseEvent) => {
+        if (isResizing) {
+            const newWidth = e.clientX;
+            if (newWidth >= 200 && newWidth <= 450) {
+                setSidebarWidth(newWidth);
+                localStorage.setItem('sidebar-width', newWidth.toString());
+            }
+        }
+    }, [isResizing]);
+
+    useEffect(() => {
+        window.addEventListener('mousemove', resize);
+        window.addEventListener('mouseup', stopResizing);
+        return () => {
+            window.removeEventListener('mousemove', resize);
+            window.removeEventListener('mouseup', stopResizing);
+        };
+    }, [resize, stopResizing]);
+
     // Fetch Data
     const fetchOrg = useCallback(() => {
         fetch('/api/org/me')
@@ -324,7 +364,18 @@ export default function Sidebar() {
     if (!org) return <div className="w-64 bg-background border-r border-[var(--glass-border)] p-4 text-white">Error loading organization</div>;
 
     return (
-        <div className="w-64 bg-background/50 backdrop-blur-3xl h-screen flex flex-col border-r border-[var(--glass-border)] relative">
+        <div
+            style={{ width: `${sidebarWidth}px` }}
+            className={`bg-background/50 backdrop-blur-3xl h-screen flex flex-col border-r border-[var(--glass-border)] relative transition-[width] duration-75 ease-out ${isResizing ? 'select-none' : ''}`}
+        >
+            {/* Resize Handle */}
+            <div
+                onMouseDown={startResizing}
+                className={`
+                    absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-accent-indigo/50 transition-colors z-50
+                    ${isResizing ? 'bg-accent-indigo w-0.5' : ''}
+                `}
+            />
             {/* Header */}
             <div className="p-6 border-b border-[var(--glass-border)]">
                 <Text type="text1" weight="bold" className="text-white truncate tracking-tighter uppercase text-glow">
