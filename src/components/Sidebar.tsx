@@ -57,6 +57,8 @@ export default function Sidebar() {
     const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
     const [boardToDelete, setBoardToDelete] = useState<{ id: string, name: string, deptId: string } | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deptToDelete, setDeptToDelete] = useState<{ id: string, name: string } | null>(null);
+    const [isDeletingDept, setIsDeletingDept] = useState(false);
 
     // Password Modal State
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -215,6 +217,41 @@ export default function Sidebar() {
         setBoardToDelete({ id: boardId, name: org?.departments.find(d => d.id === deptId)?.boards.find(b => b.id === boardId)?.name || 'Board', deptId });
     };
 
+    const confirmDeleteDepartment = async () => {
+        if (!deptToDelete) return;
+
+        setIsDeletingDept(true);
+        const { id: deptId } = deptToDelete;
+
+        const oldOrg = org;
+        if (org) {
+            setOrg({
+                ...org,
+                departments: org.departments.filter(d => d.id !== deptId)
+            });
+        }
+
+        try {
+            const res = await fetch(`/api/departments/${deptId}`, {
+                method: 'DELETE',
+            });
+            if (!res.ok) {
+                throw new Error('Failed to delete department');
+            }
+        } catch (error) {
+            console.error('Failed to delete department', error);
+            setOrg(oldOrg);
+        } finally {
+            setIsDeletingDept(false);
+            setDeptToDelete(null);
+        }
+    };
+
+    const handleDeleteDepartment = async (e: React.MouseEvent, deptId: string) => {
+        e.stopPropagation();
+        setDeptToDelete({ id: deptId, name: org?.departments.find(d => d.id === deptId)?.name || 'Department' });
+    };
+
     const handleLogout = async () => {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
@@ -348,6 +385,14 @@ export default function Sidebar() {
                                         onClick={(e) => { e.stopPropagation(); handleAddBoard(dept.id); }}
                                         ariaLabel="Add Board"
                                     />
+                                    <IconButton
+                                        icon={Trash2 as any}
+                                        size="small"
+                                        kind="tertiary"
+                                        className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-400 transition-all scale-75"
+                                        onClick={(e) => handleDeleteDepartment(e, dept.id)}
+                                        ariaLabel="Delete Department"
+                                    />
                                 </div>
 
                                 <AnimatePresence initial={false}>
@@ -458,7 +503,7 @@ export default function Sidebar() {
                         <ModalBasicLayout>
                             <ModalHeader title="Delete Sequence" />
                             <ModalContent>
-                                <Text type="text1" element="p" className="text-gray-300">
+                                <Text type="text1" element="p" className="text-slate-700">
                                     Confirm destruction of archive <span className="text-red-400 font-bold">&quot;{boardToDelete?.name}&quot;</span>. This protocol is irreversible.
                                 </Text>
                             </ModalContent>
@@ -472,6 +517,35 @@ export default function Sidebar() {
                             secondaryButton={{
                                 text: "Abort",
                                 onClick: () => !isDeleting && setBoardToDelete(null)
+                            }}
+                        />
+                    </Modal>
+                )}
+                {deptToDelete && (
+                    <Modal
+                        id="delete-dept-modal"
+                        show={!!deptToDelete}
+                        alertModal
+                        size="medium"
+                        onClose={() => !isDeletingDept && setDeptToDelete(null)}
+                    >
+                        <ModalBasicLayout>
+                            <ModalHeader title="Delete Department" />
+                            <ModalContent>
+                                <Text type="text1" element="p" className="text-slate-700">
+                                    Confirm destruction of department <span className="text-red-400 font-bold">&quot;{deptToDelete?.name}&quot;</span>. This protocol is irreversible and will delete all associated boards!
+                                </Text>
+                            </ModalContent>
+                        </ModalBasicLayout>
+                        <ModalFooter
+                            primaryButton={{
+                                text: isDeletingDept ? "Destructing..." : "Confirm Protocol",
+                                color: "negative",
+                                onClick: confirmDeleteDepartment
+                            }}
+                            secondaryButton={{
+                                text: "Abort",
+                                onClick: () => !isDeletingDept && setDeptToDelete(null)
                             }}
                         />
                     </Modal>

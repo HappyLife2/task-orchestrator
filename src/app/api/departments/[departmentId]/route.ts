@@ -29,3 +29,27 @@ export async function PATCH(
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
+
+export async function DELETE(
+    req: NextRequest,
+    { params }: { params: { departmentId: string } }
+) {
+    const token = req.cookies.get('token')?.value;
+    const payload = verifyToken(token || '');
+
+    // Only allow admins or owners to delete departments
+    if (!payload || !['ADMIN', 'OWNER'].includes(payload.role)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+        await db.department.delete({
+            where: { id: params.departmentId },
+        });
+
+        return new NextResponse(null, { status: 204 });
+    } catch (error) {
+        console.error('Error deleting department:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}
