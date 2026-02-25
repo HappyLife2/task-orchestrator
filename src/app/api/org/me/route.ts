@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
             departments: {
                 include: {
                     boards: {
-                        where: payload.role === 'ADMIN' ? undefined : {
+                        where: ['ADMIN', 'OWNER'].includes(payload.role) ? {} : {
                             members: {
                                 some: {
                                     userId: payload.userId

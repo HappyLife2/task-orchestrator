@@ -26,7 +26,7 @@ export async function GET(
         return NextResponse.json({ error: 'Board not found' }, { status: 404 });
     }
 
-    if (payload.role !== 'ADMIN' && board.members.length === 0) {
+    if (!['ADMIN', 'OWNER'].includes(payload.role) && board.members.length === 0) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -54,7 +54,7 @@ export async function PATCH(
         });
 
         if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        if (payload.role !== 'ADMIN' && boardCheck.members.length === 0) {
+        if (!['ADMIN', 'OWNER'].includes(payload.role) && boardCheck.members.length === 0) {
             return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 
@@ -95,7 +95,7 @@ export async function DELETE(
         });
 
         if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-        if (payload.role !== 'ADMIN' && boardCheck.members.length === 0) {
+        if (!['ADMIN', 'OWNER'].includes(payload.role) && boardCheck.members.length === 0) {
             return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 
