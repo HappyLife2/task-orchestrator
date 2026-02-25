@@ -16,7 +16,7 @@ export async function GET(
         where: { id: params.boardId },
         include: {
             department: true,
-            boardMembers: {
+            members: {
                 where: { userId: payload.userId }
             }
         },
@@ -26,7 +26,7 @@ export async function GET(
         return NextResponse.json({ error: 'Board not found' }, { status: 404 });
     }
 
-    if (payload.role !== 'ADMIN' && board.boardMembers.length === 0) {
+    if (payload.role !== 'ADMIN' && board.members.length === 0) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 

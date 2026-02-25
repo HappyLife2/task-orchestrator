@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
         where: { id: boardId },
         include: {
             department: true,
-            boardMembers: { where: { userId: payload.userId } }
+            members: { where: { userId: payload.userId } }
         }
     });
 
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
         return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
     }
 
-    if (payload.role !== 'ADMIN' && board.boardMembers.length === 0) {
+    if (payload.role !== 'ADMIN' && board.members.length === 0) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest, { params }: { params: { boardId: st
             where: { id: boardId },
             include: {
                 department: true,
-                boardMembers: { where: { userId: payload.userId } }
+                members: { where: { userId: payload.userId } }
             }
         });
 
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest, { params }: { params: { boardId: st
             return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
         }
 
-        if (payload.role !== 'ADMIN' && board.boardMembers.length === 0) {
+        if (payload.role !== 'ADMIN' && board.members.length === 0) {
             return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 
