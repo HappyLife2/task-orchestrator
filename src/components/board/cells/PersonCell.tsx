@@ -5,6 +5,7 @@ import { User, X } from 'lucide-react';
 interface Employee {
     id: string;
     name: string;
+    position?: string;
 }
 
 interface PersonCellProps {
@@ -51,9 +52,16 @@ export const PersonCell: React.FC<PersonCellProps> = ({ value, onChange, employe
                                     <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-medium flex-shrink-0">
                                         {emp.name.charAt(0).toUpperCase()}
                                     </div>
-                                    <span className="text-sm text-gray-200 group-hover:text-white truncate">
-                                        {emp.name}
-                                    </span>
+                                    <div className="flex flex-col flex-1 min-w-0">
+                                        <span className="text-sm text-gray-200 group-hover:text-white truncate">
+                                            {emp.name}
+                                        </span>
+                                        {emp.position && (
+                                            <span className="text-[10px] text-gray-500 truncate group-hover:text-gray-300">
+                                                {emp.position}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>

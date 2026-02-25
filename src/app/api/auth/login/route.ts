@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
             userId: user.id,
             orgId: user.organizationId,
             role: user.role,
+            position: user.position || undefined,
         });
 
         const response = NextResponse.json({
@@ -38,6 +39,7 @@ export async function POST(req: NextRequest) {
                 email: user.email,
                 name: user.name,
                 role: user.role,
+                position: user.position,
                 organizationId: user.organizationId,
             },
             token,

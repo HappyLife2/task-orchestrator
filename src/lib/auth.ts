@@ -17,6 +17,7 @@ export interface JWTPayload {
     userId: string;
     orgId: string;
     role: string;
+    position?: string;
 }
 
 export const hashPassword = async (password: string) => {

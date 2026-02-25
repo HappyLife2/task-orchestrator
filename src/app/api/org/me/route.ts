@@ -15,6 +15,13 @@ export async function GET(req: NextRequest) {
             departments: {
                 include: {
                     boards: {
+                        where: payload.role === 'ADMIN' ? undefined : {
+                            boardMembers: {
+                                some: {
+                                    userId: payload.userId
+                                }
+                            }
+                        },
                         select: {
                             id: true,
                             name: true,

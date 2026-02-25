@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
             email: true,
             name: true,
             role: true,
+            position: true,
             organizationId: true,
             organization: {
                 select: {

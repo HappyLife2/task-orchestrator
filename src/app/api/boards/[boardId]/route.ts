@@ -16,11 +16,18 @@ export async function GET(
         where: { id: params.boardId },
         include: {
             department: true,
+            boardMembers: {
+                where: { userId: payload.userId }
+            }
         },
     });
 
     if (!board) {
         return NextResponse.json({ error: 'Board not found' }, { status: 404 });
+    }
+
+    if (payload.role !== 'ADMIN' && board.boardMembers.length === 0) {
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     return NextResponse.json({
@@ -41,6 +48,16 @@ export async function PATCH(
     }
 
     try {
+        const boardCheck = await db.board.findUnique({
+            where: { id: params.boardId },
+            include: { members: { where: { userId: payload.userId } } }
+        });
+
+        if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        if (payload.role !== 'ADMIN' && boardCheck.members.length === 0) {
+            return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+        }
+
         const body = await req.json();
         const { name, icon, description } = body;
 
@@ -72,6 +89,16 @@ export async function DELETE(
     }
 
     try {
+        const boardCheck = await db.board.findUnique({
+            where: { id: params.boardId },
+            include: { members: { where: { userId: payload.userId } } }
+        });
+
+        if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        if (payload.role !== 'ADMIN' && boardCheck.members.length === 0) {
+            return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+        }
+
         await db.board.delete({
             where: { id: params.boardId },
         });

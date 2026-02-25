@@ -4,12 +4,13 @@
 import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare } from 'lucide-react';
+import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare, Link as LinkIcon } from 'lucide-react';
 import { Button, TextField, EditableHeading, IconButton } from '@vibe/core';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
 import { PersonCell } from '@/components/board/cells/PersonCell';
 import { motion, AnimatePresence } from 'framer-motion';
+import BoardInviteModal from '@/components/board/BoardInviteModal';
 
 // Types
 interface Task {
@@ -422,6 +423,10 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
     const [selectedTaskForUpdates, setSelectedTaskForUpdates] = useState<Task | null>(null);
 
+    const [currentUser, setCurrentUser] = useState<any>(null);
+    const [boardMembers, setBoardMembers] = useState<any[]>([]);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
     const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
     const [taskNameInput, setTaskNameInput] = useState('');
     const [isAddingTask, setIsAddingTask] = useState(false);
@@ -473,10 +478,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const fetchData = useCallback(async () => {
         try {
             setLoading(true);
-            const [boardRes, tasksRes, employeesRes] = await Promise.all([
+            const [boardRes, tasksRes, employeesRes, meRes, membersRes] = await Promise.all([
                 fetch(`/api/boards/${boardId}`),
                 fetch(`/api/boards/${boardId}/tasks`),
-                fetch('/api/employees')
+                fetch('/api/employees'),
+                fetch('/api/auth/me'),
+                fetch(`/api/boards/${boardId}/members`)
             ]);
 
             if (boardRes.ok && tasksRes.ok) {
@@ -498,6 +505,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
             if (employeesRes.ok) {
                 setEmployees(await employeesRes.json());
+            }
+            if (meRes.ok) {
+                const meData = await meRes.json();
+                setCurrentUser(meData.user);
+            }
+            if (membersRes.ok) {
+                const membersData = await membersRes.json();
+                setBoardMembers(membersData.members || []);
             }
         } catch (e) {
             console.error(e);
@@ -521,6 +536,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const handleCreateTask = async () => {
+        if (currentUser?.role === 'VIEWER' || currentUser?.role === 'USER') return;
         if (!newTaskName.trim()) return;
         try {
             const res = await fetch(`/api/boards/${boardId}/tasks`, {
@@ -538,6 +554,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const handleCreateSubitem = async (parentId: string) => {
+        if (currentUser?.role === 'VIEWER' || currentUser?.role === 'USER') return;
         if (!newSubitemName.trim()) return;
         try {
             const res = await fetch(`/api/tasks/${parentId}/subtasks`, {
@@ -560,6 +577,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const handleDeleteTask = async (taskId: string, isSubitem = false, parentId?: string) => {
+        if (currentUser?.role === 'VIEWER' || currentUser?.role === 'USER') return;
         // Optimistic remove
         setTasks(prev => {
             if (isSubitem && parentId) {
@@ -581,6 +599,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const handleCreateSection = () => {
+        if (currentUser?.role === 'VIEWER' || currentUser?.role === 'USER') return;
         if (!newSectionName.trim()) return;
         setCustomSections(prev => [...prev, { id: crypto.randomUUID(), name: newSectionName.trim(), color: newSectionColor, collapsed: false }]);
         setNewSectionName('');
@@ -638,6 +657,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
 
     const handleUpdateTaskName = async (taskId: string) => {
+        if (currentUser?.role === 'VIEWER') return;
         if (!taskNameInput.trim()) return;
         try {
             const res = await fetch(`/api/tasks/${taskId}`, {
@@ -657,6 +677,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     };
 
     const handleUpdateTaskColumn = async (taskId: string, columnId: string, value: any) => {
+        if (currentUser?.role === 'VIEWER') return;
         // If the task being edited is part of the current selection, treat it as a bulk action
         const isBulkUpdate = selectedTaskIds.has(taskId) && selectedTaskIds.size > 1;
         const targetTaskIds = isBulkUpdate ? Array.from(selectedTaskIds) : [taskId];
@@ -1079,42 +1100,57 @@ export default function BoardView({ boardId }: { boardId: string }) {
                             </span>
                         </div>
                     </div>
-                    {/* New Item button with dropdown */}
-                    <div className="relative" ref={newItemBtnRef}>
-                        <motion.button
-                            whileHover={{ scale: 1.02, boxShadow: '0 0 25px rgba(224, 89, 42, 0.4)' }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setIsNewItemMenuOpen(o => !o)}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-[#e0592a]/80 backdrop-blur-xl border border-white/20 text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:bg-[#e0592a]/90"
-                        >
-                            <Plus size={16} strokeWidth={3} />
-                            New Item
-                            <ChevronDown size={14} className={`transition-transform duration-300 ${isNewItemMenuOpen ? 'rotate-180' : ''}`} />
-                        </motion.button>
+                    {/* Invite & New Item buttons */}
+                    <div className="flex items-center gap-3">
+                        {currentUser && currentUser.role === 'ADMIN' && (
+                            <button
+                                onClick={() => setIsInviteModalOpen(true)}
+                                className="flex items-center gap-2 px-4 py-2 border border-white/20 text-white text-sm font-medium rounded-xl hover:bg-white/10 transition-colors shadow-lg"
+                            >
+                                <span>Invite / {boardMembers.length || 1}</span>
+                                <LinkIcon size={14} />
+                            </button>
+                        )}
 
-                        <AnimatePresence>
-                            {isNewItemMenuOpen && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute right-0 top-full mt-2 bg-[var(--surface-1)] border border-[var(--glass-border)] rounded-2xl shadow-2xl overflow-hidden min-w-[200px] z-50 backdrop-blur-3xl"
+                        {/* New Item button with dropdown */}
+                        {currentUser && currentUser.role !== 'VIEWER' && currentUser.role !== 'USER' && (
+                            <div className="relative" ref={newItemBtnRef}>
+                                <motion.button
+                                    whileHover={{ scale: 1.02, boxShadow: '0 0 25px rgba(224, 89, 42, 0.4)' }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => setIsNewItemMenuOpen(o => !o)}
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-[#e0592a]/80 backdrop-blur-xl border border-white/20 text-white text-sm font-bold rounded-xl transition-all shadow-lg hover:bg-[#e0592a]/90"
                                 >
-                                    <button
-                                        onClick={() => { setIsAddingTask(true); setIsNewItemMenuOpen(false); }}
-                                        className="w-full px-5 py-3.5 text-left hover:bg-white/10 transition-colors flex items-center gap-3 text-sm text-white font-medium group"
-                                    >
-                                        <Plus size={16} className="text-accent-indigo group-hover:scale-110 transition-transform" /> Add Task
-                                    </button>
-                                    <button
-                                        onClick={() => { setIsAddingSection(true); setIsNewItemMenuOpen(false); }}
-                                        className="w-full px-5 py-3.5 text-left hover:bg-white/10 transition-colors flex items-center gap-3 text-sm text-white font-medium group"
-                                    >
-                                        <Plus size={16} className="text-accent-cyan group-hover:scale-110 transition-transform" /> Add New Section
-                                    </button>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                                    <Plus size={16} strokeWidth={3} />
+                                    New Item
+                                    <ChevronDown size={14} className={`transition-transform duration-300 ${isNewItemMenuOpen ? 'rotate-180' : ''}`} />
+                                </motion.button>
+
+                                <AnimatePresence>
+                                    {isNewItemMenuOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute right-0 top-full mt-2 bg-[var(--surface-1)] border border-[var(--glass-border)] rounded-2xl shadow-2xl overflow-hidden min-w-[200px] z-50 backdrop-blur-3xl"
+                                        >
+                                            <button
+                                                onClick={() => { setIsAddingTask(true); setIsNewItemMenuOpen(false); }}
+                                                className="w-full px-5 py-3.5 text-left hover:bg-white/10 transition-colors flex items-center gap-3 text-sm text-white font-medium group"
+                                            >
+                                                <Plus size={16} className="text-accent-indigo group-hover:scale-110 transition-transform" /> Add Task
+                                            </button>
+                                            <button
+                                                onClick={() => { setIsAddingSection(true); setIsNewItemMenuOpen(false); }}
+                                                className="w-full px-5 py-3.5 text-left hover:bg-white/10 transition-colors flex items-center gap-3 text-sm text-white font-medium group"
+                                            >
+                                                <Plus size={16} className="text-accent-cyan group-hover:scale-110 transition-transform" /> Add New Section
+                                            </button>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -1385,6 +1421,17 @@ export default function BoardView({ boardId }: { boardId: string }) {
                 board={board}
                 onClose={() => setSelectedTaskForUpdates(null)}
             />
-        </div>
+
+            {
+                currentUser && currentUser.role === 'ADMIN' && (
+                    <BoardInviteModal
+                        isOpen={isInviteModalOpen}
+                        onClose={() => setIsInviteModalOpen(false)}
+                        boardId={boardId}
+                        currentUser={currentUser}
+                    />
+                )
+            }
+        </div >
     );
 }

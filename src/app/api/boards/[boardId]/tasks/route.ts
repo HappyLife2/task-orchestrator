@@ -18,11 +18,18 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
 
     const board = await db.board.findUnique({
         where: { id: boardId },
-        include: { department: true }
+        include: {
+            department: true,
+            boardMembers: { where: { userId: payload.userId } }
+        }
     });
 
     if (!board || board.department.organizationId !== payload.orgId) {
         return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
+    }
+
+    if (payload.role !== 'ADMIN' && board.boardMembers.length === 0) {
+        return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     const tasks = await db.task.findMany({
@@ -70,11 +77,18 @@ export async function POST(req: NextRequest, { params }: { params: { boardId: st
         // Verify board access
         const board = await db.board.findUnique({
             where: { id: boardId },
-            include: { department: true }
+            include: {
+                department: true,
+                boardMembers: { where: { userId: payload.userId } }
+            }
         });
 
         if (!board || board.department.organizationId !== payload.orgId) {
             return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
+        }
+
+        if (payload.role !== 'ADMIN' && board.boardMembers.length === 0) {
+            return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 
         // Get max position to append to bottom

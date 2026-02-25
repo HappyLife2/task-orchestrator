@@ -8,12 +8,14 @@ const registerSchema = z.object({
     password: z.string().min(6),
     name: z.string().min(2),
     orgName: z.string().min(2),
+    position: z.string().optional(),
+    role: z.string().optional(),
 });
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { email, password, name, orgName } = registerSchema.parse(body);
+        const { email, password, name, orgName, position, role } = registerSchema.parse(body);
 
         // Check if user exists
         const existingUser = await db.user.findUnique({
@@ -69,7 +71,8 @@ export async function POST(req: NextRequest) {
                     email,
                     password: hashedPassword,
                     name,
-                    role: 'OWNER',
+                    role: role || 'ADMIN',
+                    position: position || null,
                     organizationId: org.id,
                 },
             });
@@ -81,6 +84,7 @@ export async function POST(req: NextRequest) {
             userId: result.user.id,
             orgId: result.user.organizationId,
             role: result.user.role,
+            position: result.user.position || undefined,
         });
 
         const response = NextResponse.json({
@@ -89,6 +93,7 @@ export async function POST(req: NextRequest) {
                 email: result.user.email,
                 name: result.user.name,
                 role: result.user.role,
+                position: result.user.position,
                 organizationId: result.user.organizationId,
             },
             token,
