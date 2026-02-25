@@ -86,7 +86,12 @@ export default function Sidebar() {
                     setExpandedDepts(expanded);
                 }
             })
-            .catch((err) => console.error(err))
+            .catch((err) => {
+                console.error(err);
+                if (err.message === 'Unauthorized') {
+                    router.push('/login');
+                }
+            })
             .finally(() => setLoading(false));
     }, [expandedDepts]);
 
