@@ -63,7 +63,9 @@ export default function Sidebar() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [showPwd, setShowPwd] = useState(false);
+    const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+    const [showNewPwd, setShowNewPwd] = useState(false);
+    const [showConfirmPwd, setShowConfirmPwd] = useState(false);
     const [pwdError, setPwdError] = useState('');
     const [pwdSuccess, setPwdSuccess] = useState('');
     const [isChangingPwd, setIsChangingPwd] = useState(false);
@@ -229,7 +231,7 @@ export default function Sidebar() {
         setPwdError('');
         setPwdSuccess('');
 
-        if (newPassword !== confirmPassword) {
+        if (newPassword.trim() !== confirmPassword.trim()) {
             setPwdError('New passwords do not match');
             return;
         }
@@ -239,7 +241,7 @@ export default function Sidebar() {
             const res = await fetch('/api/auth/change-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ currentPassword, newPassword })
+                body: JSON.stringify({ currentPassword, newPassword: newPassword.trim() })
             });
             const data = await res.json();
 
@@ -252,6 +254,9 @@ export default function Sidebar() {
                     setCurrentPassword('');
                     setNewPassword('');
                     setConfirmPassword('');
+                    setShowCurrentPwd(false);
+                    setShowNewPwd(false);
+                    setShowConfirmPwd(false);
                     setPwdSuccess('');
                 }, 2000);
             }
@@ -261,6 +266,21 @@ export default function Sidebar() {
             setIsChangingPwd(false);
         }
     };
+
+    // Calculate Password Strength
+    const getPasswordStrength = (pwd: string) => {
+        let score = 0;
+        if (!pwd) return score;
+        if (pwd.length > 5) score += 1;
+        if (pwd.length > 8) score += 1;
+        if (/[A-Z]/.test(pwd)) score += 1;
+        if (/[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score += 1;
+        return score;
+    };
+
+    const strength = getPasswordStrength(newPassword);
+    const strengthColors = ['bg-gray-700', 'bg-red-500', 'bg-orange-500', 'bg-yellow-400', 'bg-emerald-500'];
+    const strengthLabels = ['Too Weak', 'Weak', 'Fair', 'Good', 'Strong'];
 
     if (loading) return <div className="w-64 bg-background border-r border-[var(--glass-border)] p-4 text-white">Loading...</div>;
     if (!org) return <div className="w-64 bg-background border-r border-[var(--glass-border)] p-4 text-white">Error loading organization</div>;
@@ -467,108 +487,154 @@ export default function Sidebar() {
                         size="medium"
                         onClose={() => !isChangingPwd && setShowPasswordModal(false)}
                     >
-                        <ModalBasicLayout>
-                            <ModalHeader title="Change Password" />
-                            <ModalContent>
-                                <form id="change-pwd-form" onSubmit={handleChangePassword} className="space-y-4 py-2">
-                                    {pwdError && (
-                                        <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-md text-sm">
-                                            {pwdError}
-                                        </div>
-                                    )}
-                                    {pwdSuccess && (
-                                        <div className="bg-green-500/10 border border-green-500/50 text-green-400 p-3 rounded-md text-sm">
-                                            {pwdSuccess}
-                                        </div>
-                                    )}
+                        <ModalBasicLayout className="!bg-[#0d0e26] !border-none !shadow-[0_0_50px_rgba(99,102,241,0.15)] overflow-hidden">
+                            <div className="absolute inset-0 bg-[var(--grad-surface)] pointer-events-none opacity-50" />
+                            <div className="relative z-10 p-2">
+                                <ModalHeader title="Secure Account" className="[&_h2]:!text-2xl [&_h2]:!font-black [&_h2]:!tracking-tight [&_h2]:!text-transparent [&_h2]:!bg-clip-text [&_h2]:!bg-gradient-to-r [&_h2]:from-indigo-400 [&_h2]:to-purple-400" />
+                                <ModalContent>
+                                    <form id="change-pwd-form" onSubmit={handleChangePassword} className="space-y-6 py-4">
+                                        {pwdError && (
+                                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/10 border border-red-500/30 text-red-400 p-4 rounded-xl text-sm flex items-center gap-2 backdrop-blur-md">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                                                {pwdError}
+                                            </motion.div>
+                                        )}
+                                        {pwdSuccess && (
+                                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-4 rounded-xl text-sm flex items-center gap-2 backdrop-blur-md">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                                {pwdSuccess}
+                                            </motion.div>
+                                        )}
 
-                                    <div className="space-y-1">
-                                        <label className="text-sm font-medium text-gray-300">Current Password</label>
-                                        <div className="relative">
-                                            <input
-                                                type={showPwd ? "text" : "password"}
-                                                required
-                                                value={currentPassword}
-                                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                                className="w-full rounded-md border border-[rgba(255,255,255,0.12)] bg-[#0f102a] text-white px-3 py-2 pr-10 focus:border-indigo-500 focus:outline-none"
-                                            />
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Current Authorization Key</label>
+                                            <div className="relative group">
+                                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-indigo-400 transition-colors">
+                                                    <User size={16} />
+                                                </div>
+                                                <input
+                                                    type={showCurrentPwd ? "text" : "password"}
+                                                    required
+                                                    value={currentPassword}
+                                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                                    className="w-full rounded-xl border border-white/10 bg-black/20 text-white pl-10 pr-12 py-3.5 focus:border-indigo-500 focus:bg-indigo-500/5 focus:ring-4 focus:ring-indigo-500/10 focus:outline-none transition-all placeholder:text-gray-600"
+                                                    placeholder="Enter current password"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="absolute inset-y-0 right-1 px-3 flex items-center text-gray-500 hover:text-white transition-colors"
+                                                    onMouseDown={() => setShowCurrentPwd(true)}
+                                                    onMouseUp={() => setShowCurrentPwd(false)}
+                                                    onMouseLeave={() => setShowCurrentPwd(false)}
+                                                >
+                                                    {showCurrentPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">New Security Key</label>
+                                            <div className="relative group">
+                                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-purple-400 transition-colors">
+                                                    <Key size={16} />
+                                                </div>
+                                                <input
+                                                    type={showNewPwd ? "text" : "password"}
+                                                    required
+                                                    minLength={6}
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                    className="w-full rounded-xl border border-white/10 bg-black/20 text-white pl-10 pr-12 py-3.5 focus:border-purple-500 focus:bg-purple-500/5 focus:ring-4 focus:ring-purple-500/10 focus:outline-none transition-all placeholder:text-gray-600"
+                                                    placeholder="Must be at least 6 characters"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="absolute inset-y-0 right-1 px-3 flex items-center text-gray-500 hover:text-white transition-colors"
+                                                    onMouseDown={() => setShowNewPwd(true)}
+                                                    onMouseUp={() => setShowNewPwd(false)}
+                                                    onMouseLeave={() => setShowNewPwd(false)}
+                                                >
+                                                    {showNewPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                            {/* Dynamic Strength Meter */}
+                                            {newPassword && (
+                                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pt-2 px-1">
+                                                    <div className="flex gap-1.5 mb-1.5">
+                                                        {[1, 2, 3, 4].map(level => (
+                                                            <div key={level} className="h-1.5 flex-1 bg-white/5 rounded-full overflow-hidden">
+                                                                <div
+                                                                    className={`h-full ${strength >= level ? strengthColors[strength] : 'bg-transparent'} transition-all duration-300 w-full`}
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="flex justify-end">
+                                                        <span className={`text-[10px] font-bold tracking-wider uppercase ${strengthColors[strength].replace('bg-', 'text-')}`}>
+                                                            {strengthLabels[strength]}
+                                                        </span>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest pl-1">Confirm Security Key</label>
+                                            <div className="relative group">
+                                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-500 group-focus-within:text-emerald-400 transition-colors">
+                                                    <Key size={16} />
+                                                </div>
+                                                <input
+                                                    type={showConfirmPwd ? "text" : "password"}
+                                                    required
+                                                    minLength={6}
+                                                    value={confirmPassword}
+                                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                                    className={`w-full rounded-xl border ${confirmPassword.trim() && newPassword.trim() !== confirmPassword.trim() ? 'border-red-500/50 bg-red-500/5 focus:ring-red-500/10' : 'border-white/10 bg-black/20 focus:border-emerald-500 focus:bg-emerald-500/5 focus:ring-emerald-500/10'} text-white pl-10 pr-12 py-3.5 focus:ring-4 focus:outline-none transition-all placeholder:text-gray-600`}
+                                                    placeholder="Match new password"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="absolute inset-y-0 right-1 px-3 flex items-center text-gray-500 hover:text-white transition-colors"
+                                                    onMouseDown={() => setShowConfirmPwd(true)}
+                                                    onMouseUp={() => setShowConfirmPwd(false)}
+                                                    onMouseLeave={() => setShowConfirmPwd(false)}
+                                                >
+                                                    {showConfirmPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Custom Footer inside Content for Better Styling */}
+                                        <div className="flex items-center justify-end gap-3 pt-6 mt-4 border-t border-white/5">
                                             <button
                                                 type="button"
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                                                onMouseDown={() => setShowPwd(true)}
-                                                onMouseUp={() => setShowPwd(false)}
-                                                onMouseLeave={() => setShowPwd(false)}
+                                                onClick={() => !isChangingPwd && setShowPasswordModal(false)}
+                                                className="px-5 py-2.5 rounded-xl text-sm font-semibold text-gray-400 hover:text-white hover:bg-white/5 transition-all"
                                             >
-                                                {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                Cancel
                                             </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <label className="text-sm font-medium text-gray-300">New Password</label>
-                                        <div className="relative">
-                                            <input
-                                                type={showPwd ? "text" : "password"}
-                                                required
-                                                minLength={6}
-                                                value={newPassword}
-                                                onChange={(e) => setNewPassword(e.target.value)}
-                                                className="w-full rounded-md border border-[rgba(255,255,255,0.12)] bg-[#0f102a] text-white px-3 py-2 pr-10 focus:border-indigo-500 focus:outline-none"
-                                            />
                                             <button
-                                                type="button"
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                                                onMouseDown={() => setShowPwd(true)}
-                                                onMouseUp={() => setShowPwd(false)}
-                                                onMouseLeave={() => setShowPwd(false)}
+                                                type="submit"
+                                                disabled={isChangingPwd || strength === 0 || newPassword.trim() !== confirmPassword.trim()}
+                                                className="relative group overflow-hidden px-8 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
-                                                {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                <div className="absolute inset-0 bg-[var(--grad-aurora)] opacity-80 group-hover:opacity-100 transition-opacity" />
+                                                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                                                <span className="relative z-10 flex items-center gap-2">
+                                                    {isChangingPwd ? (
+                                                        <>
+                                                            <div className="w-3 h-3 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                                                            Encrypting...
+                                                        </>
+                                                    ) : "Update Password"}
+                                                </span>
                                             </button>
                                         </div>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <label className="text-sm font-medium text-gray-300">Confirm New Password</label>
-                                        <div className="relative">
-                                            <input
-                                                type={showPwd ? "text" : "password"}
-                                                required
-                                                minLength={6}
-                                                value={confirmPassword}
-                                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                                className={`w-full rounded-md border ${confirmPassword && newPassword !== confirmPassword ? 'border-red-500' : 'border-[rgba(255,255,255,0.12)]'} bg-[#0f102a] text-white px-3 py-2 pr-10 focus:outline-none focus:border-indigo-500`}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
-                                                onMouseDown={() => setShowPwd(true)}
-                                                onMouseUp={() => setShowPwd(false)}
-                                                onMouseLeave={() => setShowPwd(false)}
-                                            >
-                                                {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </ModalContent>
+                                    </form>
+                                </ModalContent>
+                            </div>
                         </ModalBasicLayout>
-                        <ModalFooter
-                            primaryButton={{
-                                text: isChangingPwd ? "Updating..." : "Update Password",
-                                onClick: () => {
-                                    const form = document.getElementById('change-pwd-form') as HTMLFormElement;
-                                    if (form.checkValidity()) {
-                                        form.requestSubmit();
-                                    } else {
-                                        form.reportValidity();
-                                    }
-                                }
-                            }}
-                            secondaryButton={{
-                                text: "Cancel",
-                                onClick: () => !isChangingPwd && setShowPasswordModal(false)
-                            }}
-                        />
                     </Modal>
                 )}
             </AnimatePresence>
