@@ -34,6 +34,7 @@ model User {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   avatarUrl        String?
+  boardMembers     BoardMember[]
   documentVersions DocumentVersion[]
   favorites        Favorite[]
   notifications    Notification[]
@@ -46,7 +47,6 @@ model User {
   updateReactions  UpdateReaction[]
   organization     Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   watchedItems     WatchedItem[]
-  boardMembers     BoardMember[]
 }
 
 model Department {
@@ -60,17 +60,18 @@ model Department {
 }
 
 model Board {
-  id           String       @id @default(uuid())
+  id           String        @id @default(uuid())
   name         String
   departmentId String
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  columns      String       @default("[]")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  columns      String        @default("[]")
   color        String?
   description  String?
   icon         String?
   automations  Automation[]
-  department   Department   @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  department   Department    @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  members      BoardMember[]
   views        BoardView[]
   discussions  Discussion[]
   favorites    Favorite[]
@@ -78,7 +79,6 @@ model Board {
   permissions  Permission[]
   tasks        Task[]
   templates    Template[]
-  members      BoardMember[]
 
   @@index([departmentId])
 }
@@ -106,8 +106,8 @@ model BoardMember {
   role      String   @default("MEMBER")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@unique([boardId, userId])
   @@index([boardId])
@@ -310,7 +310,7 @@ model Permission {
   role         String
   settings     String    @default("{}")
   createdAt    DateTime  @default(now())
-  dashboard    Dashboard @relation(fields: [resourceId], references: [id])
+  board        Dashboard @relation(fields: [resourceId], references: [id])
   board        Board     @relation(fields: [resourceId], references: [id])
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -387,8 +387,8 @@ export default function Sidebar() {
             {/* Navigation */}
             <div className="flex-1 overflow-y-auto p-3 space-y-6">
                 <div className="space-y-2">
-                    {/* Dashboard Link - Only for Non-USER roles */}
-                    {org.currentUserRole !== 'USER' && (
+                    {/* Dashboard Link - Only for Non-USER/MEMBER roles */}
+                    {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
                         <Link href="/dashboard" className="block outline-none relative group">
                             <ListItem
                                 className={`rounded-xl transition-all duration-300 text-white ${pathname === '/dashboard' ? 'bg-white/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:bg-white/5'}`}
