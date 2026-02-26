@@ -59,5 +59,15 @@ Expose your local instance to the world:
 - **`src/lib`**: Core utilities including Auth, DB, and middleware.
 - **`prisma`**: Database schemas and migration history.
 
+## 🤝 Contributing
+
+We welcome contributions! Whether it's fixing bugs, adding new features, or improving documentation, your help is appreciated.
+
+1. **Fork** the repository.
+2. **Create a branch** for your feature (`git checkout -b feature/amazing-feature`).
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`).
+4. **Push** to the branch (`git push origin feature/amazing-feature`).
+5. **Open a Pull Request**.
+
 ---
 *Built with ❤️ for High-Performance Teams.*
