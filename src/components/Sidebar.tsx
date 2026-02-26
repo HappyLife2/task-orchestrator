@@ -367,7 +367,7 @@ export default function Sidebar() {
     return (
         <div
             style={{ width: `${sidebarWidth}px`, transition: isResizing ? 'none' : 'width 0.2s ease-out' }}
-            className={`bg-background/50 backdrop-blur-3xl h-screen flex flex-col border-r border-[var(--glass-border)] relative ${isResizing ? 'select-none' : ''}`}
+            className={`bg-[#1c1f3b] h-screen flex flex-col border-r border-white/5 relative ${isResizing ? 'select-none' : ''} font-inter`}
         >
             {/* Resize Handle */}
             <div
@@ -378,8 +378,8 @@ export default function Sidebar() {
                 `}
             />
             {/* Header */}
-            <div className="p-6 border-b border-[var(--glass-border)]">
-                <Text type="text1" weight="bold" className="text-white truncate tracking-tighter uppercase text-glow">
+            <div className="p-6 border-b border-white/5">
+                <Text type="text1" weight="bold" className="text-white truncate tracking-tight uppercase !text-[14px] !font-black !tracking-widest">
                     {org.name}
                 </Text>
             </div>
@@ -389,18 +389,19 @@ export default function Sidebar() {
                 <div className="space-y-2">
                     {/* Dashboard Link - Only for Non-USER/MEMBER roles */}
                     {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
-                        <Link href="/dashboard" className="block outline-none relative group">
-                            <ListItem
-                                className={`rounded-xl transition-all duration-300 text-white ${pathname === '/dashboard' ? 'bg-white/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:bg-white/5'}`}
-                                label="Live Data"
-                                startElement={<ListItemIcon icon={LayoutDashboard as any} className={`${pathname === '/dashboard' ? 'text-accent-indigo' : 'text-gray-400'} h-4 w-4 transition-colors`} />}
-                            />
-                            {pathname === '/dashboard' && (
-                                <motion.div
-                                    layoutId="active-nav"
-                                    className="absolute -left-1 top-2 bottom-2 w-1 bg-accent-indigo rounded-full"
-                                />
-                            )}
+                        <Link href="/dashboard" className="block outline-none relative no-underline group">
+                            <motion.div
+                                whileHover={{ backgroundColor: pathname === '/dashboard' ? '#1c3fa3' : 'rgba(255,255,255,0.03)' }}
+                                className={`
+                                    flex items-center px-4 py-2 my-0.5 rounded-lg transition-all duration-200 cursor-pointer
+                                    ${pathname === '/dashboard' ? 'bg-[#1c3fa3] text-white' : 'text-gray-400 hover:text-gray-200'}
+                                `}
+                            >
+                                <LayoutDashboard size={18} className={`mr-3 flex-shrink-0 ${pathname === '/dashboard' ? 'text-white' : 'text-gray-400'}`} />
+                                <span className={`text-[13px] font-normal tracking-wide ${pathname === '/dashboard' ? 'text-white' : 'text-gray-400'}`}>
+                                    Dashboard and reporting
+                                </span>
+                            </motion.div>
                         </Link>
                     )}
 
@@ -428,10 +429,10 @@ export default function Sidebar() {
                                                     onChange={(val: string) => handleRenameDepartment(dept.id, val)}
                                                     type="text2"
                                                     weight="bold"
-                                                    className="w-full [&_div]:!text-gray-200 [&_input]:!text-white [&_span]:!text-white tracking-tight"
+                                                    className="w-full [&_div]:!text-gray-300 [&_input]:!text-white [&_span]:!text-white !text-[13px] !font-bold !tracking-wider uppercase"
                                                 />
                                             ) : (
-                                                <Text type="text2" weight="bold" className="text-gray-200 truncate pr-2">
+                                                <Text type="text2" weight="bold" className="text-gray-300 truncate pr-2 !text-[13px] !font-bold !tracking-wider uppercase">
                                                     {dept.name}
                                                 </Text>
                                             )}
@@ -478,8 +479,8 @@ export default function Sidebar() {
                                                     animate="visible"
                                                     exit="hidden"
                                                     className={`
-                                                        group flex items-center px-4 py-2.5 rounded-xl cursor-pointer transition-all duration-300 relative
-                                                        ${pathname === `/board/${board.id}` ? 'bg-white/10 text-white shadow-[0_0_20px_rgba(139,92,246,0.15)]' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'}
+                                                        group flex items-center px-4 py-2 my-0.5 rounded-lg cursor-pointer transition-all duration-200 relative
+                                                        ${pathname === `/board/${board.id}` ? 'bg-[#1c3fa3] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'}
                                                     `}
                                                     onClick={(e) => {
                                                         if ((e.target as HTMLElement).tagName !== 'INPUT' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
@@ -487,21 +488,21 @@ export default function Sidebar() {
                                                         }
                                                     }}
                                                 >
-                                                    <Table size={14} className={`mr-3 flex-shrink-0 ${pathname === `/board/${board.id}` ? 'text-accent-cyan' : ''}`} />
+                                                    <Table size={18} className={`mr-3 flex-shrink-0 ${pathname === `/board/${board.id}` ? 'text-white' : 'text-gray-400'}`} />
                                                     <div className="flex-1 min-w-0">
                                                         {['ADMIN', 'OWNER'].includes(org.currentUserRole) ? (
                                                             <EditableText
                                                                 value={board.name}
                                                                 onChange={(val: string) => handleRenameBoard(board.id, val)}
                                                                 type="text2"
-                                                                weight={pathname === `/board/${board.id}` ? 'bold' : 'normal'}
-                                                                className="w-full [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit"
+                                                                weight="normal"
+                                                                className="w-full [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit !text-[13px] !font-normal !tracking-wide"
                                                             />
                                                         ) : (
                                                             <Text
                                                                 type="text2"
-                                                                weight={pathname === `/board/${board.id}` ? 'bold' : 'normal'}
-                                                                className={`truncate pr-2 ${pathname === `/board/${board.id}` ? 'text-white' : 'text-inherit'}`}
+                                                                weight="normal"
+                                                                className={`truncate pr-2 !text-[13px] !font-normal !tracking-wide ${pathname === `/board/${board.id}` ? 'text-white' : 'text-inherit'}`}
                                                             >
                                                                 {board.name}
                                                             </Text>
@@ -509,18 +510,12 @@ export default function Sidebar() {
                                                     </div>
                                                     {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
                                                         <button
-                                                            onClick={(e) => handleDeleteBoard(e, board.id, dept.id)}
-                                                            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-all ml-1 shrink-0"
+                                                            onClick={(e) => { e.stopPropagation(); handleDeleteBoard(e, board.id, dept.id); }}
+                                                            className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all ml-1 shrink-0"
                                                             title="Delete Board"
                                                         >
-                                                            <Trash2 size={12} />
+                                                            <Trash2 size={14} />
                                                         </button>
-                                                    )}
-                                                    {pathname === `/board/${board.id}` && (
-                                                        <motion.div
-                                                            layoutId="active-board"
-                                                            className="absolute -left-1 top-2 bottom-2 w-1 bg-accent-cyan rounded-full"
-                                                        />
                                                     )}
                                                 </motion.div>
                                             ))}
@@ -542,10 +537,10 @@ export default function Sidebar() {
                         </div>
                     </div>
                     <div>
-                        <Text type="text2" weight="bold" className="text-white text-sm">{org.currentUserName}</Text>
+                        <Text type="text2" weight="bold" className="text-white !text-[14px] !font-bold !tracking-tight">{org.currentUserName}</Text>
                         <div className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Active Link</p>
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.1em]">Online</p>
                         </div>
                     </div>
                 </div>
