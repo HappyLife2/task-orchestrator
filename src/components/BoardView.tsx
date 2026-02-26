@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useEffect, useState, useCallback, useRef, Fragment } from 'react';
+import { useEffect, useState, useCallback, useRef, Fragment, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare, Link as LinkIcon } from 'lucide-react';
@@ -362,10 +363,11 @@ function InlineTextCell({ value, onChange, placeholder }: {
 // ... existing PersonCell (kept as is)
 
 // ─── Draggable Task Row ───────────────────────────────────────────────────────
-function DraggableTaskRow({ taskId, isDragging, isSubitem, children }: {
+function DraggableTaskRow({ taskId, isDragging, isSubitem, isHighlighted, children }: {
     taskId: string;
     isDragging: boolean;
     isSubitem: boolean;
+    isHighlighted: boolean;
     children: React.ReactNode;
 }) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({ id: taskId, disabled: isSubitem });
@@ -373,9 +375,27 @@ function DraggableTaskRow({ taskId, isDragging, isSubitem, children }: {
 
     return (
         <motion.tr
+            id={`task-${taskId}`}
             layout
             initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+            animate={isHighlighted ? {
+                opacity: 1,
+                x: 0,
+                backgroundColor: [
+                    'rgba(255, 255, 255, 0)',
+                    'rgba(99, 102, 241, 0.4)',
+                    'rgba(255, 255, 255, 0)',
+                    'rgba(99, 102, 241, 0.4)',
+                    'rgba(255, 255, 255, 0)',
+                    'rgba(99, 102, 241, 0.4)',
+                    'rgba(255, 255, 255, 0)'
+                ]
+            } : { opacity: 1, x: 0 }}
+            transition={isHighlighted ? {
+                duration: 2,
+                times: [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1],
+                ease: "easeInOut"
+            } : {}}
             exit={{ opacity: 0, x: 10 }}
             whileHover={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}
             ref={setNodeRef}
@@ -449,6 +469,29 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
     const [sectionNameInput, setSectionNameInput] = useState('');
     const newItemBtnRef = useRef<HTMLDivElement>(null);
+
+    const searchParams = useSearchParams();
+    const highlightId = searchParams.get('highlight');
+
+    // Scroll highlighted task into view
+    useEffect(() => {
+        if (highlightId && tasks.length > 0) {
+            // Find if task is a subtask and needs expansion
+            const parentTask = tasks.find(t => t.subTasks?.some(st => st.id === highlightId));
+            if (parentTask) {
+                setExpandedTasks(prev => new Set([...prev, parentTask.id]));
+            }
+
+            // Small delay to ensure DOM is updated (especially after expansion)
+            const timer = setTimeout(() => {
+                const element = document.getElementById(`task-${highlightId}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [highlightId, tasks]);
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -922,10 +965,11 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const renderRow = (task: Task, sectionColor?: string, isSubitem = false, parentId?: string) => {
         const isExpanded = expandedTasks.has(task.id);
         const isDragging = activeDragId === task.id;
+        const isHighlighted = highlightId === task.id;
 
         return (
             <Fragment key={task.id}>
-                <DraggableTaskRow taskId={task.id} isDragging={isDragging} isSubitem={isSubitem}>
+                <DraggableTaskRow taskId={task.id} isDragging={isDragging} isSubitem={isSubitem} isHighlighted={isHighlighted}>
                     {/* Checkbox column */}
                     <td className="w-10 relative border-b border-[var(--glass-border)]">
                         {!isSubitem && sectionColor && (

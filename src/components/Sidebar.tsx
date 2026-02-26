@@ -878,7 +878,7 @@ export default function Sidebar() {
                                                             whileHover={{ scale: 1.01, backgroundColor: 'rgba(255,255,255,0.05)' }}
                                                             onClick={() => {
                                                                 setShowSearchModal(false);
-                                                                router.push(`/board/${result.boardId}`);
+                                                                router.push(`/board/${result.boardId}?highlight=${result.id}`);
                                                             }}
                                                             className="p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer transition-all flex items-center justify-between group"
                                                         >
