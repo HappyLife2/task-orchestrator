@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
     PieChart, Pie, Cell
@@ -52,18 +53,33 @@ const itemVariants: any = {
 };
 
 export default function DashboardPage() {
+    const router = useRouter();
     const [data, setData] = useState<AnalyticsData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [role, setRole] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch('/api/analytics')
+        // Fetch role first
+        fetch('/api/org/me')
             .then(res => res.json())
-            .then(d => {
-                setData(d);
-                setLoading(false);
+            .then(orgData => {
+                setRole(orgData.currentUserRole);
+                if (orgData.currentUserRole === 'USER') {
+                    setLoading(false);
+                    return;
+                }
+
+                // Fetch analytics if not a USER
+                return fetch('/api/analytics')
+                    .then(res => res.json())
+                    .then(d => {
+                        setData(d);
+                    });
             })
             .catch(err => {
-                console.error('Failed to fetch analytics:', err);
+                console.error('Failed to fetch dashboard data:', err);
+            })
+            .finally(() => {
                 setLoading(false);
             });
     }, []);
@@ -92,7 +108,34 @@ export default function DashboardPage() {
         );
     }
 
-    if (!data) return null;
+    if (!data) {
+        if (role === 'USER') {
+            return (
+                <div className="flex h-full items-center justify-center bg-background text-white">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="glass-card p-12 text-center max-w-md border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.1)]"
+                    >
+                        <div className="bg-red-500/10 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-red-500/20">
+                            <AlertCircle className="text-red-400" size={40} />
+                        </div>
+                        <h2 className="text-3xl font-black tracking-tighter mb-4 text-glow-red">ACCESS RESTRICTED</h2>
+                        <p className="text-gray-400 text-sm leading-relaxed mb-8">
+                            Your security clearance level (<span className="text-red-400 font-bold tracking-widest uppercase">{role}</span>) is insufficient to access the Live Data stream.
+                        </p>
+                        <button
+                            onClick={() => router.push('/board')}
+                            className="bg-white/5 hover:bg-white/10 px-8 py-3 rounded-xl text-xs font-bold uppercase tracking-[0.2em] transition-all border border-white/10"
+                        >
+                            Return to Base
+                        </button>
+                    </motion.div>
+                </div>
+            )
+        }
+        return null;
+    }
 
     const prepareChartData = (record: Record<string, number>) =>
         Object.entries(record).map(([name, value]) => ({ name, value }));

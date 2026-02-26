@@ -42,7 +42,8 @@ interface Department {
 interface Organization {
     name: string;
     departments: Department[];
-    currentUserRole: 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER';
+    currentUserRole: 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER' | 'USER';
+    currentUserName: string;
 }
 
 const itemVariants: any = {
@@ -386,20 +387,22 @@ export default function Sidebar() {
             {/* Navigation */}
             <div className="flex-1 overflow-y-auto p-3 space-y-6">
                 <div className="space-y-2">
-                    {/* Dashboard Link */}
-                    <Link href="/dashboard" className="block outline-none relative group">
-                        <ListItem
-                            className={`rounded-xl transition-all duration-300 text-white ${pathname === '/dashboard' ? 'bg-white/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:bg-white/5'}`}
-                            label="Live Data"
-                            startElement={<ListItemIcon icon={LayoutDashboard as any} className={`${pathname === '/dashboard' ? 'text-accent-indigo' : 'text-gray-400'} h-4 w-4 transition-colors`} />}
-                        />
-                        {pathname === '/dashboard' && (
-                            <motion.div
-                                layoutId="active-nav"
-                                className="absolute -left-1 top-2 bottom-2 w-1 bg-accent-indigo rounded-full"
+                    {/* Dashboard Link - Only for Non-USER roles */}
+                    {org.currentUserRole !== 'USER' && (
+                        <Link href="/dashboard" className="block outline-none relative group">
+                            <ListItem
+                                className={`rounded-xl transition-all duration-300 text-white ${pathname === '/dashboard' ? 'bg-white/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:bg-white/5'}`}
+                                label="Live Data"
+                                startElement={<ListItemIcon icon={LayoutDashboard as any} className={`${pathname === '/dashboard' ? 'text-accent-indigo' : 'text-gray-400'} h-4 w-4 transition-colors`} />}
                             />
-                        )}
-                    </Link>
+                            {pathname === '/dashboard' && (
+                                <motion.div
+                                    layoutId="active-nav"
+                                    className="absolute -left-1 top-2 bottom-2 w-1 bg-accent-indigo rounded-full"
+                                />
+                            )}
+                        </Link>
+                    )}
 
                     <div className="h-px bg-[var(--glass-border)] mx-4 my-6 opacity-30" />
 
@@ -539,7 +542,7 @@ export default function Sidebar() {
                         </div>
                     </div>
                     <div>
-                        <Text type="text2" weight="bold" className="text-white text-sm">Admin</Text>
+                        <Text type="text2" weight="bold" className="text-white text-sm">{org.currentUserName}</Text>
                         <div className="flex items-center gap-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Active Link</p>

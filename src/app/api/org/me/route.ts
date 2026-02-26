@@ -12,6 +12,10 @@ export async function GET(req: NextRequest) {
     const org = await db.organization.findUnique({
         where: { id: payload.orgId },
         include: {
+            users: {
+                where: { id: payload.userId },
+                select: { name: true }
+            },
             departments: {
                 include: {
                     boards: {
@@ -38,6 +42,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
         ...org,
-        currentUserRole: payload.role
+        currentUserRole: payload.role,
+        currentUserName: org.users[0]?.name || 'User'
     });
 }
