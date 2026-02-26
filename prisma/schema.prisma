@@ -76,7 +76,7 @@ model Board {
   discussions  Discussion[]
   favorites    Favorite[]
   groups       Group[]
-  permissions  Permission[]
+  permissions  Permission[]  @relation("BoardPermission")
   tasks        Task[]
   templates    Template[]
 
@@ -206,7 +206,7 @@ model Dashboard {
   updatedAt      DateTime          @updatedAt
   organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   widgets        DashboardWidget[]
-  permissions    Permission[]
+  permissions    Permission[]      @relation("DashboardPermission")
 
   @@index([organizationId])
 }
@@ -310,8 +310,8 @@ model Permission {
   role         String
   settings     String    @default("{}")
   createdAt    DateTime  @default(now())
-  board        Dashboard @relation(fields: [resourceId], references: [id])
-  board        Board     @relation(fields: [resourceId], references: [id])
+  board        Board?    @relation("BoardPermission", fields: [resourceId], references: [id])
+  dashboard    Dashboard? @relation("DashboardPermission", fields: [resourceId], references: [id])
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, resourceType, resourceId])
