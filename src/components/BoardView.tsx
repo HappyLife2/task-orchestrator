@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare, Link as LinkIcon } from 'lucide-react';
-import { Button, TextField, EditableHeading, IconButton } from '@vibe/core';
+import { Button, TextField, EditableHeading, IconButton, Text } from '@vibe/core';
 import { Modal, ModalHeader, ModalContent, ModalFooter, ModalBasicLayout } from '@vibe/core/next';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
@@ -1553,39 +1553,28 @@ export default function BoardView({ boardId }: { boardId: string }) {
             <Modal
                 id="task-delete-confirmation-modal"
                 show={!!taskToDelete}
-                onClose={() => setTaskToDelete(null)}
+                onClose={() => !isDeletingTask && setTaskToDelete(null)}
                 size="small"
             >
-                <ModalBasicLayout className="!bg-[#0f1126] !border-none !shadow-[0_0_80px_rgba(244,63,94,0.2)] overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-transparent to-purple-500/10 pointer-events-none" />
-                    <div className="relative z-10 p-2">
-                        <ModalHeader
-                            title="Purge Task Signal?"
-                            className="[&_h2]:!text-2xl [&_h2]:!font-black [&_h2]:!tracking-tight [&_h2]:!text-transparent [&_h2]:!bg-clip-text [&_h2]:!bg-gradient-to-r [&_h2]:from-red-400 [&_h2]:to-purple-400"
-                        />
-                        <ModalContent>
-                            <div className="py-6 text-center">
-                                <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
-                                    <Trash2 size={32} className="text-red-500" />
-                                </div>
-                                <p className="text-gray-400 text-sm leading-relaxed px-4">
-                                    You are about to permanently remove <span className="text-white font-bold">&quot;{taskToDelete?.name}&quot;</span> from the board environment. This action is immutable.
-                                </p>
-                            </div>
-                        </ModalContent>
-                        <ModalFooter
-                            primaryButton={{
-                                text: isDeletingTask ? "Destructing..." : "Confirm Purge",
-                                color: "negative",
-                                onClick: confirmDeleteTask
-                            }}
-                            secondaryButton={{
-                                text: "Abort",
-                                onClick: () => setTaskToDelete(null)
-                            }}
-                        />
-                    </div>
+                <ModalBasicLayout>
+                    <ModalHeader title="Delete Task" />
+                    <ModalContent>
+                        <Text type="text1" element="p" className="text-slate-700">
+                            Are you sure you want to delete <span className="text-red-400 font-bold">&quot;{taskToDelete?.name}&quot;</span>? This action cannot be undone.
+                        </Text>
+                    </ModalContent>
                 </ModalBasicLayout>
+                <ModalFooter
+                    primaryButton={{
+                        text: isDeletingTask ? "Deleting..." : "Delete",
+                        color: "negative",
+                        onClick: confirmDeleteTask
+                    }}
+                    secondaryButton={{
+                        text: "Cancel",
+                        onClick: () => !isDeletingTask && setTaskToDelete(null)
+                    }}
+                />
             </Modal>
         </div >
     );
