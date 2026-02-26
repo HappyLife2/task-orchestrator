@@ -5,6 +5,8 @@ OrbitBoard is a premium, high-performance work management platform inspired by M
 ## ✨ Features
 
 - **💎 Premium UI/UX:** Stunning interface with glassmorphism effects, dynamic gradients, and smooth micro-animations.
+- **🔍 Global Search:** High-performance cross-board search with Reference ID support and visual result highlighting.
+- **🛡️ Deletion Safety:** Standardized confirmation protocols for all destructive actions to prevent accidental data loss.
 - **📁 Advanced Work Management:** Draggable tasks, resizable columns, and infinite sub-item nesting.
 - **💬 Real-time Activity & Updates:** High-fidelity update cards with nested replies and multi-emoji reactions.
 - **🔐 Secure RBAC:** Comprehensive Role-Based Access Control and granular ownership permissions (OWNER, ADMIN, MEMBER, VIEWER).
