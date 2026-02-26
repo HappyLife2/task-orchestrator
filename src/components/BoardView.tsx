@@ -7,6 +7,7 @@ import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, use
 import { CSS } from '@dnd-kit/utilities';
 import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare, Link as LinkIcon } from 'lucide-react';
 import { Button, TextField, EditableHeading, IconButton } from '@vibe/core';
+import { Modal, ModalHeader, ModalContent, ModalFooter, ModalBasicLayout } from '@vibe/core/next';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
 import { PortalMenu } from '@/components/PortalMenu';
 import { PersonCell } from '@/components/board/cells/PersonCell';
@@ -468,6 +469,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const [doneSectionName, setDoneSectionName] = useState('Done');
     const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
     const [sectionNameInput, setSectionNameInput] = useState('');
+    const [taskToDelete, setTaskToDelete] = useState<{ id: string, name: string, isSubitem: boolean, parentId?: string } | null>(null);
+    const [isDeletingTask, setIsDeletingTask] = useState(false);
     const newItemBtnRef = useRef<HTMLDivElement>(null);
 
     const searchParams = useSearchParams();
@@ -634,8 +637,17 @@ export default function BoardView({ boardId }: { boardId: string }) {
         } catch (error) { console.error(error); }
     };
 
-    const handleDeleteTask = async (taskId: string, isSubitem = false, parentId?: string) => {
+    const handleDeleteTask = (taskId: string, isSubitem = false, parentId?: string) => {
         if (currentUser?.role === 'VIEWER' || currentUser?.role === 'USER') return;
+        const task = tasks.find(t => t.id === taskId) || (parentId ? tasks.find(t => t.id === parentId)?.subTasks?.find(st => st.id === taskId) : null);
+        setTaskToDelete({ id: taskId, name: task?.name || 'this task', isSubitem, parentId });
+    };
+
+    const confirmDeleteTask = async () => {
+        if (!taskToDelete) return;
+        const { id: taskId, isSubitem, parentId } = taskToDelete;
+        setIsDeletingTask(true);
+
         // Optimistic remove
         setTasks(prev => {
             if (isSubitem && parentId) {
@@ -646,14 +658,20 @@ export default function BoardView({ boardId }: { boardId: string }) {
             }
             return prev.filter(t => t.id !== taskId);
         });
+
         try {
             const res = await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
             if (!res.ok) {
                 console.error('Failed to delete task:', await res.text());
-                // Refetch to restore state on failure
                 fetchData();
             }
-        } catch (error) { console.error(error); fetchData(); }
+        } catch (error) {
+            console.error(error);
+            fetchData();
+        } finally {
+            setIsDeletingTask(false);
+            setTaskToDelete(null);
+        }
     };
 
     const handleCreateSection = () => {
@@ -1530,6 +1548,45 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     />
                 )
             }
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                id="task-delete-confirmation-modal"
+                show={!!taskToDelete}
+                onClose={() => setTaskToDelete(null)}
+                size="small"
+            >
+                <ModalBasicLayout className="!bg-[#0f1126] !border-none !shadow-[0_0_80px_rgba(244,63,94,0.2)] overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-transparent to-purple-500/10 pointer-events-none" />
+                    <div className="relative z-10 p-2">
+                        <ModalHeader
+                            title="Purge Task Signal?"
+                            className="[&_h2]:!text-2xl [&_h2]:!font-black [&_h2]:!tracking-tight [&_h2]:!text-transparent [&_h2]:!bg-clip-text [&_h2]:!bg-gradient-to-r [&_h2]:from-red-400 [&_h2]:to-purple-400"
+                        />
+                        <ModalContent>
+                            <div className="py-6 text-center">
+                                <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
+                                    <Trash2 size={32} className="text-red-500" />
+                                </div>
+                                <p className="text-gray-400 text-sm leading-relaxed px-4">
+                                    You are about to permanently remove <span className="text-white font-bold">&quot;{taskToDelete?.name}&quot;</span> from the board environment. This action is immutable.
+                                </p>
+                            </div>
+                        </ModalContent>
+                        <ModalFooter
+                            primaryButton={{
+                                text: isDeletingTask ? "Destructing..." : "Confirm Purge",
+                                color: "negative",
+                                onClick: confirmDeleteTask
+                            }}
+                            secondaryButton={{
+                                text: "Abort",
+                                onClick: () => setTaskToDelete(null)
+                            }}
+                        />
+                    </div>
+                </ModalBasicLayout>
+            </Modal>
         </div >
     );
 }

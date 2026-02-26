@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 interface PortalMenuProps {
-    triggerRef: React.RefObject<HTMLElement>;
+    triggerRef?: React.RefObject<HTMLElement>;
     onClose: () => void;
     children: React.ReactNode;
     width?: number | string;
@@ -19,7 +19,10 @@ export function PortalMenu({ triggerRef, onClose, children, width, height }: Por
     useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
     useLayoutEffect(() => {
-        if (!triggerRef.current) return;
+        if (!triggerRef || !triggerRef.current) {
+            setStyle({ position: 'fixed', inset: 0, zIndex: 9999 });
+            return;
+        }
         const rect = triggerRef.current.getBoundingClientRect();
         const spaceBelow = window.innerHeight - rect.bottom;
         const menuHeight = (typeof height === 'number' ? height : 350); // Default guess
@@ -44,7 +47,7 @@ export function PortalMenu({ triggerRef, onClose, children, width, height }: Por
         const handler = (e: MouseEvent) => {
             if (
                 menuRef.current && !menuRef.current.contains(e.target as Node) &&
-                triggerRef.current && !triggerRef.current.contains(e.target as Node)
+                triggerRef && triggerRef.current && !triggerRef.current.contains(e.target as Node)
             ) {
                 onCloseRef.current();
             }

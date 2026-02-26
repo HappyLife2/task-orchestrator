@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
                 },
                 OR: [
                     { name: { contains: query } },
-                    { referenceId: { contains: query } }
+                    { referenceId: { contains: query } },
+                    { columnValues: { contains: query } }
                 ]
             },
             select: {
