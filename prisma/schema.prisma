@@ -310,8 +310,8 @@ model Permission {
   role         String
   settings     String    @default("{}")
   createdAt    DateTime  @default(now())
-  dashboard    Dashboard? @relation(fields: [resourceId], references: [id])
-  board        Board?     @relation(fields: [resourceId], references: [id])
+  board        Dashboard @relation(fields: [resourceId], references: [id])
+  board        Board     @relation(fields: [resourceId], references: [id])
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, resourceType, resourceId])

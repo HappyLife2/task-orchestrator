@@ -15,7 +15,9 @@ import {
     LogOut,
     Key,
     Eye,
-    EyeOff
+    EyeOff,
+    Search,
+    SearchX
 } from 'lucide-react';
 import {
     EditableText,
@@ -73,6 +75,12 @@ export default function Sidebar() {
     const [pwdError, setPwdError] = useState('');
     const [pwdSuccess, setPwdSuccess] = useState('');
     const [isChangingPwd, setIsChangingPwd] = useState(false);
+
+    // Search State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showSearchModal, setShowSearchModal] = useState(false);
 
     // Sidebar Resize State
     const [sidebarWidth, setSidebarWidth] = useState(256);
@@ -346,6 +354,38 @@ export default function Sidebar() {
         }
     };
 
+    const handleSearch = useCallback(async (q: string) => {
+        if (q.trim().length < 2) {
+            setSearchResults([]);
+            return;
+        }
+        setIsSearching(true);
+        try {
+            const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+            if (res.ok) {
+                const data = await res.json();
+                setSearchResults(data.results || []);
+            }
+        } catch (err) {
+            console.error('Search error:', err);
+        } finally {
+            setIsSearching(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!showSearchModal) {
+            setSearchQuery('');
+            setSearchResults([]);
+            return;
+        }
+        const timer = setTimeout(() => {
+            if (searchQuery) handleSearch(searchQuery);
+            else setSearchResults([]);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery, handleSearch, showSearchModal]);
+
     // Calculate Password Strength
     const getPasswordStrength = (pwd: string) => {
         let score = 0;
@@ -378,10 +418,18 @@ export default function Sidebar() {
                 `}
             />
             {/* Header */}
-            <div className="p-6 border-b border-white/5">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between">
                 <Text type="text1" weight="bold" className="text-white truncate tracking-tight uppercase !text-[14px] !font-black !tracking-widest">
                     {org.name}
                 </Text>
+                <IconButton
+                    icon={Search as any}
+                    size="small"
+                    kind="tertiary"
+                    className="text-gray-400 hover:text-white transition-all opacity-60 hover:opacity-100"
+                    onClick={() => setShowSearchModal(true)}
+                    ariaLabel="Search"
+                />
             </div>
 
             {/* Navigation */}
@@ -778,6 +826,104 @@ export default function Sidebar() {
                                             </button>
                                         </div>
                                     </form>
+                                </ModalContent>
+                            </div>
+                        </ModalBasicLayout>
+                    </Modal>
+                )}
+            </AnimatePresence>
+
+            {/* Search Modal */}
+            <AnimatePresence>
+                {showSearchModal && (
+                    <Modal
+                        id="global-search-modal"
+                        show={showSearchModal}
+                        size="medium"
+                        onClose={() => setShowSearchModal(false)}
+                    >
+                        <ModalBasicLayout className="!bg-[#0f1126] !border-none !shadow-[0_0_80px_rgba(99,102,241,0.2)] overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+                            <div className="relative z-10 p-2">
+                                <ModalHeader title="Global Search" className="[&_h2]:!text-2xl [&_h2]:!font-black [&_h2]:!tracking-tight [&_h2]:!text-transparent [&_h2]:!bg-clip-text [&_h2]:!bg-gradient-to-r [&_h2]:from-indigo-400 [&_h2]:to-purple-400" />
+                                <ModalContent>
+                                    <div className="space-y-6 py-4">
+                                        <div className="relative group">
+                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-500 group-focus-within:text-indigo-400 transition-colors">
+                                                <Search size={20} />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                autoFocus
+                                                value={searchQuery}
+                                                onChange={(e) => setSearchQuery(e.target.value)}
+                                                className="w-full rounded-2xl border border-white/10 bg-black/40 text-white pl-12 pr-4 py-4 focus:border-indigo-500/50 focus:bg-indigo-500/5 focus:ring-4 focus:ring-indigo-500/10 focus:outline-none transition-all text-lg placeholder:text-gray-600 shadow-2xl"
+                                                placeholder="Search tasks, reference IDs, or boards..."
+                                            />
+                                            {isSearching && (
+                                                <div className="absolute inset-y-0 right-4 flex items-center">
+                                                    <div className="w-5 h-5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {searchResults.length > 0 ? (
+                                                <div className="grid gap-2">
+                                                    {searchResults.map((result) => (
+                                                        <motion.div
+                                                            key={result.id}
+                                                            initial={{ opacity: 0, x: -10 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            whileHover={{ scale: 1.01, backgroundColor: 'rgba(255,255,255,0.05)' }}
+                                                            onClick={() => {
+                                                                setShowSearchModal(false);
+                                                                router.push(`/board/${result.boardId}`);
+                                                            }}
+                                                            className="p-4 rounded-xl border border-white/5 bg-white/5 cursor-pointer transition-all flex items-center justify-between group"
+                                                        >
+                                                            <div className="flex flex-col gap-1">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-white font-bold text-sm tracking-tight group-hover:text-indigo-300 transition-colors">
+                                                                        {result.name}
+                                                                    </span>
+                                                                    {result.referenceId && (
+                                                                        <span className="text-[10px] font-black bg-white/10 text-gray-400 px-2 py-0.5 rounded-full tracking-widest uppercase">
+                                                                            {result.referenceId}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 font-medium">
+                                                                    <Table size={12} />
+                                                                    <span>{result.board?.name || 'Board'}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <ChevronDown size={18} className="-rotate-90 text-indigo-400" />
+                                                            </div>
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            ) : searchQuery.length >= 2 && !isSearching ? (
+                                                <motion.div
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    className="flex flex-col items-center justify-center py-12 text-gray-500 gap-3"
+                                                >
+                                                    <SearchX size={48} className="opacity-20" />
+                                                    <p className="text-sm font-bold tracking-tight">No signals detected for &quot;{searchQuery}&quot;</p>
+                                                    <p className="text-xs opacity-60">Try a different archive key or reference ID</p>
+                                                </motion.div>
+                                            ) : !searchQuery && (
+                                                <div className="flex flex-col items-center justify-center py-12 text-gray-600 gap-3">
+                                                    <Search size={48} className="opacity-10" />
+                                                    <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-40 text-center">
+                                                        Enter sequence to begin <br /> global cross-reference
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </ModalContent>
                             </div>
                         </ModalBasicLayout>
