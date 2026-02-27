@@ -40,8 +40,13 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
+    const departments = ['ADMIN', 'OWNER'].includes(payload.role)
+        ? org.departments
+        : org.departments.filter(d => d.boards.length > 0);
+
     return NextResponse.json({
         ...org,
+        departments,
         currentUserRole: payload.role,
         currentUserName: org.users[0]?.name || 'User'
     });
