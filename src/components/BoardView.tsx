@@ -1209,7 +1209,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
             <div className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${selectedTaskForUpdates ? 'mr-[450px]' : ''}`}>
 
                 {/* Header Container */}
-                <div className="px-8 pt-8 pb-4 flex justify-between items-start sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-[var(--glass-border)]">
+                <div className="pl-8 pr-12 pt-8 pb-4 flex justify-between items-start sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-[var(--glass-border)]">
                     <div className="flex-1 min-w-0 pr-4">
                         <EditableHeading
                             type="h2"
@@ -1303,7 +1303,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
                 {/* DnD Table */}
                 <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <div className="flex-1 overflow-auto px-8 pt-8 pb-32">
+                    <div className="flex-1 overflow-auto pl-8 pr-12 pt-8 pb-32">
 
                         {/* Add Section input */}
                         {isAddingSection && (

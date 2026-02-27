@@ -58,6 +58,7 @@ export default function Sidebar() {
     const router = useRouter();
     const [org, setOrg] = useState<Organization | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isAddingDept, setIsAddingDept] = useState(false);
     const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
     const [boardToDelete, setBoardToDelete] = useState<{ id: string, name: string, deptId: string } | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -222,6 +223,39 @@ export default function Sidebar() {
             }
         } catch (error) {
             console.error('Failed to create board', error);
+        }
+    };
+
+    const handleAddDepartment = async () => {
+        setIsAddingDept(true);
+        const newDeptName = "New Department";
+        console.log('Sidebar: handleAddDepartment called');
+        try {
+            const res = await fetch('/api/departments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newDeptName }),
+            });
+
+            console.log('Sidebar: Create Department response status:', res.status);
+
+            if (res.ok) {
+                const newDept = await res.json();
+                console.log('Sidebar: Department created successfully:', newDept.id);
+                // Optimistically expand it so the user sees it immediately
+                setExpandedDepts(prev => ({ ...prev, [newDept.id]: true }));
+                fetchOrg();
+            } else {
+                const errorData = await res.json();
+                console.error('Sidebar: Failed to create department:', errorData.error);
+                // Alert the user so they see what happened
+                alert(`Error creating department: ${errorData.error || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error('Sidebar: Exception in handleAddDepartment:', error);
+            alert('An unexpected error occurred while creating the department.');
+        } finally {
+            setIsAddingDept(false);
         }
     };
 
@@ -455,7 +489,29 @@ export default function Sidebar() {
 
                     <div className="h-px bg-[var(--glass-border)] mx-4 my-6 opacity-30" />
 
-                    {/* Departments */}
+                    {/* Departments Section Header */}
+                    <div className="flex items-center justify-between px-4 mb-2">
+                        <Text type="text3" weight="bold" className="text-gray-500 uppercase tracking-widest !text-[10px]">
+                            Departments
+                        </Text>
+                        {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
+                            <IconButton
+                                icon={Plus as any}
+                                size="small"
+                                kind="tertiary"
+                                className="text-gray-500 hover:text-white transition-colors"
+                                onClick={handleAddDepartment}
+                                tooltipContent="Add Department"
+                                loading={isAddingDept}
+                                tooltipProps={{
+                                    zIndex: 100000,
+                                    modifiers: [{ name: 'preventOverflow', options: { boundary: 'viewport' } }]
+                                }}
+                            />
+                        )}
+                    </div>
+
+                    {/* Departments List */}
                     <div className="space-y-4">
                         {org.departments.map((dept) => (
                             <div key={dept.id} className="space-y-1">
