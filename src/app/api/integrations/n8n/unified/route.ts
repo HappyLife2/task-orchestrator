@@ -144,19 +144,23 @@ export async function POST(req: NextRequest) {
                     id: 'status', type: 'status', title: 'Status', width: 140,
                     settings: { labels: data.config?.statusLabels || { 'done': '#00c875', 'working': '#fdab3d', 'stuck': '#e2445c', 'default': '#c4c4c4' } }
                 },
+                { id: 'created_date', type: 'text', title: 'Created Date', width: 150 },
+                { id: 'reference_id', type: 'text', title: 'Reference ID', width: 130 },
+                { id: 'requester_name', type: 'text', title: 'Requester Name', width: 150 },
+                { id: 'request_type', type: 'text', title: 'Request Type', width: 150 },
                 {
-                    id: 'importance', type: 'status', title: 'Importance', width: 140,
+                    id: 'importance', type: 'status', title: 'Importance', width: 140, hidden: true,
                     settings: { labels: data.config?.importanceLabels || { 'high': '#ff158a', 'medium': '#784bd1', 'low': '#0086c0', 'default': '#c4c4c4' } }
                 },
                 {
-                    id: 'urgency', type: 'status', title: 'Urgency', width: 140,
+                    id: 'urgency', type: 'status', title: 'Urgency', width: 140, hidden: true,
                     settings: { labels: data.config?.urgencyLabels || { 'critical': '#333333', 'urgent': '#ff642e', 'normal': '#00c875', 'default': '#c4c4c4' } }
                 },
                 {
-                    id: 'taskLoad', type: 'status', title: 'Task Load', width: 140,
+                    id: 'taskLoad', type: 'status', title: 'Task Load', width: 140, hidden: true,
                     settings: { labels: data.config?.taskLoadLabels || { 'heavy': '#ffcb00', 'moderate': '#00d1d1', 'light': '#9cd326', 'default': '#c4c4c4' } }
                 },
-                { id: 'date', type: 'date', title: 'Timeline', width: 160 },
+                { id: 'date', type: 'date', title: 'Timeline', width: 160, hidden: true },
             ];
 
             if (!board) {

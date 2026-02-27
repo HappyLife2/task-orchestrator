@@ -17,9 +17,13 @@ const defaultColumns = [
             }
         }
     },
-    { id: 'updates', type: 'updates', title: 'Updates', width: 100 },
+    { id: 'created_date', type: 'text', title: 'Created Date', width: 150 },
+    { id: 'reference_id', type: 'text', title: 'Reference ID', width: 130 },
+    { id: 'requester_name', type: 'text', title: 'Requester Name', width: 150 },
+    { id: 'request_type', type: 'text', title: 'Request Type', width: 150 },
+    { id: 'updates', type: 'updates', title: 'Updates', width: 100, hidden: true },
     {
-        id: 'importance', type: 'dropdown', title: 'Importance', width: 150, settings: {
+        id: 'importance', type: 'dropdown', title: 'Importance', width: 150, hidden: true, settings: {
             options: [
                 { label: 'Sacrosanct', value: 'sacrosanct', color: '#BC6277' },
                 { label: 'High', value: 'high', color: '#EB549F' },
@@ -29,7 +33,7 @@ const defaultColumns = [
         }
     },
     {
-        id: 'urgency', type: 'dropdown', title: 'Urgency', width: 150, settings: {
+        id: 'urgency', type: 'dropdown', title: 'Urgency', width: 150, hidden: true, settings: {
             options: [
                 { label: 'Urgent', value: 'urgent', color: '#F23C8F' },
                 { label: 'Next', value: 'next', color: '#3E9B73' },
@@ -39,9 +43,9 @@ const defaultColumns = [
             ]
         }
     },
-    { id: 'timeline', type: 'timeline', title: 'Timeline', width: 200 },
+    { id: 'timeline', type: 'timeline', title: 'Timeline', width: 200, hidden: true },
     {
-        id: 'task_load', type: 'dropdown', title: 'Task Load', width: 160, settings: {
+        id: 'task_load', type: 'dropdown', title: 'Task Load', width: 160, hidden: true, settings: {
             options: [
                 { label: 'Runes Awakened', value: 'runes_awakened', color: '#F34D9C' },
                 { label: 'Big Pot', value: 'big_pot', color: '#CF7FB0' },
@@ -50,8 +54,7 @@ const defaultColumns = [
                 { label: 'On Hold', value: 'on_hold', color: '#7A7E91' }
             ]
         }
-    },
-    { id: 'reference_id', type: 'text', title: 'Reference ID', width: 130 }
+    }
 ];
 
 export async function POST(req: NextRequest) {

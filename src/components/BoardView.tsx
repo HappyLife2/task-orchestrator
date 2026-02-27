@@ -34,6 +34,7 @@ interface Column {
     title: string;
     width?: number;
     settings?: any;
+    hidden?: boolean;
 }
 
 // ─── Resizable Column Hook ────────────────────────────────────────────────────
@@ -514,7 +515,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
-    const columns: Column[] = (board?.columns ?? []).filter((c: Column) => c.id !== 'updates');
+    const columns: Column[] = (board?.columns ?? []).filter((c: Column) => c.id !== 'updates' && !c.hidden);
     const { widths, startResize } = useColumnWidths(columns);
 
     // ── Split tasks into active and done ───────────────────────────────────────

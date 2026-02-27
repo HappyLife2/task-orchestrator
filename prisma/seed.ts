@@ -98,13 +98,19 @@ async function main() {
     if (!board) {
         // Define default columns
         const defaultColumns = [
-            { id: 'person', type: 'person', title: 'Person', width: 100 },
+            { id: 'item', type: 'text', title: 'Item', width: 300 },
+            { id: 'person', type: 'person', title: 'Person', width: 150 },
             {
-                id: 'status', type: 'status', title: 'Status', width: 140, settings: {
+                id: 'status', type: 'status', title: 'Status', width: 160, settings: {
                     labels: { 'done': '#00c875', 'working': '#fdab3d', 'stuck': '#e2445c', 'default': '#c4c4c4' }
                 }
             },
-            { id: 'date', type: 'date', title: 'Date', width: 120 },
+            { id: 'created_date', type: 'text', title: 'Created Date', width: 150 },
+            { id: 'reference_id', type: 'text', title: 'Reference ID', width: 130 },
+            { id: 'requester_name', type: 'text', title: 'Requester Name', width: 150 },
+            { id: 'request_type', type: 'text', title: 'Request Type', width: 150 },
+            { id: 'updates', type: 'updates', title: 'Updates', width: 100, hidden: true },
+            { id: 'date', type: 'date', title: 'Date', width: 120, hidden: true },
         ];
 
         board = await prisma.board.create({
