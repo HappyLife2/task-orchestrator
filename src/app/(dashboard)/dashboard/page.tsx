@@ -137,8 +137,24 @@ export default function DashboardPage() {
         return null;
     }
 
-    const prepareChartData = (record: Record<string, number>) =>
+    const prepareChartData = (record: Record<string, number> = {}) =>
         Object.entries(record).map(([name, value]) => ({ name, value }));
+
+    // Safety checks against malformed API error responses
+    const safeData = data as any;
+    if (safeData?.error || !safeData?.ongoing || !safeData?.done) {
+        return (
+            <div className="flex h-full items-center justify-center bg-background text-white p-8">
+                <div className="glass-card p-12 text-center max-w-md border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.1)]">
+                    <AlertCircle className="text-red-400 mx-auto mb-6" size={40} />
+                    <h2 className="text-2xl font-bold mb-4">Analytics Unavailable</h2>
+                    <p className="text-gray-400 text-sm">
+                        {safeData?.error || "We couldn't load the operational analytics at this time."}
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     const ongoingByBoard = prepareChartData(data.ongoing.byBoard);
     const ongoingByStatus = prepareChartData(data.ongoing.byStatus);

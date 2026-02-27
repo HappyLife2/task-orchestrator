@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
                 byStatus: {} as Record<string, number>,
                 byImportance: {} as Record<string, number>,
                 byUrgency: {} as Record<string, number>,
-                byType: {} as Record<string, number>, // Using group titles as "types"
+                byType: {} as Record<string, number>,
             },
             done: {
                 total: 0,
