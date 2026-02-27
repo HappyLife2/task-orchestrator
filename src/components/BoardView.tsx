@@ -346,7 +346,7 @@ function InlineTextCell({ value, onChange, placeholder }: {
                     if (e.key === 'Escape') { setEditing(false); setDraft(value ?? ''); }
                 }}
                 placeholder={placeholder}
-                className="w-full bg-black/60 border border-accent-indigo rounded-xl px-3 py-1.5 text-xs text-white outline-none ring-2 ring-indigo-500/20"
+                className="w-full bg-black/60 border border-accent-indigo rounded-xl px-3 py-1.5 text-xs text-center text-white outline-none ring-2 ring-indigo-500/20"
             />
         );
     }
@@ -354,7 +354,7 @@ function InlineTextCell({ value, onChange, placeholder }: {
     return (
         <div
             onClick={() => setEditing(true)}
-            className="w-full h-8 flex items-center px-3 text-[13px] text-gray-300 font-medium cursor-text hover:bg-white/5 rounded-xl transition-all truncate"
+            className="w-full h-8 flex items-center justify-center px-3 text-[13px] text-gray-300 font-medium cursor-text hover:bg-white/5 rounded-xl transition-all truncate text-center"
         >
             {draft || <span className="text-gray-600 font-normal italic">{placeholder ?? '—'}</span>}
         </div>
