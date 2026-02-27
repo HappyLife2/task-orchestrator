@@ -1211,12 +1211,14 @@ export default function BoardView({ boardId }: { boardId: string }) {
                 {/* Header Container */}
                 <div className="pl-8 pr-12 pt-8 pb-4 flex justify-between items-start sticky top-0 z-20 bg-background/80 backdrop-blur-xl border-b border-[var(--glass-border)]">
                     <div className="flex-1 min-w-0 pr-4">
-                        <EditableHeading
-                            type="h2"
-                            value={board.name}
-                            onChange={handleUpdateBoardName}
-                            className="!font-black !text-4xl tracking-tighter mb-3 [&_h2]:!text-white [&_input]:!text-white [&_span]:!text-white [&_h2]:!font-black"
-                        />
+                        <div className="w-fit min-w-[150px] px-2" onClick={(e) => e.stopPropagation()}>
+                            <EditableHeading
+                                type="h2"
+                                value={board.name}
+                                onChange={handleUpdateBoardName}
+                                className="!font-black !text-4xl tracking-tighter mb-3 [&_h2]:!text-white [&_input]:!text-white [&_span]:!text-white [&_h2]:!font-black"
+                            />
+                        </div>
                         <div className="flex items-center gap-3">
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 bg-[#1a1b4b] px-2.5 py-1 rounded-full border border-[#2c2d65]">
                                 {board.department?.name} Department
@@ -1373,13 +1375,15 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                         <ChevronRight size={18} className={`text-accent-indigo transition-transform duration-300 ${isWipSectionCollapsed ? '' : 'rotate-90'}`} />
                                                     </motion.button>
 
-                                                    <div className="flex items-center min-w-0 vibe-header-inherit">
-                                                        <EditableHeading
-                                                            type="h3"
-                                                            value={wipSectionName}
-                                                            onChange={val => setWipSectionName(val || 'Active Tasks')}
-                                                            className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                        />
+                                                    <div className="flex items-center min-w-0 vibe-header-inherit" onClick={(e) => e.stopPropagation()}>
+                                                        <div className="w-fit min-w-[100px] px-2">
+                                                            <EditableHeading
+                                                                type="h3"
+                                                                value={wipSectionName}
+                                                                onChange={val => setWipSectionName(val || 'Active Tasks')}
+                                                                className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                            />
+                                                        </div>
                                                         {renderInlineCounter(wipTasks.length, wipSubitemCount)}
                                                     </div>
                                                 </div>
@@ -1462,13 +1466,15 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                 <ChevronRight size={18} style={{ color: section.color }} className={`transition-transform duration-300 ${section.collapsed ? '' : 'rotate-90'}`} />
                                                             </motion.button>
 
-                                                            <div className="flex items-center min-w-0 vibe-header-inherit" style={{ color: section.color }}>
-                                                                <EditableHeading
-                                                                    type="h3"
-                                                                    value={section.name}
-                                                                    onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
-                                                                    className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                                />
+                                                            <div className="flex items-center min-w-0 vibe-header-inherit" style={{ color: section.color }} onClick={(e) => e.stopPropagation()}>
+                                                                <div className="w-fit min-w-[100px] px-2">
+                                                                    <EditableHeading
+                                                                        type="h3"
+                                                                        value={section.name}
+                                                                        onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
+                                                                        className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                                    />
+                                                                </div>
                                                                 {renderInlineCounter(secTasks.length, secTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0))}
                                                             </div>
 
@@ -1514,13 +1520,15 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                             <ChevronRight size={18} className={`text-accent-cyan transition-transform duration-300 ${isDoneSectionCollapsed ? '' : 'rotate-90'}`} />
                                                         </motion.button>
 
-                                                        <div className="flex items-center min-w-0 vibe-header-inherit">
-                                                            <EditableHeading
-                                                                type="h3"
-                                                                value={doneSectionName}
-                                                                onChange={val => setDoneSectionName(val || 'Done')}
-                                                                className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
-                                                            />
+                                                        <div className="flex items-center min-w-0 vibe-header-inherit" onClick={(e) => e.stopPropagation()}>
+                                                            <div className="w-fit min-w-[100px] px-2">
+                                                                <EditableHeading
+                                                                    type="h3"
+                                                                    value={doneSectionName}
+                                                                    onChange={val => setDoneSectionName(val || 'Done')}
+                                                                    className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !overflow-visible !whitespace-normal !w-auto"
+                                                                />
+                                                            </div>
                                                             {renderInlineCounter(doneTasks.length, doneSubitemCount)}
                                                         </div>
                                                     </div>

@@ -515,7 +515,14 @@ export default function Sidebar() {
                     <div className="space-y-4">
                         {org.departments.map((dept) => (
                             <div key={dept.id} className="space-y-1">
-                                <div className="flex items-center group px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer" onClick={() => toggleDept(dept.id)}>
+                                <div
+                                    className="flex items-center group px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+                                    onClick={(e) => {
+                                        const target = e.target as HTMLElement;
+                                        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.closest('.no-nav')) return;
+                                        toggleDept(dept.id);
+                                    }}
+                                >
                                     <motion.div
                                         animate={{ rotate: expandedDepts[dept.id] ? 180 : 0 }}
                                         transition={{ duration: 0.3 }}
@@ -526,17 +533,19 @@ export default function Sidebar() {
 
                                     <div className="flex-1 flex items-center min-w-0">
                                         <Briefcase size={16} className={`${expandedDepts[dept.id] ? 'text-accent-violet' : 'text-gray-500'} mr-2.5 flex-shrink-0 transition-colors`} />
-                                        <div className="flex-1 min-w-0" onClick={(e) => e.stopPropagation()}>
+                                        <div className="flex-1 min-w-0">
                                             {['ADMIN', 'OWNER'].includes(org.currentUserRole) ? (
-                                                <EditableText
-                                                    value={dept.name}
-                                                    onChange={(val: string) => handleRenameDepartment(dept.id, val)}
-                                                    type="text2"
-                                                    weight="bold"
-                                                    className="w-full [&_div]:!text-gray-300 [&_input]:!text-white [&_span]:!text-white !text-[13px] !font-bold !tracking-wider uppercase"
-                                                />
+                                                <div className="w-fit min-w-[140px] px-1 no-nav" onClick={(e) => e.stopPropagation()}>
+                                                    <EditableText
+                                                        value={dept.name}
+                                                        onChange={(val: string) => handleRenameDepartment(dept.id, val)}
+                                                        type="text2"
+                                                        weight="bold"
+                                                        className="!flex-1 [&_div]:!flex [&_div]:!text-gray-300 [&_input]:!text-white [&_span]:!text-white !text-[15px] !font-bold !tracking-wider uppercase !pl-4 !pr-4"
+                                                    />
+                                                </div>
                                             ) : (
-                                                <Text type="text2" weight="bold" className="text-gray-300 truncate pr-2 !text-[13px] !font-bold !tracking-wider uppercase">
+                                                <Text type="text2" weight="bold" className="text-gray-300 truncate pr-2 !text-[15px] !font-bold !tracking-wider uppercase">
                                                     {dept.name}
                                                 </Text>
                                             )}
@@ -572,7 +581,7 @@ export default function Sidebar() {
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
                                             transition={{ duration: 0.3, ease: "circOut" }}
-                                            className="overflow-hidden pl-7 space-y-1"
+                                            className="overflow-visible pl-7 space-y-1"
                                         >
                                             {dept.boards.map((board) => (
                                                 <motion.div
@@ -587,26 +596,28 @@ export default function Sidebar() {
                                                         ${pathname === `/board/${board.id}` ? 'bg-[#1c3fa3] text-white' : 'text-gray-400 hover:text-gray-200 hover:bg-white/5'}
                                                     `}
                                                     onClick={(e) => {
-                                                        if ((e.target as HTMLElement).tagName !== 'INPUT' && (e.target as HTMLElement).tagName !== 'TEXTAREA') {
-                                                            router.push(`/board/${board.id}`);
-                                                        }
+                                                        const target = e.target as HTMLElement;
+                                                        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.closest('.no-nav') || target.tagName === 'BUTTON' || target.closest('button')) return;
+                                                        router.push(`/board/${board.id}`);
                                                     }}
                                                 >
                                                     <Table size={18} className={`mr-3 flex-shrink-0 ${pathname === `/board/${board.id}` ? 'text-white' : 'text-gray-400'}`} />
                                                     <div className="flex-1 min-w-0">
                                                         {['ADMIN', 'OWNER'].includes(org.currentUserRole) ? (
-                                                            <EditableText
-                                                                value={board.name}
-                                                                onChange={(val: string) => handleRenameBoard(board.id, val)}
-                                                                type="text2"
-                                                                weight="normal"
-                                                                className="w-full [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit !text-[13px] !font-normal !tracking-wide"
-                                                            />
+                                                            <div className="w-fit min-w-[140px] px-1 no-nav" onClick={(e) => e.stopPropagation()}>
+                                                                <EditableText
+                                                                    value={board.name}
+                                                                    onChange={(val: string) => handleRenameBoard(board.id, val)}
+                                                                    type="text2"
+                                                                    weight="normal"
+                                                                    className="!flex-1 [&_div]:!flex [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit !text-[15px] !font-normal !tracking-wide !pl-4 !pr-4"
+                                                                />
+                                                            </div>
                                                         ) : (
                                                             <Text
                                                                 type="text2"
                                                                 weight="normal"
-                                                                className={`truncate pr-2 !text-[13px] !font-normal !tracking-wide ${pathname === `/board/${board.id}` ? 'text-white' : 'text-inherit'}`}
+                                                                className={`truncate pr-2 !text-[15px] !font-normal !tracking-wide ${pathname === `/board/${board.id}` ? 'text-white' : 'text-inherit'}`}
                                                             >
                                                                 {board.name}
                                                             </Text>
@@ -932,7 +943,9 @@ export default function Sidebar() {
                                                             initial={{ opacity: 0, x: -10 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             whileHover={{ scale: 1.01, backgroundColor: 'rgba(255,255,255,0.05)' }}
-                                                            onClick={() => {
+                                                            onClick={(e) => {
+                                                                const target = e.target as HTMLElement;
+                                                                if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.closest('.no-nav')) return;
                                                                 setShowSearchModal(false);
                                                                 router.push(`/board/${result.boardId}?highlight=${result.id}`);
                                                             }}
