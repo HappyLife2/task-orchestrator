@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
                 boardId,
                 description,
                 columnValues: JSON.stringify(columnValues || {}),
-                assignedUserId: payload.userId, // Auto-assign creator initially? Or null. Let's assign creator.
+                assignedUserId: payload.userId,
                 creatorId: payload.userId
             },
         });

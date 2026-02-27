@@ -183,8 +183,11 @@ export default function TimelineView({
                                 {/* Task Name */}
                                 <div className="w-64 flex-shrink-0 p-4 border-r border-[#2c2d65]">
                                     <div className="text-sm text-white font-medium truncate">{task.name}</div>
-                                    {task.assignedUser && (
-                                        <div className="text-xs text-gray-400 mt-1">{task.assignedUser.name}</div>
+                                    {task.assignedUsers && task.assignedUsers.length > 0 && (
+                                        <div className="text-xs text-gray-400 mt-1 truncate">
+                                            {task.assignedUsers[0].name}
+                                            {task.assignedUsers.length > 1 && ` +${task.assignedUsers.length - 1}`}
+                                        </div>
                                     )}
                                 </div>
 

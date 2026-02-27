@@ -21,7 +21,6 @@ interface Task {
     state: 'ACTIVE' | 'ARCHIVED';
     columnValues: string;
     parsedValues: Record<string, any>;
-    assignedUserId: string | null;
     assignedUser?: { id: string; name: string; email: string };
     description?: string;
     createdAt: string;
@@ -474,27 +473,43 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const newItemBtnRef = useRef<HTMLDivElement>(null);
 
     const searchParams = useSearchParams();
-    const highlightId = searchParams.get('highlight');
+    const highlightIdParam = searchParams.get('highlight');
+    const [activeHighlightId, setActiveHighlightId] = useState<string | null>(null);
+
+    // Sync highlight param to state and set timeout
+    useEffect(() => {
+        if (highlightIdParam) {
+            setActiveHighlightId(highlightIdParam);
+            const timer = setTimeout(() => {
+                setActiveHighlightId(null);
+                // Optionally clear URL param without refresh
+                const url = new URL(window.location.href);
+                url.searchParams.delete('highlight');
+                window.history.replaceState({}, '', url.toString());
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [highlightIdParam]);
 
     // Scroll highlighted task into view
     useEffect(() => {
-        if (highlightId && tasks.length > 0) {
+        if (activeHighlightId && tasks.length > 0) {
             // Find if task is a subtask and needs expansion
-            const parentTask = tasks.find(t => t.subTasks?.some(st => st.id === highlightId));
+            const parentTask = tasks.find(t => t.subTasks?.some(st => st.id === activeHighlightId));
             if (parentTask) {
                 setExpandedTasks(prev => new Set([...prev, parentTask.id]));
             }
 
             // Small delay to ensure DOM is updated (especially after expansion)
             const timer = setTimeout(() => {
-                const element = document.getElementById(`task-${highlightId}`);
+                const element = document.getElementById(`task-${activeHighlightId}`);
                 if (element) {
                     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100);
             return () => clearTimeout(timer);
         }
-    }, [highlightId, tasks]);
+    }, [activeHighlightId, tasks]);
 
     const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -534,19 +549,27 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
             if (boardRes.ok && tasksRes.ok) {
                 const boardData = await boardRes.json();
-                const tasksData: Task[] = await tasksRes.json();
+                const tasksData = await tasksRes.json();
 
-                const parsedTasks = tasksData.map(t => ({
-                    ...t,
-                    parsedValues: JSON.parse(t.columnValues || '{}'),
-                    subTasks: t.subTasks?.map(st => ({
-                        ...st,
-                        parsedValues: JSON.parse(st.columnValues || '{}')
-                    }))
-                }));
+                try {
+                    const parsedTasks = tasksData.map((t: any) => ({
+                        ...t,
+                        parsedValues: JSON.parse(t.columnValues || '{}'),
+                        subTasks: t.subTasks?.map((st: any) => ({
+                            ...st,
+                            parsedValues: JSON.parse(st.columnValues || '{}')
+                        }))
+                    }));
 
-                setBoard(boardData);
-                setTasks(parsedTasks);
+                    setBoard(boardData);
+                    setTasks(parsedTasks);
+                } catch (parseError) {
+                    console.error('JSON Parse error in tasks:', parseError);
+                    console.error('tasksData:', tasksData);
+                }
+            } else {
+                console.error('API Error: boardRes', boardRes.status, await boardRes.text());
+                console.error('API Error: tasksRes', tasksRes.status, await tasksRes.text());
             }
 
             if (employeesRes.ok) {
@@ -769,9 +792,9 @@ export default function BoardView({ boardId }: { boardId: string }) {
 
             // Update parent task if needed
             if (shouldUpdate) {
-                if (columnId === 'assignedUserId') {
-                    const user = value ? employees.find(e => e.id === value) : null;
-                    updatedTask = { ...updatedTask, assignedUserId: value, assignedUser: user };
+                if (columnId === 'assignedUserIds') {
+                    const selectedUser = employees.find((e: any) => e.id === value[0]);
+                    updatedTask = { ...updatedTask, assignedUser: selectedUser };
                 } else {
                     updatedTask = { ...updatedTask, parsedValues: { ...updatedTask.parsedValues, [columnId]: value } };
                 }
@@ -781,9 +804,9 @@ export default function BoardView({ boardId }: { boardId: string }) {
             if (t.subTasks) {
                 updatedTask.subTasks = t.subTasks.map(st => {
                     if (!targetTaskIds.includes(st.id)) return st;
-                    if (columnId === 'assignedUserId') {
-                        const user = value ? employees.find(e => e.id === value) : null;
-                        return { ...st, assignedUserId: value, assignedUser: user };
+                    if (columnId === 'assignedUserIds') {
+                        const selectedUser = employees.find((e: any) => e.id === value[0]);
+                        return { ...st, assignedUser: selectedUser };
                     }
                     return { ...st, parsedValues: { ...st.parsedValues, [columnId]: value } };
                 });
@@ -824,8 +847,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
         // Send API requests in parallel
         try {
             await Promise.all(targetTaskIds.map(async id => {
-                const payload = columnId === 'assignedUserId'
-                    ? { assignedUserId: value }
+                const payload = columnId === 'assignedUserIds'
+                    ? { assignedUserIds: value }
                     : { columnValues: { [columnId]: value } };
 
                 const res = await fetch(`/api/tasks/${id}`, {
@@ -927,8 +950,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
         if (col.id === 'person') {
             return (
                 <PersonCell
-                    value={task.assignedUserId}
-                    onChange={v => handleUpdateTaskColumn(task.id, 'assignedUserId', v)}
+                    value={task.assignedUser ? [task.assignedUser.id] : []}
+                    onChange={v => handleUpdateTaskColumn(task.id, 'assignedUserIds', v)}
                     employees={employees}
                 />
             );
@@ -983,7 +1006,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const renderRow = (task: Task, sectionColor?: string, isSubitem = false, parentId?: string) => {
         const isExpanded = expandedTasks.has(task.id);
         const isDragging = activeDragId === task.id;
-        const isHighlighted = highlightId === task.id;
+        const isHighlighted = activeHighlightId === task.id;
 
         return (
             <Fragment key={task.id}>

@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
             userId: user.id,
             orgId: user.organizationId,
             role: user.role,
+            name: user.name || undefined,
             position: user.position || undefined,
         });
 

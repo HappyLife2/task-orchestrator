@@ -40,7 +40,7 @@ model User {
   notifications    Notification[]
   permissions      Permission[]
   recentItems      RecentItem[]
-  tasks            Task[]
+  tasks            Task[]            @relation("TaskAssignments")
   createdTasks     Task[]            @relation("TaskCreator")
   timeEntries      TimeEntry[]
   updates          Update[]
@@ -120,7 +120,6 @@ model Task {
   state          String        @default("ACTIVE")
   boardId        String
   groupId        String?
-  assignedUserId String?
   referenceId    String?
   externalId     String?
   description    String?
@@ -132,7 +131,8 @@ model Task {
   parentTaskId   String?
   parentTask     Task?         @relation("SubTasks", fields: [parentTaskId], references: [id], onDelete: Cascade)
   subTasks       Task[]        @relation("SubTasks")
-  assignedUser   User?         @relation(fields: [assignedUserId], references: [id])
+  assignedUserId String?
+  assignedUser   User?         @relation("TaskAssignments", fields: [assignedUserId], references: [id])
   group          Group?        @relation(fields: [groupId], references: [id])
   board          Board         @relation(fields: [boardId], references: [id], onDelete: Cascade)
   creator        User?         @relation("TaskCreator", fields: [creatorId], references: [id])
@@ -142,7 +142,6 @@ model Task {
 
   @@index([boardId])
   @@index([groupId])
-  @@index([assignedUserId])
   @@index([referenceId])
   @@index([externalId])
   @@index([creatorId])
@@ -310,8 +309,8 @@ model Permission {
   role         String
   settings     String    @default("{}")
   createdAt    DateTime  @default(now())
-  board        Board?    @relation("BoardPermission", fields: [resourceId], references: [id])
-  dashboard    Dashboard? @relation("DashboardPermission", fields: [resourceId], references: [id])
+  dashboard    Dashboard @relation("DashboardPermission", fields: [resourceId], references: [id])
+  board        Board     @relation("BoardPermission", fields: [resourceId], references: [id])
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, resourceType, resourceId])

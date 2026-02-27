@@ -119,17 +119,17 @@ export interface Task {
   state: TaskState;
   boardId: string;
   groupId?: string;
-  assignedUserId?: string;
+  assignedUserIds?: string[];
   description?: string;
   columnValues: string; // JSON string
   parsedValues: Record<string, any>; // Parsed column values
   position: number;
-  assignedUser?: {
+  assignedUsers?: {
     id: string;
     name: string;
     email: string;
     avatarUrl?: string;
-  };
+  }[];
   creator?: {
     id: string;
     name: string;

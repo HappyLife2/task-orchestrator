@@ -17,6 +17,7 @@ export interface JWTPayload {
     userId: string;
     orgId: string;
     role: string;
+    name?: string;
     position?: string;
 }
 

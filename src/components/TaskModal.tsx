@@ -57,8 +57,8 @@ export default function TaskModal({ task, employees, onClose, onUpdate }: TaskMo
             if (updates.status) {
                 body = { columnValues: { status: updates.status } };
             }
-            if (updates.assignedUserId) {
-                body = { assignedUserId: updates.assignedUserId };
+            if (updates.assignedUserIds) {
+                body = { assignedUserIds: updates.assignedUserIds };
             }
 
             const res = await fetch(`/api/tasks/${task.id}`, {
@@ -160,21 +160,24 @@ export default function TaskModal({ task, employees, onClose, onUpdate }: TaskMo
                                     onClick={() => setAssigneeOpen(!assigneeOpen)}
                                     className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-[#0f102a] border border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)] transition-all"
                                 >
-                                    <div className="flex items-center gap-2 text-sm overflow-hidden">
-                                        {task.assignedUser ? (
-                                            <>
-                                                <div className="w-6 h-6 rounded-full bg-[#e0592a] flex items-center justify-center text-xs font-bold shrink-0">
-                                                    {task.assignedUser.name.charAt(0)}
+                                    <div className="flex -space-x-1 overflow-hidden max-w-[150px]">
+                                        {task.assignedUsers && task.assignedUsers.length > 0 ? (
+                                            task.assignedUsers.map((user: any) => (
+                                                <div
+                                                    key={user.id}
+                                                    className="w-6 h-6 rounded-full bg-[#e0592a] border-2 border-[#0f102a] flex items-center justify-center text-[10px] font-bold shrink-0"
+                                                    title={user.name}
+                                                >
+                                                    {user.name.charAt(0)}
                                                 </div>
-                                                <span className="truncate">{task.assignedUser.name}</span>
-                                            </>
+                                            ))
                                         ) : (
-                                            <>
+                                            <div className="flex items-center gap-2 text-sm text-gray-400">
                                                 <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-xs shrink-0">
                                                     <User size={14} />
                                                 </div>
-                                                <span className="text-gray-400">Unassigned</span>
-                                            </>
+                                                <span>Unassigned</span>
+                                            </div>
                                         )}
                                     </div>
                                     <ChevronDown size={16} className="text-gray-500" />
@@ -184,31 +187,40 @@ export default function TaskModal({ task, employees, onClose, onUpdate }: TaskMo
                                     <div className="absolute top-full left-0 w-full mt-2 bg-[#2c2d65] border border-[rgba(255,255,255,0.1)] rounded-lg shadow-xl z-10 overflow-hidden max-h-48 overflow-y-auto">
                                         <button
                                             onClick={() => {
-                                                updateTask({ assignedUserId: null });
+                                                updateTask({ assignedUserIds: [] });
                                                 setAssigneeOpen(false);
                                             }}
                                             className="w-full text-left px-3 py-2 hover:bg-[#3d3e80] text-sm flex items-center gap-2 text-gray-300"
                                         >
                                             <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-xs">
-                                                <User size={14} />
+                                                <X size={14} />
                                             </div>
-                                            Unassigned
+                                            Clear All
                                         </button>
-                                        {employees.map((emp) => (
-                                            <button
-                                                key={emp.id}
-                                                onClick={() => {
-                                                    updateTask({ assignedUserId: emp.id });
-                                                    setAssigneeOpen(false);
-                                                }}
-                                                className="w-full text-left px-3 py-2 hover:bg-[#3d3e80] text-sm flex items-center gap-2"
-                                            >
-                                                <div className="w-6 h-6 rounded-full bg-[#e0592a] flex items-center justify-center text-xs font-bold">
-                                                    {emp.name.charAt(0)}
-                                                </div>
-                                                {emp.name}
-                                            </button>
-                                        ))}
+                                        {employees.map((emp) => {
+                                            const isSelected = task.assignedUsers?.some((u: any) => u.id === emp.id);
+                                            return (
+                                                <button
+                                                    key={emp.id}
+                                                    onClick={() => {
+                                                        const currentIds = task.assignedUsers?.map((u: any) => u.id) || [];
+                                                        const newIds = isSelected
+                                                            ? currentIds.filter((id: string) => id !== emp.id)
+                                                            : [...currentIds, emp.id];
+                                                        updateTask({ assignedUserIds: newIds });
+                                                    }}
+                                                    className={`w-full text-left px-3 py-2 hover:bg-[#3d3e80] text-sm flex items-center justify-between group ${isSelected ? 'bg-[#3d3e80]/50' : ''}`}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded-full bg-[#e0592a] flex items-center justify-center text-xs font-bold">
+                                                            {emp.name.charAt(0)}
+                                                        </div>
+                                                        <span className={isSelected ? 'text-white' : 'text-gray-300'}>{emp.name}</span>
+                                                    </div>
+                                                    {isSelected && <X size={12} className="text-gray-500 group-hover:text-white" />}
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

@@ -93,12 +93,22 @@ export default function KanbanView({
             className="bg-[#1a1b4b] p-3 rounded-lg border border-[#2c2d65] hover:border-[#e0592a] transition-all cursor-pointer group"
         >
             <h4 className="text-white text-sm font-medium mb-2">{task.name}</h4>
-            {task.assignedUser && (
-                <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-[#e0592a] flex items-center justify-center text-xs font-bold text-white">
-                        {task.assignedUser.name.charAt(0)}
-                    </div>
-                    <span className="text-xs text-gray-400">{task.assignedUser.name}</span>
+            {task.assignedUsers && task.assignedUsers.length > 0 && (
+                <div className="flex -space-x-2 overflow-hidden">
+                    {task.assignedUsers.slice(0, 3).map((user) => (
+                        <div
+                            key={user.id}
+                            className="inline-block h-6 w-6 rounded-full ring-2 ring-[#1a1b4b] bg-[#e0592a] flex items-center justify-center text-[10px] font-bold text-white"
+                            title={user.name}
+                        >
+                            {user.name.charAt(0)}
+                        </div>
+                    ))}
+                    {task.assignedUsers.length > 3 && (
+                        <div className="flex items-center justify-center h-6 w-6 rounded-full ring-2 ring-[#1a1b4b] bg-gray-600 text-[10px] font-bold text-white">
+                            +{task.assignedUsers.length - 3}
+                        </div>
+                    )}
                 </div>
             )}
             {task._count && task._count.updates > 0 && (
