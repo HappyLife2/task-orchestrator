@@ -5,7 +5,7 @@ import { useEffect, useState, useCallback, useRef, Fragment, useMemo } from 'rea
 import { useSearchParams } from 'next/navigation';
 import { DndContext, DragOverlay, useDraggable, useDroppable, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare, Link as LinkIcon } from 'lucide-react';
+import { Plus, Loader2, ChevronRight, ChevronDown, X, Check, GripVertical, Calendar, Trash2, Sparkles, MessageSquare, Link as LinkIcon, AlertCircle } from 'lucide-react';
 import { Button, TextField, EditableHeading, IconButton, Text } from '@vibe/core';
 import { Modal, ModalHeader, ModalContent, ModalFooter, ModalBasicLayout } from '@vibe/core/next';
 import UpdatesDrawer from '@/components/UpdatesDrawer';
@@ -468,7 +468,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
     const [doneSectionName, setDoneSectionName] = useState('Done');
     const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
     const [sectionNameInput, setSectionNameInput] = useState('');
-    const [taskToDelete, setTaskToDelete] = useState<{ id: string, name: string, isSubitem: boolean, parentId?: string } | null>(null);
+    const [taskToDelete, setTaskToDelete] = useState<{ id: string; name: string; isSubitem: boolean; parentId?: string } | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [isDeletingTask, setIsDeletingTask] = useState(false);
     const newItemBtnRef = useRef<HTMLDivElement>(null);
 
@@ -568,8 +569,16 @@ export default function BoardView({ boardId }: { boardId: string }) {
                     console.error('tasksData:', tasksData);
                 }
             } else {
-                console.error('API Error: boardRes', boardRes.status, await boardRes.text());
-                console.error('API Error: tasksRes', tasksRes.status, await tasksRes.text());
+                let errorMsg = 'Unknown Error';
+                try {
+                    const errorJson = await boardRes.json();
+                    errorMsg = errorJson.error || boardRes.statusText;
+                } catch {
+                    errorMsg = boardRes.statusText;
+                }
+                const fullError = `API Error: boardRes ${boardRes.status} ${errorMsg}. tasksRes ${tasksRes.status}`;
+                console.error(fullError);
+                setError(fullError);
             }
 
             if (employeesRes.ok) {
@@ -583,8 +592,9 @@ export default function BoardView({ boardId }: { boardId: string }) {
                 const membersData = await membersRes.json();
                 setBoardMembers(membersData.members || []);
             }
-        } catch (e) {
-            console.error(e);
+        } catch (e: any) {
+            console.error("BoardView global catch error:", e);
+            setError(e?.message || "An unknown frontend crash occurred during board data parsing");
         } finally {
             setLoading(false);
         }
@@ -1169,6 +1179,18 @@ export default function BoardView({ boardId }: { boardId: string }) {
         return (
             <div className="flex h-full items-center justify-center text-white bg-[#0f102a]">
                 <Loader2 className="animate-spin mr-2" /> Loading Board...
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex h-full items-center justify-center text-white bg-[#0f102a] flex-col gap-4">
+                <AlertCircle className="text-red-500 w-12 h-12" />
+                <h2 className="text-2xl font-bold">Fatal Board Loading Error</h2>
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 font-mono p-4 rounded-xl max-w-lg whitespace-pre-wrap break-all">
+                    {error}
+                </div>
             </div>
         );
     }
