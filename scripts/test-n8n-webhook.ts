@@ -45,7 +45,7 @@ async function run() {
             importance: "Medium",
             urgency: "Normal",
 
-            // Simulating parsing of Tally Forms / Webhook data
+            // Simulating parsing of Webhook data
             customColumns: {
                 request_type: "Brochure",
                 requester_name: "John Doe",
