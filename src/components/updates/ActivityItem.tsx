@@ -108,7 +108,7 @@ export default function ActivityItem({ update, currentUser, onReply, onDelete, o
                                 <span className="text-white font-bold text-base tracking-tight hover:text-indigo-300 transition-colors cursor-pointer">{update.user?.name || 'Unknown'}</span>
                                 <span className="text-gray-500 text-[10px] font-bold uppercase tracking-widest opacity-60 flex items-center gap-2 mt-0.5">
                                     <span className="w-1 h-1 bg-gray-600 rounded-full" />
-                                    {new Date(update.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    {new Date(update.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })} at {new Date(update.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
                         </div>
