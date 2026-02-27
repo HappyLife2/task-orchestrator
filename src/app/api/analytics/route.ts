@@ -32,16 +32,16 @@ export async function GET(req: NextRequest) {
                 total: 0,
                 byBoard: {} as Record<string, number>,
                 byStatus: {} as Record<string, number>,
-                byImportance: {} as Record<string, number>,
-                byUrgency: {} as Record<string, number>,
+                byRequestType: {} as Record<string, number>,
+                byRequesterName: {} as Record<string, number>,
                 byType: {} as Record<string, number>,
             },
             done: {
                 total: 0,
                 byBoard: {} as Record<string, number>,
                 byStatus: {} as Record<string, number>,
-                byImportance: {} as Record<string, number>,
-                byUrgency: {} as Record<string, number>,
+                byRequestType: {} as Record<string, number>,
+                byRequesterName: {} as Record<string, number>,
                 byType: {} as Record<string, number>,
             }
         };
@@ -65,8 +65,8 @@ export async function GET(req: NextRequest) {
                 }
 
                 const status = (columnValues.status || '').toLowerCase();
-                const importance = (columnValues.importance || 'none').toLowerCase();
-                const urgency = (columnValues.urgency || 'none').toLowerCase();
+                const requestType = (columnValues.request_type || 'Unknown').toLowerCase();
+                const requesterName = (columnValues.requester_name || 'Unknown').toLowerCase();
                 const groupTitle = task.groupId ? (groupMap[task.groupId] || 'Other') : 'Other';
 
                 const target = status === 'done' ? analytics.done : analytics.ongoing;
@@ -80,11 +80,11 @@ export async function GET(req: NextRequest) {
                 const statusLabel = status || 'Not Started';
                 target.byStatus[statusLabel] = (target.byStatus[statusLabel] || 0) + 1;
 
-                // By Importance
-                target.byImportance[importance] = (target.byImportance[importance] || 0) + 1;
+                // By Request Type
+                target.byRequestType[requestType] = (target.byRequestType[requestType] || 0) + 1;
 
-                // By Urgency
-                target.byUrgency[urgency] = (target.byUrgency[urgency] || 0) + 1;
+                // By Requester
+                target.byRequesterName[requesterName] = (target.byRequesterName[requesterName] || 0) + 1;
 
                 // By Type (Group)
                 target.byType[groupTitle] = (target.byType[groupTitle] || 0) + 1;

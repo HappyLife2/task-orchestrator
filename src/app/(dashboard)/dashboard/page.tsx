@@ -14,16 +14,16 @@ interface AnalyticsData {
         total: number;
         byBoard: Record<string, number>;
         byStatus: Record<string, number>;
-        byImportance: Record<string, number>;
-        byUrgency: Record<string, number>;
+        byRequestType: Record<string, number>;
+        byRequesterName: Record<string, number>;
         byType: Record<string, number>;
     };
     done: {
         total: number;
         byBoard: Record<string, number>;
         byStatus: Record<string, number>;
-        byImportance: Record<string, number>;
-        byUrgency: Record<string, number>;
+        byRequestType: Record<string, number>;
+        byRequesterName: Record<string, number>;
         byType: Record<string, number>;
     };
 }
@@ -158,7 +158,7 @@ export default function DashboardPage() {
 
     const ongoingByBoard = prepareChartData(data.ongoing.byBoard);
     const ongoingByStatus = prepareChartData(data.ongoing.byStatus);
-    const ongoingByImportance = prepareChartData(data.ongoing.byImportance);
+    const ongoingByRequestType = prepareChartData(data.ongoing.byRequestType);
     const ongoingByType = prepareChartData(data.ongoing.byType);
 
     const doneByBoard = prepareChartData(data.done.byBoard);
@@ -273,15 +273,15 @@ export default function DashboardPage() {
                             </div>
                         </motion.div>
 
-                        {/* Importance Hierarchy */}
+                        {/* Strategic Weight */}
                         <motion.div variants={itemVariants} className="glass-card glass-card-hover p-8">
                             <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Strategic Weight</h3>
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em]">Request Type Weight</h3>
                                 <div className="h-1.5 w-1.5 rounded-full bg-accent-violet animate-pulse" />
                             </div>
                             <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={ongoingByImportance} layout="vertical">
+                                    <BarChart data={ongoingByRequestType} layout="vertical">
                                         <defs>
                                             <linearGradient id="importanceGradient" x1="0" y1="0" x2="1" y2="0">
                                                 <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3} />
