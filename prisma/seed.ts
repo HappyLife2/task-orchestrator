@@ -130,7 +130,7 @@ async function main() {
                 creatorId: user.id,
                 description: 'Implement JWT authentication using NextAuth or custom provider.',
                 columnValues: JSON.stringify({ status: 'Done', person: 'Alice Johnson' }),
-                assignedUserId: user.id
+                assignedUsers: { connect: [{ id: user.id }] }
             }
         });
 

@@ -21,7 +21,7 @@ interface Task {
     state: 'ACTIVE' | 'ARCHIVED';
     columnValues: string;
     parsedValues: Record<string, any>;
-    assignedUser?: { id: string; name: string; email: string };
+    assignedUsers: { id: string; name: string; email: string }[];
     description?: string;
     createdAt: string;
     subTasks?: Task[];
@@ -804,8 +804,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
             // Update parent task if needed
             if (shouldUpdate) {
                 if (columnId === 'assignedUserIds') {
-                    const selectedUser = employees.find((e: any) => e.id === value[0]);
-                    updatedTask = { ...updatedTask, assignedUser: selectedUser };
+                    const newAssignedUsers = employees.filter((e: any) => value.includes(e.id));
+                    updatedTask = { ...updatedTask, assignedUsers: newAssignedUsers };
                 } else {
                     updatedTask = { ...updatedTask, parsedValues: { ...updatedTask.parsedValues, [columnId]: value } };
                 }
@@ -816,8 +816,8 @@ export default function BoardView({ boardId }: { boardId: string }) {
                 updatedTask.subTasks = t.subTasks.map(st => {
                     if (!targetTaskIds.includes(st.id)) return st;
                     if (columnId === 'assignedUserIds') {
-                        const selectedUser = employees.find((e: any) => e.id === value[0]);
-                        return { ...st, assignedUser: selectedUser };
+                        const newAssignedUsers = employees.filter((e: any) => value.includes(e.id));
+                        return { ...st, assignedUsers: newAssignedUsers };
                     }
                     return { ...st, parsedValues: { ...st.parsedValues, [columnId]: value } };
                 });
@@ -961,7 +961,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
         if (col.id === 'person') {
             return (
                 <PersonCell
-                    value={task.assignedUser ? [task.assignedUser.id] : []}
+                    value={task.assignedUsers.map(u => u.id)}
                     onChange={v => handleUpdateTaskColumn(task.id, 'assignedUserIds', v)}
                     employees={employees}
                 />

@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
                             // Logic: validation "Board belongs to org" is implicit via findFirst above.
                             // If board name changed in payload, we should move it.
                             boardId: board.id,
-                            assignedUserId: assignedUserId || undefined,
+                            assignedUsers: assignedUserId ? { set: [{ id: assignedUserId }] } : undefined,
                             columnValues: JSON.stringify({ ...JSON.parse(existingTask.columnValues), ...parsedColumns }),
                         }
                     });
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
                             externalId: item.externalId,
                             boardId: board.id,
                             columnValues: JSON.stringify(parsedColumns),
-                            assignedUserId: assignedUserId || undefined,
+                            assignedUsers: assignedUserId ? { connect: [{ id: assignedUserId }] } : undefined,
                             state: 'ACTIVE'
                         }
                     });

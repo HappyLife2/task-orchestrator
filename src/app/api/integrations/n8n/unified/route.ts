@@ -309,7 +309,7 @@ export async function POST(req: NextRequest) {
                         name: data.name,
                         boardId: board.id,
                         groupId: group.id,
-                        assignedUserId: assignedUserId || undefined,
+                        assignedUsers: assignedUserId ? { set: [{ id: assignedUserId }] } : undefined,
                         columnValues: JSON.stringify({ ...JSON.parse(existingTask.columnValues), ...columnValues })
                     }
                 });
@@ -322,7 +322,7 @@ export async function POST(req: NextRequest) {
                         externalId: data.externalId,
                         boardId: board.id,
                         groupId: group.id,
-                        assignedUserId: assignedUserId || undefined,
+                        assignedUsers: assignedUserId ? { connect: [{ id: assignedUserId }] } : undefined,
                         columnValues: JSON.stringify(columnValues),
                         state: 'ACTIVE'
                     }

@@ -39,7 +39,7 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
         },
         include: {
             subTasks: true,
-            assignedUser: {
+            assignedUsers: {
                 select: { id: true, name: true, email: true }
             },
             creator: {
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest, { params }: { params: { boardId: st
                 columnValues: '{}',
             },
             include: {
-                assignedUser: {
+                assignedUsers: {
                     select: { id: true, name: true, email: true }
                 }
             }

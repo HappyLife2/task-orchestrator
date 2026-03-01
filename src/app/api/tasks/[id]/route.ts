@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             where: { id: taskId },
             include: {
                 board: { include: { department: true } },
-                assignedUser: true
+                assignedUsers: true
             }
         });
 
@@ -46,8 +46,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         if (referenceId !== undefined) updateData.referenceId = referenceId;
 
         if (assignedUserIds !== undefined) {
-            // For single assignee fallback
-            updateData.assignedUserId = assignedUserIds.length > 0 ? assignedUserIds[0] : null;
+            updateData.assignedUsers = {
+                set: assignedUserIds.map(id => ({ id }))
+            };
         }
 
         // Merge column values if provided
@@ -60,14 +61,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             where: { id: taskId },
             data: updateData,
             include: {
-                assignedUser: true,
+                assignedUsers: true,
                 subTasks: true
             }
         });
 
         // Trigger notifications for NEWLY assigned users
         if (assignedUserIds) {
-            const previousUserIds = new Set(task.assignedUserId ? [task.assignedUserId] : []);
+            const previousUserIds = new Set(task.assignedUsers.map((u: any) => u.id));
             const newlyAddedIds = assignedUserIds.filter(id => !previousUserIds.has(id) && id !== payload.userId);
 
             if (newlyAddedIds.length > 0) {

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
                 boardId,
                 description,
                 columnValues: JSON.stringify(columnValues || {}),
-                assignedUserId: payload.userId,
+                assignedUsers: { connect: [{ id: payload.userId }] },
                 creatorId: payload.userId
             },
         });
