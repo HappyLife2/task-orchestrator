@@ -1,6 +1,5 @@
 # Install dependencies only when needed
-FROM node:18-slim AS deps
-RUN apt-get update && apt-get install -y openssl ca-certificates libc6-dev && rm -rf /var/lib/apt/lists/*
+FROM node:18-bullseye AS deps
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
@@ -8,8 +7,7 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 # Rebuild the source code only when needed
-FROM node:18-slim AS builder
-RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+FROM deps AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -21,8 +19,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # Production image, copy all the files and run next
-FROM node:18-slim AS runner
-RUN apt-get update && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+FROM deps AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
