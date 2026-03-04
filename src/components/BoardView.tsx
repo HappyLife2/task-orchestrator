@@ -1216,7 +1216,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                 type="h2"
                                 value={board.name}
                                 onChange={handleUpdateBoardName}
-                                className="!font-black !text-4xl tracking-tighter mb-3 [&_h2]:!text-white [&_input]:!text-white [&_span]:!text-white [&_h2]:!font-black [&_h2]:!w-max [&_h2]:!min-w-max [&_h2]:!max-w-none [&_h2]:!whitespace-nowrap [&_h2]:!overflow-visible"
+                                className="!font-black !text-4xl tracking-tighter mb-3 [&_h2]:!text-white [&_input]:!text-white [&_span]:!text-white"
                             />
                         </div>
                         <div className="flex items-center gap-3">
@@ -1381,7 +1381,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                 type="h3"
                                                                 value={wipSectionName}
                                                                 onChange={val => setWipSectionName(val || 'Active Tasks')}
-                                                                className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit [&_h3]:!w-max [&_h3]:!min-w-max [&_h3]:!max-w-none [&_h3]:!whitespace-nowrap [&_h3]:!overflow-visible"
+                                                                className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit"
                                                             />
                                                         </div>
                                                         {renderInlineCounter(wipTasks.length, wipSubitemCount)}
@@ -1472,7 +1472,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                         type="h3"
                                                                         value={section.name}
                                                                         onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
-                                                                        className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit [&_h3]:!w-max [&_h3]:!min-w-max [&_h3]:!max-w-none [&_h3]:!whitespace-nowrap [&_h3]:!overflow-visible"
+                                                                        className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit"
                                                                     />
                                                                 </div>
                                                                 {renderInlineCounter(secTasks.length, secTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0))}
@@ -1526,7 +1526,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                                     type="h3"
                                                                     value={doneSectionName}
                                                                     onChange={val => setDoneSectionName(val || 'Done')}
-                                                                    className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit [&_h3]:!w-max [&_h3]:!min-w-max [&_h3]:!max-w-none [&_h3]:!whitespace-nowrap [&_h3]:!overflow-visible"
+                                                                    className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit"
                                                                 />
                                                             </div>
                                                             {renderInlineCounter(doneTasks.length, doneSubitemCount)}
