@@ -34,6 +34,11 @@ export const NotificationListener: React.FC = () => {
 
                     setToasts(prev => [...prev, newToast]);
 
+                    if (typeof window !== 'undefined') {
+                        const event = new CustomEvent('new-notification', { detail: newToast });
+                        window.dispatchEvent(event);
+                    }
+
                     // Auto-dismiss after 40 seconds
                     setTimeout(() => {
                         removeToast(newToast.id);

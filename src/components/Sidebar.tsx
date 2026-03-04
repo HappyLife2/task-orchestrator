@@ -17,7 +17,10 @@ import {
     Eye,
     EyeOff,
     Search,
-    SearchX
+    SearchX,
+    Bell,
+    Check,
+    CheckCheck
 } from 'lucide-react';
 import {
     EditableText,
@@ -83,6 +86,11 @@ export default function Sidebar() {
     const [isSearching, setIsSearching] = useState(false);
     const [showSearchModal, setShowSearchModal] = useState(false);
 
+    // Notifications State
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+    const [loadingNotifications, setLoadingNotifications] = useState(false);
+
     // Sidebar Resize State
     const [sidebarWidth, setSidebarWidth] = useState(256);
     const [isResizing, setIsResizing] = useState(false);
@@ -122,6 +130,68 @@ export default function Sidebar() {
             window.removeEventListener('mouseup', stopResizing);
         };
     }, [resize, stopResizing]);
+
+    // Fetch Notifications
+    const fetchNotifications = useCallback(async () => {
+        try {
+            setLoadingNotifications(true);
+            const res = await fetch('/api/notifications');
+            if (res.ok) {
+                const data = await res.json();
+                setNotifications(data);
+            }
+        } catch (error) {
+            console.error('Failed to fetch notifications:', error);
+        } finally {
+            setLoadingNotifications(false);
+        }
+    }, []);
+
+    // Initial fetch
+    useEffect(() => {
+        if (org) {
+            fetchNotifications();
+        }
+    }, [org, fetchNotifications]);
+
+    // Handle new incoming notifications from SSE
+    useEffect(() => {
+        const handleNewNotification = (e: Event) => {
+            const customEvent = e as CustomEvent;
+            setNotifications(prev => [
+                {
+                    ...customEvent.detail,
+                    id: customEvent.detail.id || Date.now().toString(),
+                    isRead: false,
+                    createdAt: new Date().toISOString()
+                },
+                ...prev
+            ]);
+        };
+
+        window.addEventListener('new-notification', handleNewNotification);
+        return () => window.removeEventListener('new-notification', handleNewNotification);
+    }, []);
+
+    const markNotificationAsRead = async (id: string) => {
+        setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+        try {
+            await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
+        } catch (error) {
+            console.error('Failed to mark notification as read:', error);
+            fetchNotifications();
+        }
+    };
+
+    const markAllNotificationsAsRead = async () => {
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        try {
+            await fetch('/api/notifications/read-all', { method: 'PATCH' });
+        } catch (error) {
+            console.error('Failed to mark all as read:', error);
+            fetchNotifications();
+        }
+    };
 
     // Fetch Data
     const fetchOrg = useCallback(() => {
@@ -674,6 +744,21 @@ export default function Sidebar() {
                     >
                         <Key size={18} className="transition-transform group-hover:scale-110" />
                     </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => {
+                                setShowNotificationsModal(true);
+                                if (notifications.length === 0) fetchNotifications();
+                            }}
+                            className="p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center group"
+                            title="Notifications"
+                        >
+                            <Bell size={18} className="transition-transform group-hover:scale-110" />
+                            {notifications.filter(n => !n.isRead).length > 0 && (
+                                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1c1f3b]"></span>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -988,6 +1073,117 @@ export default function Sidebar() {
                                                     <Search size={48} className="opacity-10" />
                                                     <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-40 text-center">
                                                         Enter sequence to begin <br /> global cross-reference
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </ModalContent>
+                            </div>
+                        </ModalBasicLayout>
+                    </Modal>
+                )}
+            </AnimatePresence>
+
+            {/* Notifications Modal */}
+            <AnimatePresence>
+                {showNotificationsModal && (
+                    <Modal
+                        id="notifications-modal"
+                        show={showNotificationsModal}
+                        size="medium"
+                        onClose={() => setShowNotificationsModal(false)}
+                    >
+                        <ModalBasicLayout className="!bg-[#0f1126] !border-none !shadow-[0_0_80px_rgba(99,102,241,0.2)] overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+                            <div className="relative z-10 p-2">
+                                <ModalHeader
+                                    title="Notification Center"
+                                    className="[&_h2]:!text-2xl [&_h2]:!font-black [&_h2]:!tracking-tight [&_h2]:!text-transparent [&_h2]:!bg-clip-text [&_h2]:!bg-gradient-to-r [&_h2]:from-indigo-400 [&_h2]:to-purple-400"
+                                />
+                                <ModalContent>
+                                    <div className="space-y-4 py-4 content-wrapper">
+                                        <div className="flex justify-between items-center px-2">
+                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Recent Activity</span>
+                                            {notifications.filter(n => !n.isRead).length > 0 && (
+                                                <button
+                                                    onClick={markAllNotificationsAsRead}
+                                                    className="flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                                                >
+                                                    <CheckCheck size={14} />
+                                                    Mark all as read
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                                            {loadingNotifications ? (
+                                                <div className="flex flex-col items-center justify-center py-12 text-gray-500 gap-3">
+                                                    <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-400 rounded-full animate-spin" />
+                                                </div>
+                                            ) : notifications.length > 0 ? (
+                                                <div className="grid gap-2">
+                                                    {notifications.map((notification) => (
+                                                        <motion.div
+                                                            key={notification.id}
+                                                            initial={{ opacity: 0, x: -10 }}
+                                                            animate={{ opacity: 1, x: 0 }}
+                                                            className={`p-4 rounded-xl border transition-all flex flex-col gap-2 group relative overflow-hidden ${notification.isRead
+                                                                ? 'bg-black/20 border-white/5 opacity-70'
+                                                                : 'bg-white/5 border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)]'
+                                                                }`}
+                                                        >
+                                                            {!notification.isRead && (
+                                                                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-purple-500" />
+                                                            )}
+                                                            <div className="flex justify-between items-start">
+                                                                <div className="flex flex-col">
+                                                                    <span className={`text-sm font-bold tracking-tight ${notification.isRead ? 'text-gray-300' : 'text-white'}`}>
+                                                                        {notification.title}
+                                                                    </span>
+                                                                    {notification.content && (
+                                                                        <span className="text-xs text-gray-400 mt-1 pr-6 leading-relaxed">
+                                                                            {notification.content}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex flex-col gap-1.5 shrink-0">
+                                                                    {!notification.isRead && (
+                                                                        <button
+                                                                            onClick={() => markNotificationAsRead(notification.id)}
+                                                                            className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 hover:text-indigo-300 transition-colors tooltip-trigger flex justify-center items-center"
+                                                                            title="Mark as read"
+                                                                        >
+                                                                            <Check size={14} />
+                                                                        </button>
+                                                                    )}
+                                                                    {notification.link && (
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                setShowNotificationsModal(false);
+                                                                                router.push(notification.link);
+                                                                            }}
+                                                                            className="p-1.5 rounded-lg bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-colors tooltip-trigger flex justify-center items-center"
+                                                                            title="View task"
+                                                                        >
+                                                                            <Eye size={14} />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-wider mt-1">
+                                                                {new Date(notification.createdAt).toLocaleString(undefined, {
+                                                                    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+                                                                })}
+                                                            </span>
+                                                        </motion.div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center py-12 text-gray-600 gap-3">
+                                                    <Bell size={48} className="opacity-10" />
+                                                    <p className="text-xs font-bold uppercase tracking-[0.2em] opacity-40 text-center">
+                                                        No new notifications
                                                     </p>
                                                 </div>
                                             )}
