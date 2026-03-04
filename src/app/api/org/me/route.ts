@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
             departments: {
                 include: {
                     boards: {
-                        where: ['ADMIN', 'OWNER'].includes(payload.role) ? {} : {
+                        where: ['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase()) ? {} : {
                             members: {
                                 some: {
                                     userId: payload.userId
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const departments = ['ADMIN', 'OWNER'].includes(payload.role)
+    const departments = ['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())
         ? org.departments
         : org.departments.filter(d => d.boards.length > 0);
 

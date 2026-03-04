@@ -6,11 +6,11 @@ services:
     ports:
       - "3001:3000"
     environment:
-      - DATABASE_URL=file:./dev.db
+      - DATABASE_URL=file:/app/prisma/dev.db
       - NEXTAUTH_SECRET=super-secret-jwt-key-dev-only
       - NEXTAUTH_URL=https://olden-pok-hyperrationally.ngrok-free.dev
     volumes:
-      - ./prisma/dev.db:/app/prisma/dev.db
+      - ./prisma:/app/prisma
     restart: always
 
   ngrok:

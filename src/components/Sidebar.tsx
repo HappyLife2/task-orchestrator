@@ -470,7 +470,7 @@ export default function Sidebar() {
             <div className="flex-1 overflow-y-auto p-3 space-y-6">
                 <div className="space-y-2">
                     {/* Dashboard Link - Only for Non-USER/MEMBER roles */}
-                    {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
+                    {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) && (
                         <Link href="/dashboard" className="block outline-none relative no-underline group">
                             <motion.div
                                 whileHover={{ backgroundColor: pathname === '/dashboard' ? '#1c3fa3' : 'rgba(255,255,255,0.03)' }}
@@ -494,7 +494,7 @@ export default function Sidebar() {
                         <Text type="text3" weight="bold" className="text-gray-500 uppercase tracking-widest !text-[10px]">
                             Departments
                         </Text>
-                        {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
+                        {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) && (
                             <IconButton
                                 icon={Plus as any}
                                 size="small"
@@ -534,7 +534,7 @@ export default function Sidebar() {
                                     <div className="flex-1 flex items-center min-w-0">
                                         <Briefcase size={16} className={`${expandedDepts[dept.id] ? 'text-accent-violet' : 'text-gray-500'} mr-2.5 flex-shrink-0 transition-colors`} />
                                         <div className="flex-1 min-w-0">
-                                            {['ADMIN', 'OWNER'].includes(org.currentUserRole) ? (
+                                            {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) ? (
                                                 <div className="w-fit min-w-[140px] px-1 no-nav" onClick={(e) => e.stopPropagation()}>
                                                     <EditableText
                                                         value={dept.name}
@@ -552,7 +552,7 @@ export default function Sidebar() {
                                         </div>
                                     </div>
 
-                                    {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
+                                    {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) && (
                                         <>
                                             <IconButton
                                                 icon={Plus as any}
@@ -603,7 +603,7 @@ export default function Sidebar() {
                                                 >
                                                     <Table size={18} className={`mr-3 flex-shrink-0 ${pathname === `/board/${board.id}` ? 'text-white' : 'text-gray-400'}`} />
                                                     <div className="flex-1 min-w-0">
-                                                        {['ADMIN', 'OWNER'].includes(org.currentUserRole) ? (
+                                                        {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) ? (
                                                             <div className="w-fit min-w-[140px] px-1 no-nav" onClick={(e) => e.stopPropagation()}>
                                                                 <EditableText
                                                                     value={board.name}
@@ -623,7 +623,7 @@ export default function Sidebar() {
                                                             </Text>
                                                         )}
                                                     </div>
-                                                    {['ADMIN', 'OWNER'].includes(org.currentUserRole) && (
+                                                    {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) && (
                                                         <button
                                                             onClick={(e) => { e.stopPropagation(); handleDeleteBoard(e, board.id, dept.id); }}
                                                             className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-all ml-1 shrink-0"

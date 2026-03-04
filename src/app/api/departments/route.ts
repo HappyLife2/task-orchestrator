@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!['ADMIN', 'OWNER'].includes(payload.role)) {
+    if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())) {
         return NextResponse.json({ error: 'Only admins can create departments' }, { status: 403 });
     }
 

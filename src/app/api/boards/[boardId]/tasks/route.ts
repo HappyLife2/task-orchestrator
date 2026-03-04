@@ -28,7 +28,7 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
         return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
     }
 
-    if (!['ADMIN', 'OWNER'].includes(payload.role) && board.members.length === 0) {
+    if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase()) && board.members.length === 0) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest, { params }: { params: { boardId: st
             return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
         }
 
-        if (!['ADMIN', 'OWNER'].includes(payload.role) && board.members.length === 0) {
+        if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase()) && board.members.length === 0) {
             return NextResponse.json({ error: 'Access denied' }, { status: 403 });
         }
 

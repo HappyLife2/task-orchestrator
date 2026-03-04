@@ -64,7 +64,7 @@ export default function DashboardPage() {
             .then(res => res.json())
             .then(orgData => {
                 setRole(orgData.currentUserRole);
-                if (!['ADMIN', 'OWNER'].includes(orgData.currentUserRole)) {
+                if (!['ADMIN', 'OWNER'].includes(String(String(orgData.currentUserRole).toUpperCase()).toUpperCase())) {
                     setLoading(false);
                     return;
                 }
@@ -109,7 +109,7 @@ export default function DashboardPage() {
     }
 
     if (!data) {
-        if (role && !['ADMIN', 'OWNER'].includes(role)) {
+        if (role && !['ADMIN', 'OWNER'].includes(String(String(role).toUpperCase()).toUpperCase())) {
             return (
                 <div className="flex h-full items-center justify-center bg-background text-white">
                     <motion.div

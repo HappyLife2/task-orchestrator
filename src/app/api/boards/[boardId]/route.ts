@@ -26,7 +26,7 @@ export async function GET(
         return NextResponse.json({ error: 'Board not found' }, { status: 404 });
     }
 
-    if (!['ADMIN', 'OWNER'].includes(payload.role) && board.members.length === 0) {
+    if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase()) && board.members.length === 0) {
         return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
@@ -56,7 +56,7 @@ export async function PATCH(
         if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
         // Only allow admins or owners to rename boards
-        if (!['ADMIN', 'OWNER'].includes(payload.role)) {
+        if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -99,7 +99,7 @@ export async function DELETE(
         if (!boardCheck) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
         // Only allow admins or owners to delete boards
-        if (!['ADMIN', 'OWNER'].includes(payload.role)) {
+        if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 

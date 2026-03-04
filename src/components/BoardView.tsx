@@ -1248,7 +1248,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                     </div>
                                 )}
                             </div>
-                            {currentUser && ['ADMIN', 'OWNER'].includes(currentUser.role) && (
+                            {currentUser && ['ADMIN', 'OWNER'].includes(String(currentUser.role).toUpperCase()) && (
                                 <button
                                     onClick={() => setIsInviteModalOpen(true)}
                                     className="flex items-center gap-2 px-3 py-1.5 h-8 rounded-xl border border-dashed border-white/20 bg-white/5 text-white hover:bg-white/10 hover:border-white/40 transition-all ml-4 group"
@@ -1593,7 +1593,7 @@ export default function BoardView({ boardId }: { boardId: string }) {
             />
 
             {
-                currentUser && ['ADMIN', 'OWNER'].includes(currentUser.role) && (
+                currentUser && ['ADMIN', 'OWNER'].includes(String(currentUser.role).toUpperCase()) && (
                     <BoardInviteModal
                         isOpen={isInviteModalOpen}
                         onClose={() => setIsInviteModalOpen(false)}

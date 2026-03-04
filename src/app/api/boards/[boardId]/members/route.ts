@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, { params }: { params: { boardId: st
         if (!userPayload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
         // Only ADMINs can add members, OR owners of the board (assume ADMIN for now)
-        if (!['ADMIN', 'OWNER'].includes(userPayload.role)) {
+        if (!['ADMIN', 'OWNER'].includes(String(userPayload.role).toUpperCase())) {
             return NextResponse.json({ error: 'Forbidden. Admins only.' }, { status: 403 });
         }
 
@@ -88,7 +88,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { boardId: 
         const userPayload = verifyToken(token);
         if (!userPayload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-        if (!['ADMIN', 'OWNER'].includes(userPayload.role)) {
+        if (!['ADMIN', 'OWNER'].includes(String(userPayload.role).toUpperCase())) {
             return NextResponse.json({ error: 'Forbidden. Admins only.' }, { status: 403 });
         }
 

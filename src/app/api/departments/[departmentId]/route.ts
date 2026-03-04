@@ -13,7 +13,7 @@ export async function PATCH(
     }
 
     // Only allow admins or owners to rename departments
-    if (!['ADMIN', 'OWNER'].includes(payload.role)) {
+    if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -43,7 +43,7 @@ export async function DELETE(
     const payload = verifyToken(token || '');
 
     // Only allow admins or owners to delete departments
-    if (!payload || !['ADMIN', 'OWNER'].includes(payload.role)) {
+    if (!payload || !['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
