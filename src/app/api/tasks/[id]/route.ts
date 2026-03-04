@@ -139,6 +139,17 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         await db.task.deleteMany({ where: { parentTaskId: taskId } });
         await db.task.delete({ where: { id: taskId } });
 
+        await db.activityLog.create({
+            data: {
+                organizationId: task.board.department.organizationId,
+                userId: payload.userId,
+                action: 'DELETE_TASK',
+                resourceType: 'TASK',
+                resourceId: taskId,
+                details: `Deleted task: ${task.name}`,
+            }
+        });
+
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Delete task error:', error);

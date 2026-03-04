@@ -52,6 +52,24 @@ export async function DELETE(
             where: { id: params.departmentId },
         });
 
+        const deptName = await db.department.findUnique({
+            where: { id: params.departmentId },
+            select: { name: true, organizationId: true }
+        });
+
+        if (deptName) {
+            await db.activityLog.create({
+                data: {
+                    organizationId: deptName.organizationId,
+                    userId: payload.userId,
+                    action: 'DELETE_DEPARTMENT',
+                    resourceType: 'DEPARTMENT',
+                    resourceId: params.departmentId,
+                    details: `Deleted department: ${deptName.name}`,
+                }
+            });
+        }
+
         return new NextResponse(null, { status: 204 });
     } catch (error) {
         console.error('Error deleting department:', error);

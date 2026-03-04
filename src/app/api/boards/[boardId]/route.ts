@@ -107,6 +107,26 @@ export async function DELETE(
             where: { id: params.boardId },
         });
 
+        if (boardCheck.departmentId) {
+            const dept = await db.department.findUnique({
+                where: { id: boardCheck.departmentId },
+                select: { organizationId: true }
+            });
+
+            if (dept) {
+                await db.activityLog.create({
+                    data: {
+                        organizationId: dept.organizationId,
+                        userId: payload.userId,
+                        action: 'DELETE_BOARD',
+                        resourceType: 'BOARD',
+                        resourceId: params.boardId,
+                        details: `Deleted board: ${boardCheck.name}`,
+                    }
+                });
+            }
+        }
+
         return new NextResponse(null, { status: 204 });
     } catch (error) {
         console.error('Error deleting board:', error);
