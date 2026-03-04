@@ -37,6 +37,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
                 creatorId: payload.userId,
                 // Inherit some properties if needed, or default
             },
+            include: {
+                assignedUsers: {
+                    select: { id: true, name: true, email: true }
+                }
+            }
         });
 
         return NextResponse.json(subTask, { status: 201 });
