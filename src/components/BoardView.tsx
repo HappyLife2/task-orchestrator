@@ -1376,12 +1376,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                     </motion.button>
 
                                                     <div className="flex items-center vibe-header-inherit" onClick={(e) => e.stopPropagation()}>
-                                                        <div className="w-auto min-w-max px-2">
+                                                        <div className="w-full px-2">
                                                             <EditableHeading
                                                                 type="h3"
                                                                 value={wipSectionName}
                                                                 onChange={val => setWipSectionName(val || 'Active Tasks')}
-                                                                className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit"
+                                                                className="!text-[#e0592a] !text-[14px] !font-bold !tracking-wide !font-outfit !whitespace-normal !break-words !h-auto"
                                                             />
                                                         </div>
                                                         {renderInlineCounter(wipTasks.length, wipSubitemCount)}
@@ -1467,12 +1467,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                             </motion.button>
 
                                                             <div className="flex items-center vibe-header-inherit" style={{ color: section.color }} onClick={(e) => e.stopPropagation()}>
-                                                                <div className="w-auto min-w-max px-2">
+                                                                <div className="w-full px-2">
                                                                     <EditableHeading
                                                                         type="h3"
                                                                         value={section.name}
                                                                         onChange={val => setCustomSections(prev => prev.map(s => s.id === section.id ? { ...s, name: val || s.name } : s))}
-                                                                        className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit"
+                                                                        className="!text-inherit !text-[14px] !font-bold !tracking-wide !font-outfit !whitespace-normal !break-words !h-auto"
                                                                     />
                                                                 </div>
                                                                 {renderInlineCounter(secTasks.length, secTasks.reduce((acc, t) => acc + (t.subTasks?.length || 0), 0))}
@@ -1521,12 +1521,12 @@ export default function BoardView({ boardId }: { boardId: string }) {
                                                         </motion.button>
 
                                                         <div className="flex items-center vibe-header-inherit" onClick={(e) => e.stopPropagation()}>
-                                                            <div className="w-auto min-w-max px-2">
+                                                            <div className="w-full px-2">
                                                                 <EditableHeading
                                                                     type="h3"
                                                                     value={doneSectionName}
                                                                     onChange={val => setDoneSectionName(val || 'Done')}
-                                                                    className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit"
+                                                                    className="!text-[#00c875] !text-[14px] !font-bold !tracking-wide !font-outfit !whitespace-normal !break-words !h-auto"
                                                                 />
                                                             </div>
                                                             {renderInlineCounter(doneTasks.length, doneSubitemCount)}

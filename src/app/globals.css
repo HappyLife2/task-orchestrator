@@ -114,7 +114,12 @@ body {
 .vibe-header-inherit h1,
 .vibe-header-inherit h2,
 .vibe-header-inherit h3,
-.vibe-header-inherit [role="heading"] {
+.vibe-header-inherit [role="heading"],
+.vibe-header-inherit .vibe-editable-heading__text {
   color: inherit !important;
   font-family: var(--font-outfit) !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
