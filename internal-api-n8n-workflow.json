@@ -51,7 +51,7 @@
                     "mode": "list",
                     "value": ""
                 },
-                "message": "={{ $('Webhook').item.json.body.requesterName }} just submitted a new {{ $('Webhook').item.json.body.requestType }} request.\\n\\nPlease check the Task Orchestrator dashboard to assign it.",
+                "message": "={{ $('Webhook').item.json.body.requesterName }} just submitted a new {{ $('Webhook').item.json.body.requestType }} request.\\n\\nPlease check the Task Management dashboard to assign it.",
                 "options": {}
             },
             "type": "n8n-nodes-base.microsoftTeams",

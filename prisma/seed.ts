@@ -7,7 +7,7 @@ async function main() {
     console.log('Seeding database...');
 
     // 1. Create Organization
-    const orgName = 'Acme Corp';
+    const orgName = 'PSI Real Estate';
     const orgSlug = 'acme';
 
     let org = await prisma.organization.findUnique({

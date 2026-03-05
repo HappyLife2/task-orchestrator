@@ -21,8 +21,13 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Task Orchestrator",
-  description: "Enterprise Task Management for Departments",
+  title: "PSI Real Estate | Task Management",
+  description: "Professional Task Management System",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

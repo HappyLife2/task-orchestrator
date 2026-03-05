@@ -102,7 +102,7 @@ export default function DashboardPage() {
                     >
                         <Loader2 className="text-accent-indigo" size={48} />
                     </motion.div>
-                    <p className="text-gray-400 font-medium tracking-[0.2em] uppercase text-xs animate-pulse">Orchestrating Intelligence</p>
+                    <p className="text-gray-400 font-medium tracking-[0.2em] uppercase text-xs animate-pulse">Professional Task Management</p>
                 </div>
             </div>
         );
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                         <h1 className="text-[42px] font-black tracking-tighter leading-none spectral-text mb-2">
                             Live Data
                         </h1>
-                        <p className="text-gray-400 font-medium text-sm">Real-time task synchronization across the enterprise architecture.</p>
+                        <p className="text-gray-400 font-medium text-sm">Strategic task management by PSI Real Estate.</p>
                     </div>
                     <div className="flex gap-4">
                         <div className="glass-card px-6 py-4 flex items-center gap-4 group cursor-default">
