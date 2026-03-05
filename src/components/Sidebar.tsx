@@ -685,7 +685,7 @@ export default function Sidebar() {
                                                                     onChange={(val: string) => handleRenameBoard(board.id, val)}
                                                                     type="text2"
                                                                     weight="normal"
-                                                                    className="!flex-1 [&_div]:!flex [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit !text-[15px] !font-normal !tracking-wide !pl-4 !pr-4"
+                                                                    className="!flex-1 [&_div]:!flex [&_div]:!text-inherit [&_input]:!text-white [&_span]:!text-inherit !text-[15px] !font-normal !tracking-wide !pl-0 !pr-2"
                                                                 />
                                                             </div>
                                                         ) : (
