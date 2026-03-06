@@ -73,17 +73,33 @@ async function main() {
         }
     }
 
+    // 2.5 Ensure a Workspace Exists
+    const wsName = 'Main workspace';
+    let workspace = await prisma.workspace.findFirst({
+        where: { name: wsName, organizationId: org.id },
+    });
+
+    if (!workspace) {
+        workspace = await prisma.workspace.create({
+            data: {
+                name: wsName,
+                organizationId: org.id,
+            },
+        });
+        console.log(`Created workspace: ${workspace.name}`);
+    }
+
     // 3. Create Department
     const deptName = 'Engineering';
     let dept = await prisma.department.findFirst({
-        where: { name: deptName, organizationId: org.id },
+        where: { name: deptName, workspaceId: workspace.id },
     });
 
     if (!dept) {
         dept = await prisma.department.create({
             data: {
                 name: deptName,
-                organizationId: org.id,
+                workspaceId: workspace.id,
             },
         });
         console.log(`Created department: ${dept.name}`);
