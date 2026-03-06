@@ -719,7 +719,7 @@ export default function Sidebar() {
             </div>
 
             {/* User Footer */}
-            <div className="p-6 border-t border-[var(--glass-border)] bg-black/20 flex items-center justify-between">
+            <div className="px-4 py-6 border-t border-[var(--glass-border)] bg-black/20 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-2xl bg-[var(--grad-aurora)] p-[1px]">
                         <div className="w-full h-full bg-[#03030b] rounded-2xl flex items-center justify-center text-white">
@@ -734,20 +734,20 @@ export default function Sidebar() {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-center gap-1">
+                <div className="flex flex-row items-center gap-0.5 ml-auto">
                     <button
                         onClick={handleLogout}
-                        className="p-2 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all flex items-center justify-center group"
+                        className="p-1.5 rounded-xl text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-all flex items-center justify-center group"
                         title="Sign Out"
                     >
-                        <LogOut size={18} className="group-hover:-translate-x-0.5 transition-transform" />
+                        <LogOut size={16} className="group-hover:-translate-x-0.5 transition-transform" />
                     </button>
                     <button
                         onClick={() => setShowPasswordModal(true)}
-                        className="p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center group"
+                        className="p-1.5 rounded-xl text-gray-500 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center group"
                         title="Change Password"
                     >
-                        <Key size={18} className="transition-transform group-hover:scale-110" />
+                        <Key size={16} className="transition-transform group-hover:scale-110" />
                     </button>
                     <div className="relative">
                         <button
@@ -755,12 +755,12 @@ export default function Sidebar() {
                                 setShowNotificationsModal(true);
                                 if (notifications.length === 0) fetchNotifications();
                             }}
-                            className="p-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center group"
+                            className="p-1.5 rounded-xl text-gray-500 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center group"
                             title="Notifications"
                         >
-                            <Bell size={18} className="transition-transform group-hover:scale-110" />
+                            <Bell size={16} className="transition-transform group-hover:scale-110" />
                             {notifications.filter(n => !n.isRead).length > 0 && (
-                                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1c1f3b]"></span>
+                                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-[#1c1f3b]"></span>
                             )}
                         </button>
                     </div>
