@@ -16,23 +16,27 @@ export async function GET(req: NextRequest) {
                 where: { id: payload.userId },
                 select: { name: true }
             },
-            departments: {
+            workspaces: {
                 include: {
-                    boards: {
-                        where: ['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase()) ? {} : {
-                            members: {
-                                some: {
-                                    userId: payload.userId
-                                }
-                            }
-                        },
-                        select: {
-                            id: true,
-                            name: true,
+                    departments: {
+                        include: {
+                            boards: {
+                                where: ['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase()) ? {} : {
+                                    members: {
+                                        some: {
+                                            userId: payload.userId
+                                        }
+                                    }
+                                },
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
                         },
                     },
-                },
-            },
+                }
+            }
         },
     });
 
@@ -40,14 +44,19 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const departments = ['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())
-        ? org.departments
-        : org.departments.filter(d => d.boards.length > 0);
+    // Filter departments inside workspaces based on role
+    // @ts-ignore
+    const workspaces = org.workspaces.map((ws: any) => {
+        const filteredDepartments = ['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())
+            ? ws.departments
+            : ws.departments.filter((d: any) => d.boards.length > 0);
+        return { ...ws, departments: filteredDepartments };
+    });
 
     return NextResponse.json({
-        ...org,
-        departments,
+        ...(org as any),
+        workspaces,
         currentUserRole: payload.role,
-        currentUserName: org.users[0]?.name || 'User'
+        currentUserName: (org as any).users?.[0]?.name || 'User'
     });
 }

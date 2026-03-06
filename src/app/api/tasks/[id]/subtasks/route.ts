@@ -22,10 +22,10 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         // Verify parent task exists and belongs to org
         const parentTask = await db.task.findUnique({
             where: { id: parentTaskId },
-            include: { board: { include: { department: true } } }
+            include: { board: { include: { department: { include: { workspace: true } } } } }
         });
 
-        if (!parentTask || parentTask.board.department.organizationId !== payload.orgId) {
+        if (!parentTask || parentTask.board.department.workspace.organizationId !== payload.orgId) {
             return NextResponse.json({ error: 'Parent task not found or access denied' }, { status: 404 });
         }
 

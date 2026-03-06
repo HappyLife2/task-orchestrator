@@ -29,12 +29,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         const task = await db.task.findUnique({
             where: { id: taskId },
             include: {
-                board: { include: { department: true } },
+                board: { include: { department: { include: { workspace: true } } } },
                 assignedUsers: true
             }
         });
 
-        if (!task || task.board.department.organizationId !== payload.orgId) {
+        if (!task || task.board.department.workspace.organizationId !== payload.orgId) {
             return NextResponse.json({ error: 'Task not found or access denied' }, { status: 404 });
         }
 
@@ -128,10 +128,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         // Verify task exists and belongs to org
         const task = await db.task.findUnique({
             where: { id: taskId },
-            include: { board: { include: { department: true } } }
+            include: { board: { include: { department: { include: { workspace: true } } } } }
         });
 
-        if (!task || task.board.department.organizationId !== payload.orgId) {
+        if (!task || task.board.department.workspace.organizationId !== payload.orgId) {
             return NextResponse.json({ error: 'Task not found or access denied' }, { status: 404 });
         }
 
@@ -141,7 +141,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
         await db.activityLog.create({
             data: {
-                organizationId: task.board.department.organizationId,
+                organizationId: task.board.department.workspace.organizationId,
                 userId: payload.userId,
                 action: 'DELETE_TASK',
                 resourceType: 'TASK',

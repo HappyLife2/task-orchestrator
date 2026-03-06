@@ -48,19 +48,19 @@ export async function DELETE(
     }
 
     try {
-        await db.department.delete({
-            where: { id: params.departmentId },
-        });
-
         const deptName = await db.department.findUnique({
             where: { id: params.departmentId },
-            select: { name: true, organizationId: true }
+            select: { name: true, workspace: { select: { organizationId: true } } }
+        });
+
+        await db.department.delete({
+            where: { id: params.departmentId },
         });
 
         if (deptName) {
             await db.activityLog.create({
                 data: {
-                    organizationId: deptName.organizationId,
+                    organizationId: deptName.workspace.organizationId,
                     userId: payload.userId,
                     action: 'DELETE_DEPARTMENT',
                     resourceType: 'DEPARTMENT',

@@ -20,7 +20,10 @@ import {
     SearchX,
     Bell,
     Check,
-    CheckCheck
+    CheckCheck,
+    BarChart2,
+    MoreHorizontal,
+    Home
 } from 'lucide-react';
 import {
     EditableText,
@@ -44,9 +47,15 @@ interface Department {
     boards: Board[];
 }
 
-interface Organization {
+interface Workspace {
+    id: string;
     name: string;
     departments: Department[];
+}
+
+interface Organization {
+    name: string;
+    workspaces: Workspace[];
     currentUserRole: 'OWNER' | 'ADMIN' | 'MEMBER' | 'VIEWER' | 'USER';
     currentUserName: string;
 }
@@ -61,6 +70,11 @@ export default function Sidebar() {
     const router = useRouter();
     const [org, setOrg] = useState<Organization | null>(null);
     const [loading, setLoading] = useState(true);
+
+    // Workspace State
+    const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
     const [isAddingDept, setIsAddingDept] = useState(false);
     const [expandedDepts, setExpandedDepts] = useState<Record<string, boolean>>({});
     const [boardToDelete, setBoardToDelete] = useState<{ id: string, name: string, deptId: string } | null>(null);
@@ -202,11 +216,17 @@ export default function Sidebar() {
             })
             .then((data) => {
                 setOrg(data);
+                if (data.workspaces && data.workspaces.length > 0) {
+                    setActiveWorkspaceId(prev => prev || data.workspaces[0].id);
+                }
+
                 // Expand all by default if not already set
-                if (Object.keys(expandedDepts).length === 0 && data.departments) {
+                if (Object.keys(expandedDepts).length === 0 && data.workspaces) {
                     const expanded: Record<string, boolean> = {};
-                    data.departments.forEach((d: Department) => {
-                        expanded[d.id] = true;
+                    data.workspaces.forEach((w: Workspace) => {
+                        w.departments.forEach((d: Department) => {
+                            expanded[d.id] = true;
+                        });
                     });
                     setExpandedDepts(expanded);
                 }
@@ -234,9 +254,10 @@ export default function Sidebar() {
         if (org) {
             setOrg({
                 ...org,
-                departments: org.departments.map(d =>
-                    d.id === deptId ? { ...d, name: newName } : d
-                )
+                workspaces: org.workspaces.map(w => ({
+                    ...w,
+                    departments: w.departments.map(d => d.id === deptId ? { ...d, name: newName } : d)
+                }))
             });
         }
 
@@ -257,11 +278,12 @@ export default function Sidebar() {
         if (org) {
             setOrg({
                 ...org,
-                departments: org.departments.map(d => ({
-                    ...d,
-                    boards: d.boards.map(b =>
-                        b.id === boardId ? { ...b, name: newName } : b
-                    )
+                workspaces: org.workspaces.map(w => ({
+                    ...w,
+                    departments: w.departments.map(d => ({
+                        ...d,
+                        boards: d.boards.map(b => b.id === boardId ? { ...b, name: newName } : b)
+                    }))
                 }))
             });
         }
@@ -297,6 +319,7 @@ export default function Sidebar() {
     };
 
     const handleAddDepartment = async () => {
+        if (!activeWorkspaceId) return alert('No active workspace selected.');
         setIsAddingDept(true);
         const newDeptName = "New Department";
         console.log('Sidebar: handleAddDepartment called');
@@ -304,7 +327,7 @@ export default function Sidebar() {
             const res = await fetch('/api/departments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: newDeptName }),
+                body: JSON.stringify({ name: newDeptName, workspaceId: activeWorkspaceId }),
             });
 
             console.log('Sidebar: Create Department response status:', res.status);
@@ -339,9 +362,12 @@ export default function Sidebar() {
         if (org) {
             setOrg({
                 ...org,
-                departments: org.departments.map(d => ({
-                    ...d,
-                    boards: d.id === deptId ? d.boards.filter(b => b.id !== boardId) : d.boards
+                workspaces: org.workspaces.map(w => ({
+                    ...w,
+                    departments: w.departments.map(d => ({
+                        ...d,
+                        boards: d.id === deptId ? d.boards.filter(b => b.id !== boardId) : d.boards
+                    }))
                 }))
             });
         }
@@ -368,7 +394,8 @@ export default function Sidebar() {
 
     const handleDeleteBoard = async (e: React.MouseEvent, boardId: string, deptId: string) => {
         e.stopPropagation();
-        setBoardToDelete({ id: boardId, name: org?.departments.find(d => d.id === deptId)?.boards.find(b => b.id === boardId)?.name || 'Board', deptId });
+        const dept = org?.workspaces.flatMap(w => w.departments).find(d => d.id === deptId);
+        setBoardToDelete({ id: boardId, name: dept?.boards.find(b => b.id === boardId)?.name || 'Board', deptId });
     };
 
     const confirmDeleteDepartment = async () => {
@@ -381,7 +408,10 @@ export default function Sidebar() {
         if (org) {
             setOrg({
                 ...org,
-                departments: org.departments.filter(d => d.id !== deptId)
+                workspaces: org.workspaces.map(w => ({
+                    ...w,
+                    departments: w.departments.filter(d => d.id !== deptId)
+                }))
             });
         }
 
@@ -403,7 +433,8 @@ export default function Sidebar() {
 
     const handleDeleteDepartment = async (e: React.MouseEvent, deptId: string) => {
         e.stopPropagation();
-        setDeptToDelete({ id: deptId, name: org?.departments.find(d => d.id === deptId)?.name || 'Department' });
+        const deptName = org?.workspaces.flatMap(w => w.departments).find(d => d.id === deptId)?.name || 'Department';
+        setDeptToDelete({ id: deptId, name: deptName });
     };
 
     const handleLogout = async () => {
@@ -505,8 +536,29 @@ export default function Sidebar() {
     const strengthColors = ['bg-gray-700', 'bg-red-500', 'bg-orange-500', 'bg-yellow-400', 'bg-emerald-500'];
     const strengthLabels = ['Too Weak', 'Weak', 'Fair', 'Good', 'Strong'];
 
+    const handleAddWorkspace = async () => {
+        const name = window.prompt("Enter new Workspace name:", "New Workspace");
+        if (!name) return;
+        try {
+            const res = await fetch('/api/workspaces', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            if (res.ok) {
+                const newWs = await res.json();
+                fetchOrg();
+                setActiveWorkspaceId(newWs.id);
+            } else {
+                alert("Failed to create workspace.");
+            }
+        } catch (e) { console.error(e); }
+    };
+
     if (loading) return <div style={{ width: `${sidebarWidth}px` }} className="bg-background border-r border-[var(--glass-border)] p-4 text-white flex items-center justify-center"><div className="w-6 h-6 border-2 border-accent-indigo border-t-transparent rounded-full animate-spin" /></div>;
     if (!org) return <div style={{ width: `${sidebarWidth}px` }} className="bg-background border-r border-[var(--glass-border)] p-4 text-white">Error loading organization</div>;
+
+    const activeWorkspace = org.workspaces?.find(w => w.id === activeWorkspaceId) || org.workspaces?.[0];
 
     return (
         <div
@@ -521,24 +573,102 @@ export default function Sidebar() {
                     ${isResizing ? 'bg-accent-indigo/50' : ''}
                 `}
             />
-            {/* Header */}
-            <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center overflow-hidden flex-shrink-0">
-                        <img src="/logo.png" alt="PSI Logo" className="w-full h-full object-contain p-1" />
-                    </div>
-                    <Text type="text1" weight="bold" className="text-white truncate tracking-tight uppercase !text-[14px] !font-black !tracking-widest">
-                        {org.name}
+            {/* Header / Workspaces Dropdown */}
+            <div className="pt-6 px-4 pb-2 border-b border-white/5 space-y-4">
+                {/* Top Row: "Workspaces" title & icons */}
+                <div className="flex items-center justify-between">
+                    <Text type="text1" weight="bold" className="text-white !text-[16px] !font-bold tracking-tight">
+                        Workspaces
                     </Text>
+                    <div className="flex items-center gap-1">
+                        <IconButton
+                            icon={MoreHorizontal as any}
+                            size="small"
+                            kind="tertiary"
+                            className="text-gray-400 hover:text-white transition-all opacity-60 hover:opacity-100"
+                            ariaLabel="Options"
+                        />
+                        <IconButton
+                            icon={Search as any}
+                            size="small"
+                            kind="tertiary"
+                            className="text-gray-400 hover:text-white transition-all opacity-60 hover:opacity-100"
+                            onClick={() => setShowSearchModal(true)}
+                            ariaLabel="Search"
+                        />
+                    </div>
                 </div>
-                <IconButton
-                    icon={Search as any}
-                    size="small"
-                    kind="tertiary"
-                    className="text-gray-400 hover:text-white transition-all opacity-60 hover:opacity-100"
-                    onClick={() => setShowSearchModal(true)}
-                    ariaLabel="Search"
-                />
+
+                {/* Bottom Row: Selector & Plus Button */}
+                <div className="flex items-center gap-2 relative">
+                    {/* Selector Dropdown Box */}
+                    <div
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className="flex-1 flex items-center justify-between bg-[#1c1f3b] border border-white/20 rounded-md px-2 py-1.5 cursor-pointer hover:bg-white/5 transition-colors relative"
+                    >
+                        <div className="flex items-center gap-2 min-w-0">
+                            {/* "M" Icon Badge */}
+                            <div className={`relative w-7 h-7 rounded flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${activeWorkspace?.name === 'Main workspace' ? 'bg-[#ff3d57]' : 'bg-[#0073ea]'}`}>
+                                {activeWorkspace?.name?.charAt(0).toUpperCase() || 'W'}
+                                {/* Tiny home icon overlay */}
+                                {activeWorkspace?.name === 'Main workspace' && (
+                                    <div className="absolute -bottom-1 -right-1 bg-[#1c1f3b] rounded-sm p-[1px]">
+                                        <Home size={10} className="text-white" />
+                                    </div>
+                                )}
+                            </div>
+                            <Text type="text2" weight="bold" className="text-white truncate !text-[14px] !font-bold">
+                                {activeWorkspace?.name || 'Loading workspace...'}
+                            </Text>
+                        </div>
+                        <ChevronDown size={16} className="text-gray-400 flex-shrink-0 ml-1" />
+                    </div>
+
+                    {/* Dropdown Menu Popover */}
+                    <AnimatePresence>
+                        {isMenuOpen && (
+                            <>
+                                <div className="fixed inset-0 z-40" onClick={() => setIsMenuOpen(false)} />
+                                <motion.div
+                                    initial={{ opacity: 0, y: -5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -5 }}
+                                    transition={{ duration: 0.15 }}
+                                    className="absolute top-12 left-0 w-[240px] bg-[#2a2d4b] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden py-1"
+                                >
+                                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Your Workspaces</div>
+                                    {org.workspaces?.map((ws) => (
+                                        <div
+                                            key={ws.id}
+                                            onClick={() => {
+                                                setActiveWorkspaceId(ws.id);
+                                                setIsMenuOpen(false);
+                                            }}
+                                            className={`px-3 py-2 flex items-center gap-2 cursor-pointer transition-colors ${activeWorkspaceId === ws.id ? 'bg-[#1c3fa3] text-white' : 'text-gray-300 hover:bg-white/5'}`}
+                                        >
+                                            <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0 ${ws.name === 'Main workspace' ? 'bg-[#ff3d57]' : 'bg-[#0073ea]'}`}>
+                                                {ws.name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <span className="truncate text-[14px]">{ws.name}</span>
+                                            {activeWorkspaceId === ws.id && <Check size={14} className="ml-auto" />}
+                                        </div>
+                                    ))}
+                                </motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Blue Plus Button */}
+                    {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) && (
+                        <button
+                            onClick={handleAddWorkspace}
+                            className="bg-[#0073ea] hover:bg-[#0060c2] text-white p-2 rounded-md transition-colors flex-shrink-0 flex items-center justify-center h-[40px] w-[40px]"
+                            title="Add Workspace"
+                        >
+                            <Plus size={20} />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Navigation */}
@@ -554,8 +684,8 @@ export default function Sidebar() {
                                     ${pathname === '/dashboard' ? 'bg-[#1c3fa3] text-white' : 'text-gray-400 hover:text-gray-200'}
                                 `}
                             >
-                                <LayoutDashboard size={18} className={`mr-3 flex-shrink-0 ${pathname === '/dashboard' ? 'text-white' : 'text-gray-400'}`} />
-                                <span className={`text-[13px] font-normal tracking-wide ${pathname === '/dashboard' ? 'text-white' : 'text-gray-400'}`}>
+                                <BarChart2 size={18} className={`mr-3 flex-shrink-0 ${pathname === '/dashboard' ? 'text-white' : 'text-gray-400'}`} />
+                                <span className={`text-[15px] font-normal tracking-wide ${pathname === '/dashboard' ? 'text-white' : 'text-gray-400'}`}>
                                     Dashboard and reporting
                                 </span>
                             </motion.div>
@@ -588,7 +718,7 @@ export default function Sidebar() {
 
                     {/* Departments List */}
                     <div className="space-y-4">
-                        {org.departments.map((dept) => (
+                        {(activeWorkspace?.departments || []).map((dept) => (
                             <div key={dept.id} className="space-y-1">
                                 <div
                                     className="flex items-center group px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
@@ -607,7 +737,6 @@ export default function Sidebar() {
                                     </motion.div>
 
                                     <div className="flex-1 flex items-center min-w-0">
-                                        <Briefcase size={16} className={`${expandedDepts[dept.id] ? 'text-accent-violet' : 'text-gray-500'} mr-2.5 flex-shrink-0 transition-colors`} />
                                         <div className="flex-1 min-w-0">
                                             {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) ? (
                                                 <div className="w-fit min-w-[140px] px-1 no-nav" onClick={(e) => e.stopPropagation()}>
@@ -615,12 +744,12 @@ export default function Sidebar() {
                                                         value={dept.name}
                                                         onChange={(val: string) => handleRenameDepartment(dept.id, val)}
                                                         type="text2"
-                                                        weight="bold"
-                                                        className="!flex-1 [&_div]:!flex [&_div]:!text-gray-300 [&_input]:!text-white [&_span]:!text-white !text-[15px] !font-bold !tracking-wider uppercase !pl-4 !pr-4"
+                                                        weight="normal"
+                                                        className="!flex-1 [&_div]:!flex [&_div]:!text-gray-300 [&_input]:!text-white [&_span]:!text-white !text-[15px] !font-normal !tracking-wider uppercase !pl-4 !pr-4"
                                                     />
                                                 </div>
                                             ) : (
-                                                <Text type="text2" weight="bold" className="text-gray-300 truncate pr-2 !text-[15px] !font-bold !tracking-wider uppercase">
+                                                <Text type="text2" weight="normal" className="text-gray-300 truncate pr-2 !text-[15px] !font-normal !tracking-wider uppercase">
                                                     {dept.name}
                                                 </Text>
                                             )}
@@ -676,7 +805,7 @@ export default function Sidebar() {
                                                         router.push(`/board/${board.id}`);
                                                     }}
                                                 >
-                                                    <Table size={18} className={`mr-3 flex-shrink-0 ${pathname === `/board/${board.id}` ? 'text-white' : 'text-gray-400'}`} />
+                                                    <LayoutDashboard size={18} className={`mr-3 flex-shrink-0 ${pathname === `/board/${board.id}` ? 'text-white' : 'text-gray-400'}`} />
                                                     <div className="flex-1 min-w-0">
                                                         {['ADMIN', 'OWNER'].includes(String(String(org.currentUserRole).toUpperCase()).toUpperCase()) ? (
                                                             <div className="w-fit min-w-[140px] px-1 no-nav" onClick={(e) => e.stopPropagation()}>

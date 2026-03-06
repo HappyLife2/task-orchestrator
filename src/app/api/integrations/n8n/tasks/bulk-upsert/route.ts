@@ -66,11 +66,14 @@ export async function POST(req: NextRequest) {
             await db.$transaction(async (tx: Prisma.TransactionClient) => {
                 // A. Ensure Department
                 let dept = await tx.department.findFirst({
-                    where: { organizationId: orgId, name: item.department },
+                    where: { workspace: { organizationId: orgId }, name: item.department },
                 });
                 if (!dept) {
+                    let defaultWs = await tx.workspace.findFirst({ where: { organizationId: orgId, name: 'Main workspace' } });
+                    if (!defaultWs) { defaultWs = await tx.workspace.findFirst({ where: { organizationId: orgId } }); }
+                    if (!defaultWs) { defaultWs = await tx.workspace.create({ data: { name: 'Main workspace', organizationId: orgId } }); }
                     dept = await tx.department.create({
-                        data: { name: item.department, organizationId: orgId },
+                        data: { name: item.department, workspaceId: defaultWs.id },
                     });
                 }
 
@@ -144,7 +147,9 @@ export async function POST(req: NextRequest) {
                         externalId: item.externalId,
                         board: {
                             department: {
-                                organizationId: orgId
+                                workspace: {
+                                    organizationId: orgId
+                                }
                             }
                         }
                     }

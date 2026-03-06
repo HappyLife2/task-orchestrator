@@ -21,7 +21,9 @@ export async function GET(req: NextRequest) {
             where: {
                 board: {
                     department: {
-                        organizationId: payload.orgId
+                        workspace: {
+                            organizationId: payload.orgId
+                        }
                     }
                 },
                 OR: [

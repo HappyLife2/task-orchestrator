@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
 
         const orgId = keyRecord.organizationId;
         const departments = await db.department.findMany({
-            where: { organizationId: orgId },
+            where: { workspace: { organizationId: orgId } },
             include: {
                 boards: {
                     include: {

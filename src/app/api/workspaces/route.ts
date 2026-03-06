@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, verifyToken } from '@/lib/auth';
 import { z } from 'zod';
 
-const createDepartmentSchema = z.object({
+const createWorkspaceSchema = z.object({
     name: z.string().min(1, 'Name is required'),
-    workspaceId: z.string().min(1, 'Workspace ID is required'),
 });
 
 export async function POST(req: NextRequest) {
@@ -16,33 +15,28 @@ export async function POST(req: NextRequest) {
     }
 
     if (!['ADMIN', 'OWNER'].includes(String(String(payload.role).toUpperCase()).toUpperCase())) {
-        return NextResponse.json({ error: 'Only admins can create departments' }, { status: 403 });
+        return NextResponse.json({ error: 'Only admins can create workspaces' }, { status: 403 });
     }
 
     try {
         const body = await req.json();
-        const { name, workspaceId } = createDepartmentSchema.parse(body);
+        const { name } = createWorkspaceSchema.parse(body);
 
         if (!payload.orgId) {
             return NextResponse.json({ error: 'No organization found in token' }, { status: 400 });
         }
 
-        const workspace = await db.workspace.findUnique({ where: { id: workspaceId } });
-        if (!workspace || workspace.organizationId !== payload.orgId) {
-            return NextResponse.json({ error: 'Invalid workspace' }, { status: 400 });
-        }
-
-        const newDepartment = await db.department.create({
+        const newWorkspace = await db.workspace.create({
             data: {
                 name,
-                workspaceId
+                organizationId: payload.orgId
             }
         });
 
-        return NextResponse.json(newDepartment);
+        return NextResponse.json(newWorkspace);
 
     } catch (error) {
-        console.error('Failed to create department', error);
+        console.error('Failed to create workspace', error);
         if (error instanceof z.ZodError) {
             return NextResponse.json({ error: 'Invalid data', details: error.issues }, { status: 400 });
         }

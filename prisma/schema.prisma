@@ -17,7 +17,7 @@ model Organization {
   activityLogs ActivityLog[]
   apiKeys      ApiKey[]
   dashboards   Dashboard[]
-  departments  Department[]
+  workspaces   Workspace[]
   documents    Document[]
   users        User[]
   workforms    Workform[]
@@ -49,14 +49,29 @@ model User {
   watchedItems     WatchedItem[]
 }
 
-model Department {
+model Workspace {
   id             String       @id @default(uuid())
   name           String
+  description    String?
   organizationId String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  boards         Board[]
+  departments    Department[]
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model Department {
+  id             String       @id @default(uuid())
+  name           String
+  workspaceId    String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  boards         Board[]
+  workspace      Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model Board {

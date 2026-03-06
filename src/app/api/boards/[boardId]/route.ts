@@ -110,13 +110,13 @@ export async function DELETE(
         if (boardCheck.departmentId) {
             const dept = await db.department.findUnique({
                 where: { id: boardCheck.departmentId },
-                select: { organizationId: true }
+                select: { workspace: { select: { organizationId: true } } }
             });
 
             if (dept) {
                 await db.activityLog.create({
                     data: {
-                        organizationId: dept.organizationId,
+                        organizationId: dept.workspace.organizationId,
                         userId: payload.userId,
                         action: 'DELETE_BOARD',
                         resourceType: 'BOARD',

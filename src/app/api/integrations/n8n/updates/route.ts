@@ -70,7 +70,9 @@ export async function POST(req: NextRequest) {
                 externalId: data.externalId,
                 board: {
                     department: {
-                        organizationId: orgId
+                        workspace: {
+                            organizationId: orgId
+                        }
                     }
                 }
             }

@@ -23,10 +23,10 @@ export async function POST(req: NextRequest) {
 
         const board = await db.board.findUnique({
             where: { id: boardId },
-            include: { department: true }
+            include: { department: { include: { workspace: true } } }
         });
 
-        if (!board || board.department.organizationId !== payload.orgId) {
+        if (!board || board.department.workspace.organizationId !== payload.orgId) {
             return NextResponse.json({ error: 'Board not found' }, { status: 404 });
         }
 

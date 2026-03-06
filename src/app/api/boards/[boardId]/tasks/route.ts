@@ -19,12 +19,12 @@ export async function GET(req: NextRequest, { params }: { params: { boardId: str
     const board = await db.board.findUnique({
         where: { id: boardId },
         include: {
-            department: true,
+            department: { include: { workspace: true } },
             members: { where: { userId: payload.userId } }
         }
     });
 
-    if (!board || board.department.organizationId !== payload.orgId) {
+    if (!board || board.department.workspace.organizationId !== payload.orgId) {
         return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
     }
 
@@ -78,12 +78,12 @@ export async function POST(req: NextRequest, { params }: { params: { boardId: st
         const board = await db.board.findUnique({
             where: { id: boardId },
             include: {
-                department: true,
+                department: { include: { workspace: true } },
                 members: { where: { userId: payload.userId } }
             }
         });
 
-        if (!board || board.department.organizationId !== payload.orgId) {
+        if (!board || board.department.workspace.organizationId !== payload.orgId) {
             return NextResponse.json({ error: 'Board not found or access denied' }, { status: 404 });
         }
 
